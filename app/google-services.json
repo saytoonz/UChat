@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "765536356861",
+    "firebase_url": "https://unerchatapp.firebaseio.com",
+    "project_id": "unerchatapp",
+    "storage_bucket": "unerchatapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765536356861:android:a86e41b64dba542f",
+        "android_client_info": {
+          "package_name": "com.nsromapa.uchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765536356861-jdn9ehlb31sibjqcto3drbc748pdcspf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsromapa.uchat",
+            "certificate_hash": "4735557d2bfda1f20e92efcd482b087093476f95"
+          }
+        },
+        {
+          "client_id": "765536356861-ts49rr0ki3tgi0mfc6tthc7rugoqa5qr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBujOYRYNY4DuDCmxnfo7RxTt_khwAo6XM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "765536356861-ts49rr0ki3tgi0mfc6tthc7rugoqa5qr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

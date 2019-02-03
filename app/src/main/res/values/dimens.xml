@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="statusbar_height">24dp</dimen>
+    <dimen name="toobal_height">56dp</dimen>
+    <dimen name="statusbar_plus_toolbar_height">80dp</dimen>
+
+</resources>

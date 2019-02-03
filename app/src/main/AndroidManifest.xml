@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.nsromapa.uchat">
+
+
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.hardware.camera2.full" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".loginsignupsplash.SplashScreenActivity"
+            android:theme="@style/FullScreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".loginsignupsplash.LoginActivity"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".loginsignupsplash.SignUpActivity"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".ShowCapturedActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".photoeditor.PhotoEditorMainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChooseReceiverActivity"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".FindUsersActivity"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".ChatActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".recyclerviewstory.DisplayImageActivity"
+            android:theme="@style/FullScreenTheme" />
+
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".LocationUtil.SingLocationActivity"
+            android:label="@string/title_activity_sing_location" />
+        <activity android:name=".LocationUtil.MapboxSingleLocationActivity" />
+        <activity
+            android:name=".findme.FindMeMapsActivity"
+            android:label="@string/title_activity_find_me_maps"></activity>
+    </application>
+
+</manifest>

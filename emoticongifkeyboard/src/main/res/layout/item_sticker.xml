@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/gif_image_view_height"
+    android:orientation="vertical">
+
+    <!--Image view to load STICKERS.-->
+    <ImageView
+        android:id="@+id/sticker_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/gif_grid_view_item_spacing"
+        android:background="@android:color/transparent"
+        android:adjustViewBounds="true"
+        android:padding="6dp"
+        tools:ignore="ContentDescription,UnusedAttribute"/>
+</LinearLayout>

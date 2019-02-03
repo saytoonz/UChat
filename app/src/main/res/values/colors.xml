@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">@color/color_option_menu</color>
+
+    <color name="loading_background">#424242</color>
+    <color name="chat_recycler_background">#e5e5e5</color>
+    <color name="chat_bottom_layout_background">#fafafa</color>
+
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="white_t75">#b4ffffff</color>
+
+    <color name="light_blue">#81d4fa</color>
+    <color name="light_purple">#ab47bc</color>
+    <color name="yellow">#ffee58</color>
+    <color name="red">#ff0000</color>
+    <color name="light_grey">#e0e0e0</color>
+    <color name="dark_grey">#9e9e9e</color>
+    <color name="card_background_color">@color/white</color>
+
+    
+    <color name="selected_filter">#221f20</color>
+    <color name="normal_filter">#8a8889</color>
+    <color name="color_option_menu">#ff3399</color>
+    <color name="cardview_background">#333639</color>
+    <color name="halfwhite">#84FFFFFF</color>
+</resources>

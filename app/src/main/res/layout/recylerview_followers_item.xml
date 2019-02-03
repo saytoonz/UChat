@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="7dp">
+
+
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/follower_item_profileImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/profile_image"
+            app:civ_border_width="4dp"
+            app:civ_border_color="@color/light_blue"
+            android:layout_gravity="center_vertical|end"/>
+
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingStart="13dp"
+            android:paddingEnd="0dp">
+
+            <TextView
+                android:id="@+id/follower_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Large Text"
+                android:textColor="@color/dark_grey"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/follower_item_index"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Large Text"
+                android:textColor="@color/black_overlay"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end">
+
+            <ImageButton
+                android:id="@+id/follower_item_follow"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/follo_btn_background"
+                android:src="@drawable/ic_group_add_81d4fa_24dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/light_grey"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"/>
+</LinearLayout>

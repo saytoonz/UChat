@@ -1,0 +1,115 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:context="com.nsromapa.say.emogifstickerkeyboard.EmoticonGIFKeyboardFragment">
+
+    <!--Top divider-->
+    <include layout="@layout/layout_divider"/>
+
+    <!--View pager to display GIF/Emoticon-->
+    <FrameLayout
+        android:id="@+id/keyboard_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_light"/>
+
+    <include layout="@layout/layout_divider"/>
+
+    <!--Bottom container-->
+    <RelativeLayout
+        android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/keyboard_tabs_container_height"
+        android:background="@color/background_dark"
+        android:elevation="2dp"
+        android:orientation="horizontal"
+        tools:ignore="UnusedAttribute">
+
+        <!--Search button-->
+        <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+            android:id="@+id/search_btn"
+            android:layout_width="@dimen/keyboard_tabs_container_height"
+            android:layout_height="@dimen/keyboard_tabs_container_height"
+            android:layout_alignParentBottom="true"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/image_btn_padding"
+            android:src="@drawable/ic_search"
+            tools:ignore="ContentDescription,RtlHardcoded"/>
+
+        <!--Backspace button-->
+        <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+            android:id="@+id/emojis_backspace"
+            android:layout_width="@dimen/keyboard_tabs_container_height"
+            android:layout_height="@dimen/keyboard_tabs_container_height"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/image_btn_padding"
+            android:src="@drawable/emoji_x"
+            tools:ignore="ContentDescription,RtlHardcoded"/>
+
+        <!--Emoticon/GIF button container-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <!--Emoticon button-->
+            <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+                android:id="@+id/btn_emoji_tab"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/keyboard_tabs_container_height"
+                android:layout_height="@dimen/keyboard_tabs_container_height"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/image_btn_padding"
+                android:src="@drawable/ic_smiley"
+                tools:ignore="ContentDescription"/>
+
+
+            <!--GIF button-->
+            <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+                android:id="@+id/btn_gif_tab"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/keyboard_tabs_container_height"
+                android:layout_height="@dimen/keyboard_tabs_container_height"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_gif"
+                tools:ignore="ContentDescription,RtlHardcoded"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"/>
+
+
+            <!--Sticker button-->
+            <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+                android:id="@+id/btn_sticker_tab"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/keyboard_tabs_container_height"
+                android:layout_height="@dimen/keyboard_tabs_container_height"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_sticker"
+                android:padding="@dimen/image_btn_padding"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                tools:ignore="ContentDescription,RtlHardcoded"/>
+
+
+            <!--Sound button-->
+            <com.nsromapa.say.emogifstickerkeyboard.internal.EmoticonGifImageView
+                android:id="@+id/btn_sound_tab"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/keyboard_tabs_container_height"
+                android:layout_height="@dimen/keyboard_tabs_container_height"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_surround_sound"
+                android:padding="@dimen/image_btn_padding"
+                tools:ignore="ContentDescription,RtlHardcoded"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

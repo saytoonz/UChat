@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:id="@+id/asc_root_view">
+
+    <com.jsibbold.zoomage.ZoomageView
+        android:id="@+id/image_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:zoomage_restrictBounds="false"
+        app:zoomage_animateOnReset="true"
+        app:zoomage_autoResetMode="UNDER"
+        app:zoomage_autoCenter="true"
+        app:zoomage_zoomable="true"
+        app:zoomage_translatable="true"
+        app:zoomage_minScale="0.6"
+        app:zoomage_maxScale="8"
+        />
+
+    <FrameLayout
+        android:id="@+id/main_media_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="#000000">
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/exoplayer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center" />
+
+    </FrameLayout>
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/loading_progress"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/show_capture_linear_backgrnd"
+        android:padding="8dp"
+        android:layout_alignParentBottom="true">
+
+
+        <ImageView
+            android:id="@+id/asc_insert_Emoji"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_insert_emoticon_24dp"/>
+
+        <View
+            android:layout_width="0.7dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:background="@color/white_t75"/>
+
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
+            android:id="@+id/asc_add_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="54dp"
+            android:minHeight="36dp"
+            android:textSize="18sp"
+            android:hint="@string/caption"
+            android:textColorHint="@color/white_t75"
+            android:textColor="@android:color/white"
+            android:inputType="textMultiLine"
+            android:singleLine="false"
+            android:background="@android:color/transparent"
+            tools:textColor="@android:color/black"
+            android:overScrollMode="always"
+            android:paddingBottom="16dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:imeOptions="actionSend"
+            emojicon:emojiconSize="20sp"/>
+
+
+    </LinearLayout>
+
+    <include layout="@layout/toolbar_show_capture_activity"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="36sp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_done_all_24dp" />
+
+
+</RelativeLayout>

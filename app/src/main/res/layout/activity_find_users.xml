@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".FindUsersActivity"
+    android:background="@drawable/tab_background_gradient">
+
+
+    <FrameLayout
+        android:background="@drawable/card_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/activity_find_users_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:paddingTop="3dp"
+            android:paddingBottom="48dp"/>
+
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/findUser_activity_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statusbar_plus_toolbar_height"
+        android:background="@drawable/tab_background_gradient">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/statusbar_height">
+
+            <ImageView
+                android:id="@+id/findUser_toolbar_go_back"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_arrow_back_24dp" />
+
+            <View
+                android:layout_width="0px"
+                android:layout_height="0px"
+                android:focusable="true"
+                android:focusableInTouchMode="true" />
+
+            <EditText
+                android:id="@+id/findUser_toolbar_search_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/search_Button_imageView"
+                android:layout_toEndOf="@+id/findUser_toolbar_go_back"
+                android:background="@android:color/transparent"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                android:drawablePadding="2dp"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/white"
+                android:textSize="20sp"
+                tools:textColor="@android:color/black" />
+
+
+            <ImageView
+                android:id="@+id/search_Button_imageView"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:src="@android:drawable/ic_menu_search" />
+
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+
+    <ProgressBar
+        android:id="@+id/findUser_activity_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center_horizontal"/>
+</FrameLayout>

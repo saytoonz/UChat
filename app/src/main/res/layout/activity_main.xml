@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".MainActivity">
+
+    <View
+        android:id="@+id/am_background_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:alpha=".5"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/am_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+    <include layout="@layout/toolbar_main_layout"/>
+    <include layout="@layout/toolbar_main_activity_menu"/>
+
+
+
+    <com.nsromapa.uchat.view.MyTabsView
+        android:id="@+id/am_my_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="16dp"/>
+
+
+</RelativeLayout>

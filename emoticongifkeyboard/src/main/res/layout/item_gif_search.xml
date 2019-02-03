@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--Image view to load GIF.-->
+<ImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gif_iv"
+    android:layout_width="150dp"
+    android:layout_height="@dimen/gif_image_view_height"
+    android:layout_margin="@dimen/gif_grid_view_item_spacing"
+    android:background="@color/background_dark"
+    android:elevation="2dp"
+    tools:ignore="ContentDescription,UnusedAttribute"/>

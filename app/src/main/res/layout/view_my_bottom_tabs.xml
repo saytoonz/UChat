@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    tools:background="@color/light_purple"
+    tools:layout_gravity="bottom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/vmt_camera_image"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start|bottom"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_camera_24dp" />
+
+        <ImageView
+            android:id="@+id/vmt_stories_image"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="2"
+            android:src="@drawable/ic_group_work_24dp" />
+
+        <ImageView
+            android:id="@+id/vmt_home_image"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="3"
+            android:src="@drawable/ic_home_24dp" />
+
+        <ImageView
+            android:id="@+id/vmt_chats_image"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="2"
+            android:src="@drawable/ic_chat_bubble_24dp" />
+
+        <ImageView
+            android:id="@+id/vmt_facemash_image"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_gravity="start|bottom"
+            android:layout_marginBottom="40dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_face_24dp" />
+    </LinearLayout>
+
+</FrameLayout>

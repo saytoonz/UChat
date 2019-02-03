@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/yellow">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/statusbar_plus_toolbar_height"
+        android:background="@color/white">
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshFriends"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/homePostRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>

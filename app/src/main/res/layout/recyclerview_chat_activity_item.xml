@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/receivedMessage_fullLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="0dp"
+        android:paddingEnd="60dp">
+
+
+
+        <!--Full Sender LinearLayout without Time and date view /Receiver-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+
+            <!--Text and EmojiText Message /Receiver-->
+            <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                android:id="@+id/receiver_message_text"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/receiver_messages_layout"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:emojiconSize="30sp" />
+
+
+
+
+            <!--Image and Video Message Image viewer  /Receiver-->
+            <LinearLayout
+                android:id="@+id/receiver_message_ImageFull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:background="@drawable/receiver_messages_layout">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/receiver_message_Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="250dp"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/receiver_message_VideoThumbnail_play"
+                        android:src="@drawable/ic_play"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+            </LinearLayout>
+
+
+
+
+            <!--Sticker and Gif Message Image Viewer /Receiver-->
+            <ImageView
+                android:id="@+id/receiver_sticker_gif_Image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/sticker_gif_background"
+                android:contentDescription="@string/chat_image"
+                android:maxHeight="250dp"
+                android:padding="10dp" />
+
+
+
+            <!--Sound Message Image /Receiver-->
+            <ImageView
+                android:id="@+id/receiver_sound_Image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/chat_image"
+                android:maxHeight="250dp"
+                android:padding="10dp" />
+
+
+
+            <!--Contact Number Message /Receiver-->
+            <LinearLayout
+                android:id="@+id/receiver_contactFull"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_weight="4"
+                android:background="@drawable/receiver_messages_layout">
+
+                <LinearLayout
+                    android:padding="4dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:orientation="vertical"
+                    android:background="@drawable/sender_messages_layout">
+
+                    <TextView
+                        android:id="@+id/receiver_contactName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
+
+                    <TextView
+                        android:id="@+id/receiver_contactNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/receiver_contactIcon"
+                    android:src="@drawable/ic_contacts_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/todo" />
+            </LinearLayout>
+
+
+
+            <!--File Attachment Message /Receiver-->
+            <LinearLayout
+                android:id="@+id/receiver_document_attachmentFull"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:background="@drawable/receiver_messages_layout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:background="@drawable/sticker_gif_background">
+                    <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                        android:id="@+id/receiver_document_attachmentName"
+                        style="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:emojiconSize="30sp" />
+
+                    <ImageView
+                        android:layout_gravity="end"
+                        android:layout_marginStart="3dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_insert_drive_file_f44c63_24dp"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+
+            <!--Audio Message /Receiver-->
+            <LinearLayout
+                android:id="@+id/receiver_message_audioFull"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/receiver_messages_layout">
+
+                <ImageView
+                    android:id="@+id/receiver_message_audioImageIcon"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_play"
+                    android:layout_marginEnd="7dp"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/receiver_message_audioProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal" />
+
+                    <TextView
+                        android:id="@+id/receiver_message_audioFileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:text="file name will appear here"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
+            <!--FindMe request Message /Receiver-->
+            <LinearLayout
+                android:id="@+id/receiver_message_findMeFull"
+                android:background="@drawable/receiver_messages_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:padding="7dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:src="@drawable/track_map"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"/>
+
+                <TextView
+                    android:id="@+id/receiver_message_findMeTextNotification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:padding="5dp"
+                    android:textColor="@color/black"
+                    android:text="Your friend wants to connect with you on findMe, should we connect you?"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/receiver_message_findMeBtnNo"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:background="@drawable/sticker_gif_background"/>
+
+                    <Button
+                        android:id="@+id/receiver_message_findMeBtnYes"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="@string/yes"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:background="@drawable/sticker_gif_background"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+
+
+        <!--Time and Date of message /Receiver-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/receiverMessage_dateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#84000000"
+                android:padding="4dp"
+                android:shadowRadius="13"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/senderMessage_fullLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="60dp"
+        android:paddingEnd="0dp">
+
+
+        <!--Full Sender LinearLayout without Time and date view /Sender-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+
+
+            <!--Text and EmojiText Message /Sender-->
+            <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                android:id="@+id/sender_message_text"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/sender_messages_layout"
+                android:padding="10dp"
+                android:text="Sender Messages"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:emojiconSize="30sp" />
+
+
+
+
+            <!--Image and Video Message Image viewer  /Sender-->
+            <LinearLayout
+                android:id="@+id/sender_message_ImageFull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:background="@drawable/sender_messages_layout">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/sender_message_Image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="250dp"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/sender_message_VideoThumbnail_play"
+                        android:src="@drawable/ic_play"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+            </LinearLayout>
+
+
+
+            <!--Sticker and Gif Message Image Viewer /Sender-->
+            <ImageView
+                android:id="@+id/sender_sticker_gif_Image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/sticker_gif_background"
+                android:contentDescription="@string/chat_image"
+                android:maxHeight="250dp"
+                android:padding="10dp"/>
+
+
+
+
+
+            <!--Sound Message Image/Sender-->
+            <ImageView
+                android:id="@+id/sender_sound_Image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/chat_image"
+                android:maxHeight="250dp"
+                android:padding="10dp" />
+
+
+
+
+
+            <!--Contact Number Message /Sender-->
+            <LinearLayout
+                android:id="@+id/sender_contactFull"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_weight="4"
+                android:background="@drawable/sender_messages_layout">
+
+                <ImageView
+                    android:id="@+id/sender_contactIcon"
+                    android:src="@drawable/ic_contacts_white_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/todo" />
+
+                <LinearLayout
+                    android:padding="4dp"
+                    android:layout_weight="3"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/receiver_messages_layout">
+
+                    <TextView
+                        android:id="@+id/sender_contactName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/sender_contactNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
+
+            <!--File Attachment Message /Sender-->
+            <LinearLayout
+                android:id="@+id/sender_document_attachmentFull"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:background="@drawable/sender_messages_layout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:background="@drawable/sticker_gif_background">
+                    <ImageView
+                        android:layout_marginEnd="3dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_insert_drive_file_white_24dp"/>
+
+                    <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                        android:id="@+id/sender_document_attachmentName"
+                        style="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:emojiconSize="30sp"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+
+
+            <!--Audio Message /Sender-->
+            <LinearLayout
+                android:id="@+id/sender_message_audioFull"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/sender_messages_layout">
+                <ImageView
+                    android:id="@+id/sender_message_audioImageIcon"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_play"
+                    android:layout_marginEnd="7dp"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/sender_message_audioProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal" />
+
+                    <TextView
+                        android:id="@+id/sender_message_audioFileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:text="file name will appear here"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
+            <!--FindMe request Message /Sender-->
+            <LinearLayout
+                android:id="@+id/sender_message_findMeFull"
+                android:background="@drawable/sender_messages_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:padding="7dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:src="@drawable/track_map"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"/>
+
+                <TextView
+                    android:id="@+id/sender_message_findMeTextNotification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:padding="5dp"
+                    android:textColor="@color/white"
+                    android:text="You requsted to connect with Your Friend"/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+        <!--Time and Date of message /Sender-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/senderMessage_dateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#84ffffff"
+                android:padding="4dp"
+                android:shadowRadius="13"
+                android:textColor="#e0f44c63"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>
+
+
+    <!--<de.hdodenhof.circleimageview.CircleImageView--><!--android:id="@+id/message_profile_image"--><!--android:layout_width="40dp"--><!--android:layout_height="40dp"--><!--android:layout_marginTop="10dp"--><!--android:src="@drawable/profile_image"/>--><!--android:layout_toEndOf="@+id/message_profile_image"-->
+
+
+
+
+
