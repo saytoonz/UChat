@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nsromapa.uchat.customizations.CustomIntent;
+import com.nsromapa.uchat.databases.UpdateLocalDB;
 import com.nsromapa.uchat.usersInfos.MyStories;
 import com.nsromapa.uchat.usersInfos.UserInformation;
 import com.nsromapa.uchat.adapter.MainPagerAdapter;
@@ -45,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
+
+import static com.nsromapa.uchat.databases.DBOperations.DB_NAME;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,12 +67,20 @@ public class MainActivity extends AppCompatActivity {
 
     String currentUserId;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.main_activity_toolbar);
+
+
+
+        if (!checkDatabase()){
+            Intent intent = new Intent(this,UpdateLocalDB.class);
+            startActivity(intent);
+        }
+
+
 
         mAuth = FirebaseAuth.getInstance();
         mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -208,6 +219,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    public boolean checkDatabase(){
+        File dbFile = this.getDatabasePath(DB_NAME);
+        return dbFile.exists();
+    }
 
     @Override
     protected void onStart() {
@@ -217,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
             updateDeviceToken(FirebaseInstanceId.getInstance().getToken());
         }
     }
+
 
     @Override
     protected void onStop() {

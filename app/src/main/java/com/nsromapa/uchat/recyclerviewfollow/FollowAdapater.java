@@ -97,14 +97,14 @@ public class FollowAdapater extends RecyclerView.Adapter<FollowViewHolders> {
         FirebaseDatabase.getInstance().getReference()
                 .child("users").child(otherUserId)
                 .child("followers").child(myUserId)
-                .setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                .setValue("not_in").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
                     //// Add other person to user's followers
                     FirebaseDatabase.getInstance().getReference()
                             .child("users").child(myUserId).child("following")
-                            .child(otherUserId).setValue(true)
+                            .child(otherUserId).setValue("not_in")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -168,14 +168,14 @@ public class FollowAdapater extends RecyclerView.Adapter<FollowViewHolders> {
                             FirebaseDatabase.getInstance().getReference()
                                     .child("users").child(otherUserId)
                                     .child("friends").child(myUserId)
-                                    .setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .setValue("not_in").addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
                                         FirebaseDatabase.getInstance().getReference()
                                                 .child("users").child(myUserId)
                                                 .child("friends").child(otherUserId)
-                                                .setValue(true);
+                                                .setValue("not_in");
                                     }
                                 }
                             });

@@ -84,7 +84,10 @@ dependencies {
 
     //////----------- SQLite -------------///////
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
+    implementation 'net.zetetic:android-database-sqlcipher:4.0.1@aar'
 
+    //////----------- PDF Viewer -------------///////
+    implementation 'com.github.barteksc:android-pdf-viewer:2.3.0'
 
 
     testImplementation 'junit:junit:4.12'
