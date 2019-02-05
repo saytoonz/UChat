@@ -48,5 +48,7 @@
     <string name="todo">TODO</string>
     <string name="yes">Yes</string>
     <string name="no">no</string>
+    <string name="please_be_patient_as_we_set_up_your_account_for_you">Please be patient as we set up your account for you...</string>
+    <string name="this_process_will_take_some_time">This process will take some time...</string>
 
 </resources>
