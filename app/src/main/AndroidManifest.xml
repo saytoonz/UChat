@@ -66,6 +66,9 @@
         <activity
             android:name=".recyclerviewstory.DisplayImageActivity"
             android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".databases.UpdateLocalDB"
+            android:theme="@style/FullScreenTheme" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
