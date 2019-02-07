@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
 
 
@@ -80,7 +81,9 @@ public class UpdateLocalDB extends AppCompatActivity {
                         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                              finish();
+                                Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         });
 
@@ -93,6 +96,8 @@ public class UpdateLocalDB extends AppCompatActivity {
                                     Log.d(TAG, "onCreate: could not add Messages Successfully.....");
                                 }
 
+                                Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+                                startActivity(intent);
                                 finish();
                             }
                         });
@@ -179,6 +184,16 @@ public class UpdateLocalDB extends AppCompatActivity {
                                                 CAPTION, DATE, TIME, MESSAGE, TYPE, LOCAL_LOCATION, SYNCHRONIZED);
 
                         Log.d(TAG, "onDataChange:  Message "+MESSAGE_ID+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+FROM_UID+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+TO_UID+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+CAPTION+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+DATE+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+MESSAGE_ID+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+TIME+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+MESSAGE+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+TYPE+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+LOCAL_LOCATION+" added to table insertion........");
+                        Log.d(TAG, "onDataChange:  Message "+SYNCHRONIZED+" added to table insertion........");
 
 
 
@@ -288,7 +303,14 @@ public class UpdateLocalDB extends AppCompatActivity {
         return true;
     }
 
-    private boolean getUserInformation() {
+
+
+
+
+
+
+
+    public boolean getUserInformation() {
         bool = false;
 
         mRoot.child("users").child(mAuth.getCurrentUser().getUid())

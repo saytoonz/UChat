@@ -24,6 +24,8 @@ public class ChatFragmentAdapater extends RecyclerView.Adapter<ChatFragmentViewH
         this.usersList = usersList;
         this.context = context;
     }
+
+
     @Override
     public ChatFragmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recylerview_fragment_chat_item, null);

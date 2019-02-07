@@ -91,6 +91,7 @@ import com.nsromapa.uchat.LocationUtil.PermissionUtils;
 import com.nsromapa.uchat.LocationUtil.SingLocationActivity;
 import com.nsromapa.uchat.customizations.CustomIntent;
 import com.nsromapa.uchat.findme.FindMeMapsActivity;
+import com.nsromapa.uchat.recyclerchatactivity.ChatActivityBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsAdapter;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsObjects;
 
@@ -127,7 +128,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     private LinearLayout img_capt_aud_rec,attachment_layouout;
     private ImageView attach_photo, attach_video, attach_gallery, attach_record;
     private ImageView attach_audio, attach_document, attach_findUser, attach_location, attach_contact;
-    private RecyclerView userMessagesRecycler;
+    private RecyclerView messagesRecycler;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mRootRef, theseUsersMessageTableRef;
@@ -205,7 +206,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                     SendMessage(messageEditText.getText().toString(),"text","");
                     messageEditText.setText("");
 
-                }else displayAttchments();
+                }else displayAttachments();
             }
         });
 
@@ -301,45 +302,45 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             updateStatus("online");
         }
-        //Load all messages when intent is opened
-        mRootRef.child("messages").child(sender_user_id).child(receiver_user_id)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
-                        messageList.add(messages);
-                        chatsAdapter.notifyDataSetChanged();
-
-                        userMessagesRecycler.smoothScrollToPosition(userMessagesRecycler.getAdapter().getItemCount());
-
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
-                        messageList.remove(messages);
-                        chatsAdapter.notifyDataSetChanged();
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
-                        messageList.remove(messages);
-                        chatsAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+//        //Load all messages when intent is opened
+//        mRootRef.child("messages").child(sender_user_id).child(receiver_user_id)
+//                .addChildEventListener(new ChildEventListener() {
+//                    @Override
+//                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
+//                        messageList.add(messages);
+//                        chatsAdapter.notifyDataSetChanged();
+//
+//                        userMessagesRecycler.smoothScrollToPosition(userMessagesRecycler.getAdapter().getItemCount());
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
+//                        messageList.remove(messages);
+//                        chatsAdapter.notifyDataSetChanged();
+//
+//                    }
+//
+//                    @Override
+//                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                        ChatsObjects messages = dataSnapshot.getValue(ChatsObjects.class);
+//                        messageList.remove(messages);
+//                        chatsAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
     }
 
 
@@ -400,11 +401,18 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         //Setup chats into the chat recyclerView
-        userMessagesRecycler = findViewById(R.id.activity_chat_recyclerview);
+        messagesRecycler = findViewById(R.id.activity_chat_recyclerview);
+        messagesRecycler.setHasFixedSize(true);
+        messagesRecycler.setNestedScrollingEnabled(false);
         linearLayoutManager = new LinearLayoutManager(this);
-        userMessagesRecycler.setLayoutManager(linearLayoutManager);
-        chatsAdapter = new ChatsAdapter(this,messageList);
-        userMessagesRecycler.setAdapter(chatsAdapter);
+        messagesRecycler.setLayoutManager(linearLayoutManager);
+
+//        chatsAdapter = new ChatsAdapter(this,messageList);
+//        userMessagesRecycler.setAdapter(chatsAdapter);
+
+        new ChatActivityBackground(messagesRecycler,this).execute();
+
+
 
 
 //        Initialize keyboard
@@ -1053,7 +1061,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private void displayAttchments() {
+    private void displayAttachments() {
 
         //Check and close emojiGifStickerKeyboard if opend
         if (emoticonGIFKeyboardFragment.isOpen()){

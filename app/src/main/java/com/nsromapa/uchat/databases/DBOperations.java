@@ -2,6 +2,7 @@ package com.nsromapa.uchat.databases;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -11,8 +12,6 @@ public class DBOperations extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     public static final String DB_NAME = "product.db";
     private static final String TAG = "Database Operations";
-
-
 
     public DBOperations(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -98,7 +97,7 @@ public class DBOperations extends SQLiteOpenHelper {
 
         db.insert(DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME, null, contentValues);
 
-        Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME+".......");
+        Log.d(TAG, "One row inserted into "+DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME+"......."+DBObjects.DBHelperObjects.MESSAGE_ID);
     }
 
 
@@ -134,5 +133,15 @@ public class DBOperations extends SQLiteOpenHelper {
         db.execSQL(DBObjects.DBHelperObjects.DELETE_MESSAGES_TABLE_QUERY);
         db.execSQL(DBObjects.DBHelperObjects.DELETE_STORIES_TABLE_QUERY);
         onCreate(db);
+    }
+
+
+    public  void deleteTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(DBObjects.DBHelperObjects.DELETE_USERS_TABLE_QUERY);
+    }
+
+    public Cursor readFromLocalDB(SQLiteDatabase database, String tableName, String [] projections){
+        return database.query(tableName,projections,null,null,null,null,null);
     }
 }

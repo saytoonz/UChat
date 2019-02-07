@@ -11,7 +11,7 @@ public class ChatsObjects {
         this.messageID = messageID;
         this.from = from;
         this.message = message;
-        this.type = type;
+        this.type = "text";
         this.caption = caption;
         this.date = date;
         this.time = time;

@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nsromapa.uchat.customizations.CustomIntent;
+import com.nsromapa.uchat.databases.DBOperations;
 import com.nsromapa.uchat.databases.UpdateLocalDB;
 import com.nsromapa.uchat.usersInfos.MyStories;
 import com.nsromapa.uchat.usersInfos.UserInformation;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         if (!checkDatabase()){
             Intent intent = new Intent(this,UpdateLocalDB.class);
             startActivity(intent);
+            finish();
         }
 
 
@@ -203,13 +205,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        UserInformation userInformationListener = new UserInformation();
-        userInformationListener.startFetchingFollowing();
-        userInformationListener.startFetchingFollowers();
-        userInformationListener.startFetchingFriends();
-
-        MyStories myStories = new MyStories();
-        myStories.startFetchingStories();
+//        UserInformation userInformationListener = new UserInformation();
+//        userInformationListener.startFetchingFollowing();
+//        userInformationListener.startFetchingFollowers();
+//        userInformationListener.startFetchingFriends();
+//
+//        MyStories myStories = new MyStories();
+//        myStories.startFetchingStories();
 
         downloadStickers();
         downloadSounds();
@@ -304,9 +306,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logOut() {
+
+        new DBOperations(this).deleteTable();
         updateDeviceToken("");
         updateStatus("offline");
         mAuth.signOut();
+
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

@@ -2,7 +2,6 @@ package com.nsromapa.uchat.recyclerviewchatfragment;
 
 public class ChatFragmentObject {
 
-
     private String name;
     private String uid;
     private String state;
