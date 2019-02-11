@@ -1,20 +1,21 @@
 package com.nsromapa.uchat.recyclerchatactivity;
 
 public class ChatsObjects {
-    String messageID,from, message, type, caption, date, time;
+    String messageID,from, message, type, caption, date, time, state;
 
-    public ChatsObjects(){
+//    public ChatsObjects(){
+//
+//    }
 
-    }
-
-    public ChatsObjects(String messageID, String from, String message, String type, String caption, String date, String time) {
+    public ChatsObjects(String messageID, String from, String message, String type, String caption, String date, String time, String state) {
         this.messageID = messageID;
         this.from = from;
         this.message = message;
-        this.type = "text";
+        this.type = type;
         this.caption = caption;
         this.date = date;
         this.time = time;
+        this.state = state;
     }
 
     public String getFrom() {
@@ -73,4 +74,11 @@ public class ChatsObjects {
         this.messageID = messageID;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 }

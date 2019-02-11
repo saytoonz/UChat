@@ -6,11 +6,11 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 
-public class BackgroundTask extends AsyncTask<String, Void, String> {
+public class InsertIntoDBBackground extends AsyncTask<String, Void, String> {
 
     private Context context;
 
-    public BackgroundTask(Context context) {
+    public InsertIntoDBBackground(Context context) {
         this.context = context;
     }
 
@@ -38,7 +38,7 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
 
                 dbOperations.AddUser(database, uid, index, name, profileImage, state, welcomed);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -71,7 +71,7 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
 
                 dbOperations.AddtoFollowAndFriends(tablename, database, uid, index, name, profileImage, state);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -87,16 +87,16 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                 String caption = params[4];
                 String _date = params[5];
                 String _time = params[6];
-                String message = params[6];
-                String type = params[6];
-                String local_loc = params[6];
-                String sync_ed = params[6];
-
+                String message = params[7];
+                String type = params[8];
+                String state = params[9];
+                String local_loc = params[10];
+                String sync_ed = params[11];
 
                 dbOperations.AddMessage(database, messageId, fromId, toId, caption,
-                        _date, _time, message, type, local_loc, sync_ed);
+                        _date, _time, message, type, state ,local_loc, sync_ed);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -106,12 +106,8 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
 
             default: {
 
-                String id = params[1];
-                String name = params[2];
-                dbOperations.AddStories(database, id, name, name, name, name, name, name, name, id, id);
-
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -132,7 +128,7 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, result, Toast.LENGTH_LONG).show();
     }
 
 }

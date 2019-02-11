@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -30,14 +29,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nsromapa.uchat.customizations.CustomIntent;
-import com.nsromapa.uchat.databases.DBOperations;
+import com.nsromapa.uchat.databases.InsertIntoDBBackground;
+import com.nsromapa.uchat.databases.StickersSoundBackground;
 import com.nsromapa.uchat.databases.UpdateLocalDB;
-import com.nsromapa.uchat.usersInfos.MyStories;
-import com.nsromapa.uchat.usersInfos.UserInformation;
 import com.nsromapa.uchat.adapter.MainPagerAdapter;
+import com.nsromapa.uchat.fragment.CameraFragment;
 import com.nsromapa.uchat.loginsignupsplash.LoginActivity;
+import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
 import com.nsromapa.uchat.view.MyTabsView;
 
 import java.io.File;
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference mRootRef;
 
     String currentUserId;
+    private boolean bool;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +80,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.main_activity_toolbar);
 
 
-
-        if (!checkDatabase()){
-            Intent intent = new Intent(this,UpdateLocalDB.class);
-            startActivity(intent);
-            finish();
-        }
-
-
-
         mAuth = FirebaseAuth.getInstance();
         mRootRef = FirebaseDatabase.getInstance().getReference();
-
 
 
         final View background = findViewById(R.id.am_background_view);
@@ -109,15 +104,15 @@ public class MainActivity extends AppCompatActivity {
         cameraFacingORMenuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (viewPager.getCurrentItem() == 0){
+                if (viewPager.getCurrentItem() == 0) {
                     ma_toolbar_menu_framelayout.setAlpha(0);
                     ma_toolbar_menu_framelayout.setVisibility(View.GONE);
 
-                }else{
+                } else {
                     if (ma_toolbar_menu_framelayout.getVisibility() == View.GONE) {
                         ma_toolbar_menu_framelayout.setAlpha(1);
                         ma_toolbar_menu_framelayout.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         ma_toolbar_menu_framelayout.setAlpha(0);
                         ma_toolbar_menu_framelayout.setVisibility(View.GONE);
                     }
@@ -140,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         final int colorblue = ContextCompat.getColor(this, R.color.light_blue);
         final int colorpurple = ContextCompat.getColor(this, R.color.light_purple);
 
@@ -152,13 +146,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if (position == 0) {
                     background.setAlpha(positionOffset);
-                    mDivider.setAlpha(1-positionOffset);
+                    mDivider.setAlpha(1 - positionOffset);
 
                     cameraFacingORMenuBtn.setImageResource(R.drawable.ic_image_24dp);
                     ma_toolbar_menu_framelayout.setAlpha(0);
 
                     myTabsView.setVisibility(View.GONE);
 
+                    CameraFragment cameraFragment = CameraFragment.create();
+                    cameraFragment.setHiddenBool(true);
 
                 } else if (position == 1) {
                     background.setBackgroundColor(colorblue);
@@ -167,8 +163,9 @@ public class MainActivity extends AppCompatActivity {
                     mSearchEditText.setEnabled(true);
                     mSearchEditText.setAlpha(1 - positionOffset);
 
-
                     myTabsView.setVisibility(View.VISIBLE);
+                    CameraFragment cameraFragment = CameraFragment.create();
+                    cameraFragment.setHiddenBool(false);
 
                 } else if (position == 2) {
                     background.setBackgroundColor(colorpurple);
@@ -180,12 +177,16 @@ public class MainActivity extends AppCompatActivity {
                     mSearchEditText.setAlpha(positionOffset);
 
                     myTabsView.setVisibility(View.VISIBLE);
+                    CameraFragment cameraFragment = CameraFragment.create();
+                    cameraFragment.setHiddenBool(false);
 
                 } else if (position == 3) {
                     background.setAlpha(1 - positionOffset);
                     mSearchEditText.setEnabled(true);
 
                     myTabsView.setVisibility(View.VISIBLE);
+                    CameraFragment cameraFragment = CameraFragment.create();
+                    cameraFragment.setHiddenBool(false);
                 }
 
 
@@ -204,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
 //        UserInformation userInformationListener = new UserInformation();
 //        userInformationListener.startFetchingFollowing();
 //        userInformationListener.startFetchingFollowers();
@@ -217,52 +217,294 @@ public class MainActivity extends AppCompatActivity {
         downloadSounds();
 
 
+        getUserInformation();
+        getFollowerFollowingAndFriendsInformation("friends");
+        getFollowerFollowingAndFriendsInformation("followers");
+        getFollowerFollowingAndFriendsInformation("following");
+        getUserMessages();
+
+
     }
 
 
+    private void fetchMessageFromFriends(final String key) {
+        if (mAuth.getCurrentUser() != null) {
+            Log.d(TAG, "onCreate: getUserMessages");
 
-    public boolean checkDatabase(){
-        File dbFile = this.getDatabasePath(DB_NAME);
-        return dbFile.exists();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            updateStatus("online");
-            updateDeviceToken(FirebaseInstanceId.getInstance().getToken());
+            mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            String MESSAGE_ID = dataSnapshot.child("messageID").getValue().toString();
+                            String FROM_UID = dataSnapshot.child("from").getValue().toString();
+                            String TO_UID = key;
+                            String CAPTION = dataSnapshot.child("caption").getValue().toString();
+                            String DATE = dataSnapshot.child("date").getValue().toString();
+                            String TIME = dataSnapshot.child("time").getValue().toString();
+                            String MESSAGE = dataSnapshot.child("message").getValue().toString();
+                            String TYPE = dataSnapshot.child("type").getValue().toString();
+                            String STATE = dataSnapshot.child("state").getValue().toString();
+                            String LOCAL_LOCATION = " ";
+                            String SYNCHRONIZED = "yes";
+
+                            if (FROM_UID.equals(key)) {
+                                TO_UID = mAuth.getCurrentUser().getUid();
+
+                                if (STATE.equals("sent")) {
+                                    mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").setValue("delivered");
+
+                                    ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                    insertIntoDBBackground.execute("message_db", MESSAGE_ID, FROM_UID, TO_UID,
+                                            CAPTION, DATE, TIME, MESSAGE, TYPE, "delivered", LOCAL_LOCATION, SYNCHRONIZED);
+                                    Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");
+
+                                }
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            String MESSAGE_ID = dataSnapshot.child("messageID").getValue().toString();
+                            String FROM_UID = dataSnapshot.child("from").getValue().toString();
+                            String TO_UID = key;
+                            String CAPTION = dataSnapshot.child("caption").getValue().toString();
+                            String DATE = dataSnapshot.child("date").getValue().toString();
+                            String TIME = dataSnapshot.child("time").getValue().toString();
+                            String MESSAGE = dataSnapshot.child("message").getValue().toString();
+                            String TYPE = dataSnapshot.child("type").getValue().toString();
+                            String STATE = dataSnapshot.child("state").getValue().toString();
+                            String LOCAL_LOCATION = " ";
+                            String SYNCHRONIZED = "yes";
+
+                            if (FROM_UID.equals(key)) {
+                                TO_UID = mAuth.getCurrentUser().getUid();
+
+                                if (STATE.equals("sent")) {
+                                    STATE = "delivered";
+                                    mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").setValue(STATE);
+
+                                }
+
+                                ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                insertIntoDBBackground.execute("update_message", MESSAGE_ID, FROM_UID, TO_UID,
+                                        CAPTION, DATE, TIME, MESSAGE, TYPE, STATE, LOCAL_LOCATION, SYNCHRONIZED);
+                                Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");
+                            }
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            String MESSAGE_ID = dataSnapshot.child("messageID").getValue().toString();
+                            String FROM_UID = dataSnapshot.child("from").getValue().toString();
+                            String TO_UID = key;
+                            String CAPTION = dataSnapshot.child("caption").getValue().toString();
+                            String DATE = dataSnapshot.child("date").getValue().toString();
+                            String TIME = dataSnapshot.child("time").getValue().toString();
+                            String MESSAGE = dataSnapshot.child("message").getValue().toString();
+                            String TYPE = dataSnapshot.child("type").getValue().toString();
+                            String STATE = dataSnapshot.child("state").getValue().toString();
+                            String LOCAL_LOCATION = " ";
+                            String SYNCHRONIZED = "yes";
+
+                            if (FROM_UID.equals(key)) {
+                                TO_UID = mAuth.getCurrentUser().getUid();
+
+                                if (STATE.equals("sent")) {
+                                    STATE = "delivered";
+                                    mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").setValue(STATE);
+
+                                }
+
+                                ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                insertIntoDBBackground.execute("message_deleted", MESSAGE_ID, FROM_UID, TO_UID,
+                                        CAPTION, DATE, TIME, MESSAGE, TYPE, STATE, LOCAL_LOCATION, SYNCHRONIZED);
+                                Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");
+                            }
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
         }
     }
 
 
-    @Override
-    protected void onStop() {
-        if (FirebaseAuth.getInstance().getCurrentUser()!=null){
-           updateStatus("offline");
+    private void getUserMessages() {
+        if (mAuth.getCurrentUser() != null) {
+
+            Log.d(TAG, "onCreate: getUserMessages");
+
+            mRootRef.child("messages").child(mAuth.getCurrentUser().getUid())
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            fetchMessageFromFriends(dataSnapshot.getKey());
+                            Log.d(TAG, "onChildAdded: messages added = ..........."+dataSnapshot.getKey());
+
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        } else {
+            logOut();
         }
-        super.onStop();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (FirebaseAuth.getInstance().getCurrentUser()!=null){
-            updateStatus("offline");
+
+    private void getUserInformation() {
+        if (mAuth.getCurrentUser() != null) {
+            mRootRef.child("users").child(mAuth.getCurrentUser().getUid())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChildren()) {
+                                String uid = dataSnapshot.getKey();
+                                String indexNo = dataSnapshot.child("index").getValue().toString();
+                                String name = dataSnapshot.child("name").getValue().toString();
+                                String profileImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+                                String userState = " ";
+                                String welcomed = dataSnapshot.child("welcomed").getValue().toString();
+
+                                InsertIntoDBBackground insertIntoDBBackground = new InsertIntoDBBackground(MainActivity.this);
+                                insertIntoDBBackground.execute("user_db", uid, indexNo, name, profileImage, userState, welcomed);
+
+                                Log.d(TAG, "onDataChange: user " + name + " inserted into table........");
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        } else {
+            logOut();
         }
-        super.onDestroy();
+    }
+
+    public void getFollowerFollowingAndFriendsInformation(final String which) {
+        if (mAuth.getCurrentUser() != null) {
+            Log.d(TAG, "onCreate: getFollowerFollowingAndFriendsInformation");
+            mRootRef.child("users").child(mAuth.getCurrentUser().getUid()).child(which)
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            if (dataSnapshot.exists()) {
+                                String uid = dataSnapshot.getRef().getKey();
+                                if (uid != null && !uid.equals(mAuth.getCurrentUser().getUid())) {
+
+                                    if (getUserDetailsAndSave(which, uid)) {
+                                        mRootRef.child("users").child(mAuth.getCurrentUser().getUid()).child(which)
+                                                .child(uid).setValue("doneWith");
+                                    } else {
+                                        Log.d(TAG, "onChildAdded: " + uid + " Couldnt be inserted in local db");
+                                    }
+                                }
+
+
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            return;
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+        } else {
+            logOut();
+        }
 
     }
 
+    public boolean getUserDetailsAndSave(final String which, String key) {
+        Log.d(TAG, "onCreate: getUserDetailsAndSave");
+        mRootRef.child("users").child(key)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChildren()) {
+                            String uid = dataSnapshot.getKey();
+                            String indexNo = dataSnapshot.child("index").getValue().toString();
+                            String name = dataSnapshot.child("name").getValue().toString();
+                            String profileImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+                            String userState = " ";
 
-    private void updateDeviceToken(String deviceToken){
+                            InsertIntoDBBackground insertIntoDBBackground = new InsertIntoDBBackground(MainActivity.this);
+                            insertIntoDBBackground.execute(which + "_db", uid, indexNo, name, profileImage, userState);
+
+                            Log.d(TAG, "onDataChange:  " + which + " " + name + " table inserted........");
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+        return true;
+    }
+
+
+    private void updateDeviceToken(String deviceToken) {
         String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
         mRootRef.child("users").child(currentUserId).child("device_token")
                 .setValue(deviceToken);
     }
 
-    private void setUpMyTaoolbar(){
-        mDivider  = findViewById(R.id.toolbar_bottom_divider);
+    private void setUpMyTaoolbar() {
+        mDivider = findViewById(R.id.toolbar_bottom_divider);
         mSearchEditText = findViewById(R.id.main_toolbar_search_edittext);
         cameraFacingORMenuBtn = findViewById(R.id.main_toolbar_switch_camera_or_menu_icon);
 
@@ -271,17 +513,146 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = mSearchEditText.getText().toString();
-                if(text.equals("Search") || text.equals("Stories") || text.equals("Chat"))
+                if (text.equals("Search") || text.equals("Stories") || text.equals("Chat"))
                     mSearchEditText.setText("");
             }
 
         });
 
 
-
     }
 
-    private void updateStatus(String state){
+
+    private void downloadStickers() {
+
+        mRootRef.child("stickers")
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        if (dataSnapshot.exists()) {
+                            final String stickerName = dataSnapshot.getRef().getKey();
+                            File stickerFile = new File(String.valueOf(getExternalFilesDir("/Images/Stickers/" + stickerName + ".png")));
+
+                            if (!(stickerFile.exists()) || (!stickerFile.isFile())) {
+                                stickerFile.delete();
+
+                                String loc = dataSnapshot.child("loc").getValue().toString();
+                                StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
+                                stickersSoundBackground.execute(stickerName + ".png", loc, "/Images/Stickers/");
+
+                            }
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        final String stickerName = dataSnapshot.getRef().getKey();
+                        File stickerFile = new File(String.valueOf(getExternalFilesDir("/Images/Stickers/" + stickerName + ".png")));
+                        if ((stickerFile.exists()) || (stickerFile.isFile())) {
+                            stickerFile.delete();
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        final String stickerName = dataSnapshot.getRef().getKey();
+                        File stickerFile = new File(String.valueOf(getExternalFilesDir("/Images/Stickers/" + stickerName + ".png")));
+
+                        if ((stickerFile.exists()) || (stickerFile.isFile())) {
+                            stickerFile.delete();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void downloadSounds() {
+
+        mRootRef.child("sounds")
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        if (dataSnapshot.exists()) {
+                            final String soundName = dataSnapshot.getRef().getKey();
+
+                            File soundImageFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundImages/" + soundName + ".png")));
+                            if (!(soundImageFile.exists()) || (!soundImageFile.isFile())) {
+                                soundImageFile.delete();
+
+                                String imageUrl = dataSnapshot.child("image").getValue().toString();
+                                StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
+                                stickersSoundBackground.execute(soundName + ".png", imageUrl, "/Sounds/SoundImages/");
+                            }
+
+                            File soundAudioFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundAudios/" + soundName + ".mp3")));
+                            if (!(soundAudioFile.exists()) || (!soundAudioFile.isFile())) {
+                                soundAudioFile.delete();
+
+                                final String audioUrl = dataSnapshot.child("audio").getValue().toString();
+                                StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
+                                stickersSoundBackground.execute(soundName + ".mp3", audioUrl, "/Sounds/SoundAudios/");
+                            }
+
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        final String soundName = dataSnapshot.getRef().getKey();
+
+                        File soundImageFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundImages/" + soundName + ".png")));
+                        if (!(soundImageFile.exists()) || (!soundImageFile.isFile())) {
+                            soundImageFile.delete();
+                        }
+
+                        File soundAudioFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundAudios/" + soundName + ".mp3")));
+                        if ((soundAudioFile.exists()) || (soundAudioFile.isFile())) {
+                            soundAudioFile.delete();
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        final String soundName = dataSnapshot.getRef().getKey();
+
+                        File soundImageFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundImages/" + soundName + ".png")));
+                        if (!(soundImageFile.exists()) || (!soundImageFile.isFile())) {
+                            soundImageFile.delete();
+                        }
+
+                        File soundAudioFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundAudios/" + soundName + ".mp3")));
+                        if ((soundAudioFile.exists()) || (soundAudioFile.isFile())) {
+                            soundAudioFile.delete();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+    }
+
+
+    private void userState(String state) {
         String saveCurrentTime, saveCurrentDate;
         currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
@@ -294,206 +665,58 @@ public class MainActivity extends AppCompatActivity {
         saveCurrentTime = currentTime.format(calendar.getTime());
 
         HashMap<String, Object> onlineState = new HashMap<>();
-        onlineState.put("time",saveCurrentTime);
-        onlineState.put("date",saveCurrentDate);
-        onlineState.put("state",state);
+        onlineState.put("time", saveCurrentTime);
+        onlineState.put("date", saveCurrentDate);
+        onlineState.put("state", state);
 
         mRootRef.child("users").child(currentUserId).child("userState")
                 .updateChildren(onlineState);
 
 
-
     }
 
-    private void logOut() {
 
-        new DBOperations(this).deleteTable();
+    public void logOut() {
+        deleteDatabase(DB_NAME);
+
         updateDeviceToken("");
-        updateStatus("offline");
+        userState("offline");
         mAuth.signOut();
 
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        CustomIntent.customType(MainActivity.this,"bottom-to-up");
+        CustomIntent.customType(MainActivity.this, "bottom-to-up");
         finish();
     }
 
 
-    private void downloadStickers(){
-
-        mRootRef.child("stickers")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        if (dataSnapshot.exists()){
-                            final String stickerName = dataSnapshot.getRef().getKey();
-                            File stickerFile =new File(String.valueOf(getExternalFilesDir("/Images/Stickers/"+stickerName+".png")));
-
-                            if (!(stickerFile.exists()) || (!stickerFile.isFile()) ) {
-                                stickerFile.delete();
-
-                                String loc = dataSnapshot.child("loc").getValue().toString();
-                                Glide.with(MainActivity.this)
-                                        .asBitmap()
-                                        .load(loc)
-                                        .into(new SimpleTarget<Bitmap>() {
-                                            @Override
-                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                                saveImage(resource, stickerName,"/Images/Stickers/");
-                                            }
-                                        });
-
-
-
-                            }
-
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if (dataSnapshot.exists()){
-                            final String stickerName = dataSnapshot.getRef().getKey();
-                            File stickerFile =new File(String.valueOf(getExternalFilesDir("/Images/Stickers/"+stickerName+".png")));
-                            if (stickerFile.exists() && stickerFile.isFile()){
-                                stickerFile.delete();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            final String stickerName = dataSnapshot.getRef().getKey();
-                            File stickerFile =new File(String.valueOf(getExternalFilesDir("/Images/Stickers/"+stickerName+".png")));
-                            if (stickerFile.exists() && stickerFile.isFile()){
-                                stickerFile.delete();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if (dataSnapshot.exists()){
-                            final String stickerName = dataSnapshot.getRef().getKey();
-                            File stickerFile =new File(String.valueOf(getExternalFilesDir("/Images/Stickers/"+stickerName+".png")));
-                            if (stickerFile.exists() && stickerFile.isFile()){
-                                stickerFile.delete();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-    private void downloadSounds(){
-
-        mRootRef.child("sounds")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        if (dataSnapshot.exists()){
-                            final String soundName = dataSnapshot.getRef().getKey();
-                            File soundImageFile =new File(String.valueOf(getExternalFilesDir("/Sounds/SoundImages/"+soundName+".png")));
-
-                            if (!(soundImageFile.exists()) || (!soundImageFile.isFile()) ) {
-                                soundImageFile.delete();
-
-                                String imageUrl= dataSnapshot.child("image").getValue().toString();
-                                final String audioUrl = dataSnapshot.child("audio").getValue().toString();
-                                Glide.with(MainActivity.this)
-                                        .asBitmap()
-                                        .load(imageUrl)
-                                        .into(new SimpleTarget<Bitmap>() {
-                                            @Override
-                                            public void onResourceReady(@NonNull Bitmap resource,
-                                                                        @Nullable Transition<? super Bitmap> transition) {
-                                                saveImage(resource, soundName, "/Sounds/SoundImages/");
-
-                                                File soundAudioFile = new File(String.valueOf(getExternalFilesDir("/Sounds/SoundAudios/" + soundName + ".mp3")));
-
-                                                if (!(soundAudioFile.exists()) || (!soundAudioFile.isFile())) {
-                                                    soundAudioFile.delete();
-                                                    downloadAndSaveSound(audioUrl, soundName + ".mp3", "/Sounds/SoundAudios/");
-                                                }
-
-                                            }
-                                        });
-
-
-
-                            }
-
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-
-
-    private void downloadAndSaveSound(String url, String soundName, String localLocation) {
-        DownloadManager downloadManager = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
-
-        Uri uri = Uri.parse(url);
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION);
-        request.setDestinationInExternalFilesDir(this,localLocation,soundName);
-
-        downloadManager.enqueue(request);
-
-
-    }
-
-    private void saveImage(Bitmap image,String imageFileName, String directory) {
-        File storageDir = new File(String.valueOf(this.getExternalFilesDir(directory)));
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
-        }
-        if (success) {
-            File imageFile = new File(storageDir, imageFileName+".png");
-            try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-                fOut.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            //Toast.makeText(this, "saved "+imageFileName,Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            userState("online");
+            updateDeviceToken(FirebaseInstanceId.getInstance().getToken());
         }
     }
+
+    @Override
+    protected void onStop() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            userState("offline");
+        }
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            userState("offline");
+        }
+        super.onDestroy();
+
+    }
+
 
 }
 

@@ -96,6 +96,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         chatsViewHolder.sender_message_audioFull.setVisibility(View.GONE);
         chatsViewHolder.receiver_message_findMeFull.setVisibility(View.GONE);
         chatsViewHolder.sender_message_findMeFull.setVisibility(View.GONE);
+        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+
+
 
         if (messages.getType().equals("text")){
 
@@ -103,10 +106,26 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.senderMessage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.senderMessage.setBackgroundResource(R.drawable.sender_messages_layout);
-                chatsViewHolder.senderMessage.setText(messages.getMessage()+"\n\n"+messages.getType());
+                chatsViewHolder.senderMessage.setText(messages.getMessage());
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
 
             }else{
 
@@ -114,15 +133,18 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.receiverMessage.setBackgroundResource(R.drawable.receiver_messages_layout);
-                chatsViewHolder.receiverMessage.setText(messages.getMessage()+"\n\n"+messages.getType());
+                chatsViewHolder.receiverMessage.setText(messages.getMessage());
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
 
+        }
 
 
 
-        }else if (messages.getType().equals("image") || messages.getType().equals("video")){
 
+
+
+        else if (messages.getType().equals("image") || messages.getType().equals("video")){
 
             if ( messages.getFrom().equals(currentUserID)){
                 if (messages.getType().equals("video")){
@@ -133,11 +155,31 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.senderMessageImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.senderMessageImage.setBackgroundResource(R.drawable.sender_messages_layout);
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
                 Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
+
 
             }else{
                 if (messages.getType().equals("video")){
@@ -154,19 +196,42 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
 
+        }
 
 
-        }else if (messages.getType().equals("gif")){
 
+
+
+
+
+
+        else if (messages.getType().equals("gif")){
 
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.senderStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
                 Glide.with(mContext).asGif().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
 
             }else{
 
@@ -178,13 +243,19 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
 
-        }else if (messages.getType().equals("sticker")){
+        }
 
+
+
+
+
+        else if (messages.getType().equals("sticker")){
 
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.senderStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
@@ -214,6 +285,22 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
                                 .into(chatsViewHolder.senderStickerSoundGifImage);
                     }
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
 
 
 
@@ -250,14 +337,20 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 .into(chatsViewHolder.recieverStickerSoundGifImage);
                     }
             }
+        }
 
 
-        }else if (messages.getType().equals("sound")){
+
+
+
+
+        else if (messages.getType().equals("sound")){
 
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.senderSoundImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
@@ -280,6 +373,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 }
                             });
 
+
                 }else {
                     Glide.with(mContext)
                             .asBitmap()
@@ -288,6 +382,21 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                             .into(chatsViewHolder.senderSoundImage);
                 }
 
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
 
 
             }else{
@@ -323,17 +432,41 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                             .into(chatsViewHolder.recieverSoundImage);
                 }
             }
-        }else if (messages.getType().equals("contact")){
+        }
+
+
+
+
+
+        else if (messages.getType().equals("contact")){
 
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.sender_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.sender_contactName.setText(messages.getCaption());
                 chatsViewHolder.sender_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
                 chatsViewHolder.sender_contactIcon.setImageResource(R.drawable.ic_contacts_white_24dp);
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
 
             }else{
 
@@ -345,16 +478,18 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
                 chatsViewHolder.receiver_contactIcon.setImageResource(R.drawable.ic_contacts_black_24dp);
             }
+        }
 
 
 
 
-        }else if (messages.getType().equals("location") || messages.getType().contains("Lng:")){
+        else if (messages.getType().equals("location") || messages.getType().contains("Lng:")){
 
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.sender_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.sender_contactName.setText(messages.getType().replace("Lng","Longitude")+"\n"+messages.getCaption().replace("Lat","Latitude")+"\n");
                 chatsViewHolder.sender_contactNumber.setText(messages.getMessage());
@@ -374,6 +509,23 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                         return false;
                     }
                 });
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
 
             }else{
 
@@ -399,18 +551,38 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                     }
                 });
             }
+        }
 
 
 
 
-        }else if (messages.getType().equals("document")){
+        else if (messages.getType().equals("document")){
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.sender_document_attachmentFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.sender_document_attachmentName.setText(messages.getCaption());
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
+
 
             }else{
 
@@ -420,19 +592,38 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_document_attachmentName.setText(messages.getCaption());
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
+        }
 
 
 
 
 
-        }else if (messages.getType().equals("audio")){
+        else if (messages.getType().equals("audio")){
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.sender_message_audioFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.sender_message_audioFileName.setText(messages.getCaption());
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
 
             }else{
 
@@ -442,17 +633,35 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_message_audioFileName.setText(messages.getCaption());
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
+        }
 
 
 
 
-        }else if (messages.getType().equals("findMe")){
+        else if (messages.getType().equals("findMe")){
             if ( messages.getFrom().equals(currentUserID)){
 
                 chatsViewHolder.sender_message_findMeFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
 
             }else{
 
@@ -481,7 +690,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                     }
                 });
             }
-
 
         }
 

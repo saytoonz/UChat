@@ -598,6 +598,14 @@
                 android:textStyle="bold"
                 android:textSize="12sp" />
 
+            <View
+                android:id="@+id/senderMessage_state"
+                android:background="@color/black_overlay"
+                android:layout_width="5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_height="match_parent"/>
+
         </LinearLayout>
 
 

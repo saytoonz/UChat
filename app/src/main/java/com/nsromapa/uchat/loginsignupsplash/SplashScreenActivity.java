@@ -30,9 +30,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                    CustomIntent.customType(SplashScreenActivity.this, "up-to-bottom");
+                    CustomIntent.customType(SplashScreenActivity.this, "left-to-right");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                 }
 
@@ -43,9 +43,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                    CustomIntent.customType(SplashScreenActivity.this, "bottom-to-up");
+                    CustomIntent.customType(SplashScreenActivity.this, "left-to-right");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                 }
 

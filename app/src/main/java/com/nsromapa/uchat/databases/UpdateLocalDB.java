@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
-
+import com.nsromapa.uchat.customizations.CustomIntent;
 
 
 public class UpdateLocalDB extends AppCompatActivity {
@@ -37,10 +36,9 @@ public class UpdateLocalDB extends AppCompatActivity {
     private String networkState = "";
     private FirebaseAuth mAuth;
     private DatabaseReference mRoot;
-
-    boolean bool = false;
-
     AlertDialog.Builder builder;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,65 +57,87 @@ public class UpdateLocalDB extends AppCompatActivity {
         mRoot = FirebaseDatabase.getInstance().getReference();
 
 
-        if (getUserInformation()){
-            Log.d(TAG, "onCreate: User informaitons Added Successfully.....");
 
-            if (getFollowerFollowingAndFriendsInformation("friends")){
-                Log.d(TAG, "onCreate: All Friends Added");
-
-                if (getFollowerFollowingAndFriendsInformation("followers")){
-                    Log.d(TAG, "onCreate: All Followers Added");
-
-                    if (getFollowerFollowingAndFriendsInformation("following")){
-
-                        Log.d(TAG, "onCreate: All Following Added");
-
-
-
-                        builder = new AlertDialog.Builder(this);
-                        builder.setTitle(" ");
-                        builder.setCancelable(false);
-                        builder.setMessage("Do you want to get your previous messages?\n");
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (getUserMessages()){
-                                    Log.d(TAG, "onCreate: All Messages Added");
-                                }else{
-                                    Log.d(TAG, "onCreate: could not add Messages Successfully.....");
-                                }
-
-                                Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-
-                        builder.show();
-
-                    }else{
-                        Log.d(TAG, "onCreate: could not add following informaitons Successfully.....");
-                    }
-                }else{
-                    Log.d(TAG, "onCreate: could not add followers informaitons Successfully.....");
-                }
-            }else{
-                Log.d(TAG, "onCreate: could not add friends informaitons Successfully.....");
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle(" ");
+        builder.setCancelable(false);
+        builder.setMessage("Do you want to get your previous messages?\n");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteOnlineMesssagesForUser();
             }
-        }else{
-            Log.d(TAG, "onCreate: could not add User informaitons Successfully.....");
-        }
+        });
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (getUserMessages()){
+                    Log.d(TAG, "onCreate: All Messages Added");
+                    Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Log.d(TAG, "onCreate: could not add Messages Successfully.....");
+                    Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
+
+            }
+        });
+
+
+
+        mRoot.child("messages").child(mAuth.getCurrentUser().getUid())
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        if (dataSnapshot.exists() && dataSnapshot.hasChildren()){
+
+                            builder.show();
+
+                        }else{
+                            Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        recreate();
+                    }
+                });
+
+
 
     }
+
+    private void deleteOnlineMesssagesForUser() {
+        mRoot.child("messages").child(mAuth.getCurrentUser().getUid())
+                .removeValue();
+
+        Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
+        startActivity(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+        Log.d(TAG, "onCreate: user rejected message backups.....");
+    }
+
+
 
     private boolean getUserMessages() {
 
@@ -133,29 +153,27 @@ public class UpdateLocalDB extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        return;
-                    }
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                     @Override
                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        return;
+
                     }
 
                     @Override
                     public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        return;
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        return;
+                        recreate();
                     }
                 });
 
 
         return true;
     }
+
 
     private boolean fetchMessageForFriend(final String key) {
 
@@ -164,7 +182,7 @@ public class UpdateLocalDB extends AppCompatActivity {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        String MESSAGE_ID = dataSnapshot.getKey();
+                        String MESSAGE_ID = dataSnapshot.child("messageID").getValue().toString();
                         String FROM_UID = dataSnapshot.child("from").getValue().toString();
                         String TO_UID = key;
                         String CAPTION = dataSnapshot.child("caption").getValue().toString();
@@ -172,6 +190,7 @@ public class UpdateLocalDB extends AppCompatActivity {
                         String TIME = dataSnapshot.child("time").getValue().toString();
                         String MESSAGE = dataSnapshot.child("message").getValue().toString();
                         String TYPE = dataSnapshot.child("type").getValue().toString();
+                        String STATE = dataSnapshot.child("state").getValue().toString();
                         String LOCAL_LOCATION = " ";
                         String SYNCHRONIZED = "yes";
 
@@ -179,21 +198,11 @@ public class UpdateLocalDB extends AppCompatActivity {
                             TO_UID = mAuth.getCurrentUser().getUid();
                         }
 
-                        BackgroundTask backgroundTask = new BackgroundTask(UpdateLocalDB.this);
-                        backgroundTask.execute("message_db", MESSAGE_ID, FROM_UID, TO_UID,
-                                                CAPTION, DATE, TIME, MESSAGE, TYPE, LOCAL_LOCATION, SYNCHRONIZED);
+                        InsertIntoDBBackground insertIntoDBBackground = new InsertIntoDBBackground(UpdateLocalDB.this);
+                        insertIntoDBBackground.execute("message_db", MESSAGE_ID, FROM_UID, TO_UID,
+                                                CAPTION, DATE, TIME, MESSAGE, TYPE, STATE,LOCAL_LOCATION, SYNCHRONIZED);
 
                         Log.d(TAG, "onDataChange:  Message "+MESSAGE_ID+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+FROM_UID+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+TO_UID+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+CAPTION+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+DATE+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+MESSAGE_ID+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+TIME+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+MESSAGE+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+TYPE+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+LOCAL_LOCATION+" added to table insertion........");
-                        Log.d(TAG, "onDataChange:  Message "+SYNCHRONIZED+" added to table insertion........");
 
 
 
@@ -223,127 +232,7 @@ public class UpdateLocalDB extends AppCompatActivity {
         return true;
     }
 
-    private boolean getFollowerFollowingAndFriendsInformation(final String which) {
 
-        Log.d(TAG, "onCreate: getFollowerFollowingAndFriendsInformation");
-        bool = false;
-        mRoot.child("users").child(mAuth.getCurrentUser().getUid()).child(which)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if (dataSnapshot.exists()){
-                            String uid = dataSnapshot.getRef().getKey();
-                            if (uid != null && !uid.equals(mAuth.getCurrentUser().getUid())){
-
-                                if (getUserDetailsAndSave(which,uid)){
-                                    mRoot.child("users").child(mAuth.getCurrentUser().getUid()).child(which)
-                                            .child(uid).setValue("doneWith");
-                                }else{
-                                    Log.d(TAG, "onChildAdded: "+uid+" Couldnt be inserted in local db");
-                                }
-                            }
-
-
-                        }
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        return;
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        return;
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        return;
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        return;
-
-                    }
-                });
-
-        return true;
-    }
-
-    private boolean getUserDetailsAndSave(final String which, String key) {
-        Log.d(TAG, "onCreate: getUserDetailsAndSave");
-        bool = true;
-        mRoot.child("users").child(key)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChildren()){
-                            String uid = dataSnapshot.getKey();
-                            String indexNo = dataSnapshot.child("index").getValue().toString();
-                            String name = dataSnapshot.child("name").getValue().toString();
-                            String profileImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-                            String userState = " ";
-
-                            BackgroundTask backgroundTask = new BackgroundTask(UpdateLocalDB.this);
-                            backgroundTask.execute(which+"_db",uid,indexNo,name,profileImage,userState);
-
-                            Log.d(TAG, "onDataChange:  "+which+" "+name+" table inserted........");
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                       return;
-                    }
-                });
-        return true;
-    }
-
-
-
-
-
-
-
-
-    public boolean getUserInformation() {
-        bool = false;
-
-        mRoot.child("users").child(mAuth.getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChildren()){
-                            String uid = dataSnapshot.getKey();
-                            String indexNo = dataSnapshot.child("index").getValue().toString();
-                            String name = dataSnapshot.child("name").getValue().toString();
-                            String profileImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-                            String userState = " ";
-                            String welcomed = dataSnapshot.child("welcomed").getValue().toString();
-
-                            BackgroundTask backgroundTask = new BackgroundTask(UpdateLocalDB.this);
-                            backgroundTask.execute("user_db",uid,indexNo,name,profileImage,userState,welcomed);
-
-                            Log.d(TAG, "onDataChange: user "+name+" inserted into table........");
-
-                        }
-
-                        bool = true;
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                      return;
-                    }
-                });
-
-
-        return true;
-    }
 
 
 

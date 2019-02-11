@@ -3,6 +3,8 @@ package com.nsromapa.uchat.databases;
 public final class DBObjects {
     public static abstract class DBHelperObjects {
 
+        public static final String PASS_PHASE = "P@@ssw0rd11223573";
+
         ///TABLE NAMES
         public static final String USERS_TABLE_NAME = "users";
         public static final String FOLLOWERS_TABLE_NAME = "followers";
@@ -27,6 +29,7 @@ public final class DBObjects {
         public static final String TIME = "_time";
         public static final String MESSAGE = "message";
         public static final String TYPE = "type";
+        public static final String STATE = "state";
         public static final String LOCAL_LOCATION = "local_location";
         public static final String SYNCHRONIZED = "synchronized";
 
@@ -102,6 +105,7 @@ public final class DBObjects {
                         + TIME + " TEXT,"
                         + MESSAGE + " TEXT,"
                         + TYPE + " TEXT,"
+                        + STATE + " TEXT,"
                         + LOCAL_LOCATION + " TEXT,"
                         + SYNCHRONIZED + " TEXT);";
 

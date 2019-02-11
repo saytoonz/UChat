@@ -1,17 +1,13 @@
 package com.nsromapa.uchat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.database.Cursor;
-import android.hardware.input.InputManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -19,9 +15,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -39,7 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -62,11 +55,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -88,10 +81,10 @@ import com.nsromapa.say.emogifstickerkeyboard.internal.sound.SoundSelectListener
 import com.nsromapa.say.emogifstickerkeyboard.internal.sticker.StickerSelectListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.uchat.LocationUtil.PermissionUtils;
-import com.nsromapa.uchat.LocationUtil.SingLocationActivity;
 import com.nsromapa.uchat.customizations.CustomIntent;
 import com.nsromapa.uchat.findme.FindMeMapsActivity;
 import com.nsromapa.uchat.recyclerchatactivity.ChatActivityBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatSendBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsAdapter;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsObjects;
 
@@ -203,7 +196,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(messageEditText.getText().toString()))
                 {
-                    SendMessage(messageEditText.getText().toString(),"text","");
+                    SendMessage(messageEditText.getText().toString(),"text","","");
                     messageEditText.setText("");
 
                 }else displayAttachments();
@@ -410,7 +403,14 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 //        chatsAdapter = new ChatsAdapter(this,messageList);
 //        userMessagesRecycler.setAdapter(chatsAdapter);
 
-        new ChatActivityBackground(messagesRecycler,this).execute();
+        new ChatActivityBackground(messagesRecycler,this)
+                .execute(receiver_user_id);
+
+        setAllFriendMessagestoRead(receiver_user_id);
+
+
+
+
 
 
 
@@ -469,6 +469,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     }
+
+
     private void initializeEmojiGifStickerKeyBoard() {
 
         EmoticonGIFKeyboardFragment.EmoticonConfig emoticonConfig = new EmoticonGIFKeyboardFragment.EmoticonConfig()
@@ -491,7 +493,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 .setGifSelectListener(new GifSelectListener() {
                     @Override
                     public void onGifSelected(@NonNull Gif gif) {
-                        sendKeyboardGIF(gif.getGifUrl());
+                        sendKeyboardGIF(gif.getGifUrl(),"");
 
                     }
                 });
@@ -500,7 +502,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 .setStickerSelectedListener(new StickerSelectListener() {
                     @Override
                     public void onStickerSelectListner(@NonNull File sticker) {
-                        sendKeyboardSticker(sticker.getName().replace(".png",""));
+                        sendKeyboardSticker(sticker.getName().replace(".png",""), "");
                     }
                 });
 
@@ -598,8 +600,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
-    public void SendMessage(String messageText,String type, String caption ) {
+    public void SendMessage(String messageText,String type, String caption ,String LOCAL_LOCATION) {
         if (!TextUtils.isEmpty(messageText.trim())){
 
             Calendar calendarFordate = Calendar.getInstance();
@@ -610,35 +611,66 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
             SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
             currentTime = currentTimeFormat.format(calendarForTime.getTime());
 
-            ////Get unique key for message
-            String messagePushKey = theseUsersMessageTableRef.push().getKey();
 
-            Map<String,Object> messageTextBody = new HashMap<>();
-            messageTextBody.put("messageID",messagePushKey);
-            messageTextBody.put("message",messageText);
-            messageTextBody.put("caption",caption);
-            messageTextBody.put("type",type);
-            messageTextBody.put("from",sender_user_id);
-            messageTextBody.put("date",currentDate);
-            messageTextBody.put("time",currentTime);
+            String messageLocalKey = String.valueOf(System.currentTimeMillis());
+            String SYNCHRONIZED = "no";
+
+            new ChatSendBackground(messagesRecycler,this,receiver_user_id)
+            .execute("sendMessage", messageLocalKey, sender_user_id, receiver_user_id,
+                    caption, currentDate, currentTime, messageText, type, LOCAL_LOCATION, SYNCHRONIZED);
 
 
 
-            Map<String, Object> messageBodyDetails = new HashMap<>();
-            messageBodyDetails.put(messageSenderRef + "/" + messagePushKey, messageTextBody);
-            messageBodyDetails.put(messageReceivererRef + "/" + messagePushKey, messageTextBody);
+        }
+    }
 
-            mRootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+
+
+    private void setAllFriendMessagestoRead(String receiver_user_id) {
+        if (mAuth.getCurrentUser()!=null && !TextUtils.isEmpty(receiver_user_id)){
+
+//            Query friendMessagesQuery =  mRootRef.child("messsages").child(receiver_user_id)
+//                    .child(mAuth.getCurrentUser().getUid()).orderByChild("state").equalTo("delivered");
+//
+            Query myMessagesQuery =  mRootRef.child("messsages").child(mAuth.getCurrentUser().getUid())
+                    .child(receiver_user_id).orderByChild("state").equalTo("delivered");
+
+            myMessagesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (!task.isSuccessful()){
-                        Toast.makeText(ChatActivity.this, "Message could not send....", Toast.LENGTH_SHORT).show();
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+
+                        snapshot.getRef().child("state").setValue("read");
                     }
+                    Log.d(TAG, "onDataChange: All Messeges set to read");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
             });
 
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void uploadFilesInChat(Uri fileUri, final String fileType, final String caption) {
         final String messagePushKey = theseUsersMessageTableRef.push().getKey();
@@ -729,33 +761,37 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void DisplayLastSeen(){
-        mRootRef.child("users").child(receiver_user_id)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String userState = "";
-                        if (dataSnapshot.child("userState").hasChild("state")){
-                            String state=dataSnapshot.child("userState").child("state").getValue().toString();
-                            String date=dataSnapshot.child("userState").child("date").getValue().toString();
-                            String time=dataSnapshot.child("userState").child("time").getValue().toString();
-                          
-                            if (!state.equals("offline"))
-                                userState = state;
-                            else
-                                userState = "Last seen"+date+"-"+time;
-                            
-                        }else{
+        if (mAuth.getCurrentUser() != null) {
+            mRootRef.child("users").child(receiver_user_id)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String userState = "";
+                            if (dataSnapshot.child("userState").hasChild("state")) {
+                                String state = dataSnapshot.child("userState").child("state").getValue().toString();
+                                String date = dataSnapshot.child("userState").child("date").getValue().toString();
+                                String time = dataSnapshot.child("userState").child("time").getValue().toString();
+
+                                if (!state.equals("offline"))
+                                    userState = state;
+                                else
+                                    userState = date + "-" + time;
+
+                            } else {
+
+                            }
+                            lastSeen.setText(userState);
 
                         }
-                        lastSeen.setText(userState);
 
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        lastSeen.setText("");
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            lastSeen.setText("");
+                        }
+                    });
+        }else{
+            new MainActivity().logOut();
+        }
 
     }
 
@@ -782,7 +818,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 mMediaPlayer.setOnCompletionListener(null);
                 mMediaPlayer.stop();
                 mMediaPlayer.release();
-                sendKeyboardSound(file.getName().replace(".mp3",""));
+                sendKeyboardSound(file.getName().replace(".mp3",""),"");
             }
         });
         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -810,10 +846,11 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    private void sendKeyboardGIF(String url) {
-        SendMessage(url,"gif","");
+    private void sendKeyboardGIF(String url, String LOCAL_LOCATION) {
+        SendMessage(url,"gif","", LOCAL_LOCATION);
     }
-    private void sendKeyboardSticker(final String name) {
+    private void sendKeyboardSticker(final String name, final String LOCAL_LOCATION) {
+        if (mAuth.getCurrentUser()!=null){
         FirebaseDatabase.getInstance().getReference()
                 .child("stickers")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -821,7 +858,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(name)){
                             String stickerLink = dataSnapshot.child(name).child("loc").getValue().toString();
-                            SendMessage(name,"sticker",stickerLink);
+                            SendMessage(name,"sticker",stickerLink, LOCAL_LOCATION);
                         }else
                             Toast.makeText(ChatActivity.this, "Sticker has been depreciated...", Toast.LENGTH_SHORT).show();
                     }
@@ -831,26 +868,34 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     }
                 });
+        }else{
+            new MainActivity().logOut();
+        }
     }
-    private void sendKeyboardSound(String name) {
-        SendMessage(name,"sound","");
+    private void sendKeyboardSound(String name, String LOCAL_LOCATION) {
+        SendMessage(name,"sound","",LOCAL_LOCATION);
     }
     private void downloadSound(final String soundName) {
-        mRootRef.child("sounds").child(soundName)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChild("audio")){
-                            String audioUrl = dataSnapshot.child("audio").getValue().toString();
-                            downloadAndSaveSound(audioUrl, soundName + ".mp3", "/Sounds/SoundAudios/");
+        if (mAuth.getCurrentUser()!=null){
+            mRootRef.child("sounds").child(soundName)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild("audio")){
+                                String audioUrl = dataSnapshot.child("audio").getValue().toString();
+                                downloadAndSaveSound(audioUrl, soundName + ".mp3", "/Sounds/SoundAudios/");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        showToast("Couldn't download...");
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            showToast("Couldn't download...");
+                        }
+                    });
+        }else {
+            new MainActivity().logOut();
+        }
+
     }
 
     private void downloadAndSaveSound(String url, String soundName, String localLocation) {
@@ -1047,7 +1092,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                     phoneNo = cursor.getString(phoneIndex);
                     name = cursor.getString(nameIndex);
 
-                    SendMessage(phoneNo,"contact",name);
+                    SendMessage(phoneNo,"contact",name,"");
                     
 
                 } catch (Exception e) {
@@ -1267,7 +1312,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                         String message = finalCurrentLocation;
                         String type = "Lng:"+longitude;
                         String caption = "Lat:"+latitude;
-                        SendMessage(message,type,caption);
+                        SendMessage(message,type,caption,"");
                     }
                 });
                 alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {

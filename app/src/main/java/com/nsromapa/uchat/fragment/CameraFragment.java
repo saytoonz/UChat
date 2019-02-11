@@ -88,6 +88,8 @@ public class CameraFragment extends Fragment
      * Conversion from screen rotation to JPEG orientation.
      */
 
+    Boolean hiddenBool = true;
+
 
     private static final int SENSOR_ORIENTATION_DEFAULT_DEGREES = 90;
     private static final int SENSOR_ORIENTATION_INVERSE_DEGREES = 270;
@@ -149,6 +151,10 @@ public class CameraFragment extends Fragment
      * Max preview height that is guaranteed by Camera2 API
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
+
+
+
+
 
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
@@ -592,6 +598,11 @@ public class CameraFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_camera, container, false);
+    }
+
+
+    public void setHiddenBool(Boolean hiddenBool) {
+        this.hiddenBool = hiddenBool;
     }
 
     @Override
@@ -1069,26 +1080,34 @@ public class CameraFragment extends Fragment
                                 return;
                             }
 
-                            // When the session is ready, we start displaying the preview.
-                            mCaptureSession = cameraCaptureSession;
+
+                            if (hiddenBool){
+                                try {
+                                    // When the session is ready, we start displaying the preview.
+                                mCaptureSession = cameraCaptureSession;
 
                                 // Auto focus should be continuous for camera preview.
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, getRange());//This line of code is used for adjusting the fps range and fixing the dark preview
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                                         CaptureRequest.CONTROL_AF_MODE_AUTO);
-                                // Flash is automatically enabled when necessary.
 
+
+                                    // Flash is automatically enabled when necessary.
                                 setFlash(mPreviewRequestBuilder);
 
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
-                            try {
-                                mCameraOpenCloseLock.release();
-                                mCaptureSession.setRepeatingRequest(mPreviewRequest,
-                                        mCaptureCallback, mBackgroundHandler);
-                            } catch (CameraAccessException e) {
-                                e.printStackTrace();
+
+                                    mState = STATE_PREVIEW;
+                                    //  mCameraOpenCloseLock.release();
+                                    mCaptureSession.setRepeatingRequest(mPreviewRequest,
+                                            mCaptureCallback, mBackgroundHandler);
+                                } catch (CameraAccessException e) {
+                                    e.printStackTrace();
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             }
 
                         }
@@ -1181,6 +1200,7 @@ public class CameraFragment extends Fragment
         }
 
     }
+
 
     /**
      * Lock the focus as the first step for a still image capture.
@@ -1830,5 +1850,19 @@ public class CameraFragment extends Fragment
                     .create();
         }
     }
+
+//    @Override
+//    public void onHiddenChanged(boolean hidden) {
+//        super.onHiddenChanged(hidden);
+//        if (hidden) {
+//            hiddenBool = true;
+//            Log.d(TAG, ((Object) this).getClass().getSimpleName() + " is NOT on screen");
+//        }
+//        else
+//        {
+//            hiddenBool = false;
+//            Log.d(TAG, ((Object) this).getClass().getSimpleName() + " is on screen");
+//        }
+//    }
 
 }

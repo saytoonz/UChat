@@ -39,6 +39,8 @@ public class ChatsViewHolder extends RecyclerView.ViewHolder {
     TextView receiver_message_findMeTextNotification, sender_message_findMeTextNotification;
     Button receiver_message_findMeBtnNo,receiver_message_findMeBtnYes;
 
+    View senderMessage_state;
+
 
 
     public ChatsViewHolder(@NonNull View itemView) {
@@ -88,6 +90,9 @@ public class ChatsViewHolder extends RecyclerView.ViewHolder {
         receiver_message_findMeBtnNo = itemView.findViewById(R.id.receiver_message_findMeBtnNo);
         receiver_message_findMeBtnYes = itemView.findViewById(R.id.receiver_message_findMeBtnYes);
 
+
+
+        senderMessage_state = itemView.findViewById(R.id.senderMessage_state);
 
 
         senderMessage.setEmoticonProvider(SamsungEmoticonProvider.create());

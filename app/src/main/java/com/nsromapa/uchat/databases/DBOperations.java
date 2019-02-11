@@ -9,6 +9,16 @@ import android.util.Log;
 
 public class DBOperations extends SQLiteOpenHelper {
 
+
+    private static DBOperations instance;
+
+    static public synchronized DBOperations getInstance(Context context) {
+        if (instance == null)
+            instance = new DBOperations(context);
+        return instance;
+    }
+
+
     private static final int DB_VERSION = 1;
     public static final String DB_NAME = "product.db";
     private static final String TAG = "Database Operations";
@@ -30,7 +40,6 @@ public class DBOperations extends SQLiteOpenHelper {
     }
 
 
-
     public void AddUser(SQLiteDatabase db, String uid, String index,
                         String name, String profileImage, String state,
                         String welcomed) {
@@ -44,7 +53,7 @@ public class DBOperations extends SQLiteOpenHelper {
 
         db.insert(DBObjects.DBHelperObjects.USERS_TABLE_NAME, null, contentValues);
 
-        Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.USERS_TABLE_NAME+".......");
+        Log.d(TAG, "One row inserted into" + DBObjects.DBHelperObjects.USERS_TABLE_NAME + ".......");
     }
 
 
@@ -61,15 +70,15 @@ public class DBOperations extends SQLiteOpenHelper {
         switch (table) {
             case DBObjects.DBHelperObjects.FOLLOWERS_TABLE_NAME:
                 db.insert(DBObjects.DBHelperObjects.FOLLOWERS_TABLE_NAME, null, contentValues);
-                Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.FOLLOWERS_TABLE_NAME+".......");
+                Log.d(TAG, "One row inserted into" + DBObjects.DBHelperObjects.FOLLOWERS_TABLE_NAME + ".......");
                 break;
             case DBObjects.DBHelperObjects.FOLLOWING_TABLE_NAME:
                 db.insert(DBObjects.DBHelperObjects.FOLLOWING_TABLE_NAME, null, contentValues);
-                Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.FOLLOWING_TABLE_NAME+".......");
+                Log.d(TAG, "One row inserted into" + DBObjects.DBHelperObjects.FOLLOWING_TABLE_NAME + ".......");
                 break;
             case DBObjects.DBHelperObjects.FRIENDS_TABLE_NAME:
                 db.insert(DBObjects.DBHelperObjects.FRIENDS_TABLE_NAME, null, contentValues);
-                Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.FRIENDS_TABLE_NAME+".......");
+                Log.d(TAG, "One row inserted into" + DBObjects.DBHelperObjects.FRIENDS_TABLE_NAME + ".......");
                 break;
             default:
                 Log.d(TAG, "Unknown table for insertion.......");
@@ -82,7 +91,7 @@ public class DBOperations extends SQLiteOpenHelper {
     public void AddMessage(SQLiteDatabase db, String messageId,
                            String fromId, String toId, String caption,
                            String date, String time, String message,
-                           String type, String local_loc, String sync_ed) {
+                           String type, String state, String local_loc, String sync_ed) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBObjects.DBHelperObjects.MESSAGE_ID, messageId);
         contentValues.put(DBObjects.DBHelperObjects.FROM_UID, fromId);
@@ -92,14 +101,14 @@ public class DBOperations extends SQLiteOpenHelper {
         contentValues.put(DBObjects.DBHelperObjects.TIME, time);
         contentValues.put(DBObjects.DBHelperObjects.MESSAGE, message);
         contentValues.put(DBObjects.DBHelperObjects.TYPE, type);
+        contentValues.put(DBObjects.DBHelperObjects.STATE, state);
         contentValues.put(DBObjects.DBHelperObjects.LOCAL_LOCATION, local_loc);
         contentValues.put(DBObjects.DBHelperObjects.SYNCHRONIZED, sync_ed);
 
         db.insert(DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME, null, contentValues);
 
-        Log.d(TAG, "One row inserted into "+DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME+"......."+DBObjects.DBHelperObjects.MESSAGE_ID);
+        Log.d(TAG, "One row inserted into " + DBObjects.DBHelperObjects.MESSAGES_TABLE_NAME + "......." + DBObjects.DBHelperObjects.MESSAGE_ID);
     }
-
 
 
     public void AddStories(SQLiteDatabase db, String story_id, String caption,
@@ -120,7 +129,7 @@ public class DBOperations extends SQLiteOpenHelper {
 
         db.insert(DBObjects.DBHelperObjects.MY_STORIES_TABLE_NAME, null, contentValues);
 
-        Log.d(TAG, "One row inserted into"+DBObjects.DBHelperObjects.MY_STORIES_TABLE_NAME+".......");
+        Log.d(TAG, "One row inserted into" + DBObjects.DBHelperObjects.MY_STORIES_TABLE_NAME + ".......");
     }
 
 
@@ -136,12 +145,20 @@ public class DBOperations extends SQLiteOpenHelper {
     }
 
 
-    public  void deleteTable() {
+    public void deleteTable() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(DBObjects.DBHelperObjects.DELETE_USERS_TABLE_QUERY);
     }
 
-    public Cursor readFromLocalDB(SQLiteDatabase database, String tableName, String [] projections){
-        return database.query(tableName,projections,null,null,null,null,null);
+    public Cursor readFromLocalDB(SQLiteDatabase database, String tableName, String[] projections) {
+        return database.query(tableName, projections, null, null, null, null, null);
+    }
+
+
+    public boolean updateMessage(SQLiteDatabase database, String tableName, ContentValues values, String whereClause) {
+        database.update(tableName, values, whereClause, null);
+        database.close();
+        return true;
+
     }
 }

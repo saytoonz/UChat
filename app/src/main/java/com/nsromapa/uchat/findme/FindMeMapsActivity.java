@@ -101,6 +101,8 @@ public class FindMeMapsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_me_maps);
 
+        progressDialog = new ProgressDialog(this);;
+
         toggleMapView = findViewById(R.id.toggle_mapView);
         toggleNavigation = findViewById(R.id.toggle_navigation);
         toggleFindMe = findViewById(R.id.toggle_FindMe);
@@ -212,7 +214,6 @@ public class FindMeMapsActivity extends AppCompatActivity implements
 
 
     private void toggleFindMe(final String friendUid){
-        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
 
@@ -227,7 +228,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                                 usersRef.child(myUid).child("findMe").child("findMeState")
                                         .removeValue();
                                 toggleFindMe.setImageResource(R.drawable.ic_perm_contact_calendar_red_24dp);
-                                progressDialog.dismiss();
+                                if (progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                             }else{
                                 tryAddFriendOnFindMe("connected");
                             }
@@ -256,7 +259,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                                 
                                 
                                 if (userState.equals("connected")) {
-                                    progressDialog.dismiss();
+                                    if (progressDialog.isShowing()){
+                                        progressDialog.dismiss();
+                                    }
                                     map.clear();
                                     Toast.makeText(FindMeMapsActivity.this,
                                             friendName + " is on FindMe with someone else...",
@@ -266,6 +271,8 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                                 }
 
                             }else {
+                                if (progressDialog.isShowing())
+                                    progressDialog.dismiss();
                                 map.clear();
                                 String userState = "Sorry, "+friendName+" is offline...";
                                 Toast.makeText(FindMeMapsActivity.this, userState, Toast.LENGTH_SHORT).show();
@@ -358,7 +365,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        progressDialog.dismiss();
+                        if (progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         Toast.makeText(FindMeMapsActivity.this, "Message delivered to "+friendName+", wait till he connect you back", Toast.LENGTH_SHORT).show();
                     }else
                         Toast.makeText(FindMeMapsActivity.this, "Message could not send....", Toast.LENGTH_SHORT).show();
@@ -380,8 +389,10 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                             if (state.equals("online"))
                                 checkIfImSharingLocationWithFriend(friendUid);
                             else {
+                                if (progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                                 map.clear();
-
                                 String userState = "Sorry, "+friendName+" is offline...";
                                 notificationView.setText(userState);
 
@@ -397,7 +408,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        progressDialog.dismiss();
+                        if (progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         map.clear();
 
                         String userState = "Sorry, "+friendName+" is unreachable...";
@@ -416,12 +429,16 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                             if (findMeState.equals(friendUid)){
                                 checkIfFriendisSharingLocationWithMe(friendUid);
                             }else{
-                                progressDialog.dismiss();
+                                if (progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                                 map.clear();
                                 notificationView.setText("You are not sharing your location with "+friendName);
                             }
                         }else{
-                            progressDialog.dismiss();
+                            if (progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             map.clear();
                             notificationView.setText("Your Location is not shared yet.");
                         }
@@ -444,13 +461,17 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                             if (findMeState.equals(myUid)){
                                 loadLocationForFriend(friendUid);
                             }else{
-                                progressDialog.dismiss();
+                                if (progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
                                 map.clear();
                                 notificationView.setText(friendName+" is on FindMe with someone else...");
 
                             }
                         }else{
-                            progressDialog.dismiss();
+                            if (progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             map.clear();
                             notificationView.setText(friendName+"'s Location is not shared yet.");
                         }
@@ -674,7 +695,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
         HashMap<String, Object> onlineState = new HashMap<>();
         onlineState.put("state",state);
 
-        usersRef.child("users").child(myUid).child("userState")
+        usersRef.child(myUid).child("userState")
                 .updateChildren(onlineState);
 
     }

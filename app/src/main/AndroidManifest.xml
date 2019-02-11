@@ -27,7 +27,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".loginsignupsplash.SplashScreenActivity"
-            android:theme="@style/FullScreenTheme">
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,39 +37,49 @@
         </activity>
         <activity
             android:name=".loginsignupsplash.LoginActivity"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop"/>
         <activity
             android:name=".loginsignupsplash.SignUpActivity"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".ShowCapturedActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".photoeditor.PhotoEditorMainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseReceiverActivity"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".FindUsersActivity"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".ChatActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:launchMode = "singleTop"/>
         <activity
             android:name=".recyclerviewstory.DisplayImageActivity"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
         <activity
             android:name=".databases.UpdateLocalDB"
-            android:theme="@style/FullScreenTheme" />
+            android:theme="@style/FullScreenTheme"
+            android:launchMode = "singleTop" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
