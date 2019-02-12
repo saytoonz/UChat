@@ -253,9 +253,29 @@ public class MainActivity extends AppCompatActivity {
                                 TO_UID = mAuth.getCurrentUser().getUid();
 
                                 if (STATE.equals("sent")) {
+                                    //Update state in my message list
                                     mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
                                             .child(dataSnapshot.child("messageID").getValue().toString())
                                             .child("state").setValue("delivered");
+
+                                    //Update state in friends message list
+                                    final String finalSTATE = STATE;
+                                    mRootRef.child("messages").child(key).child(mAuth.getCurrentUser().getUid())
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()){
+                                                dataSnapshot.getRef().setValue(finalSTATE);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
 
                                     ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
                                     insertIntoDBBackground.execute("message_db", MESSAGE_ID, FROM_UID, TO_UID,
@@ -288,9 +308,29 @@ public class MainActivity extends AppCompatActivity {
 
                                 if (STATE.equals("sent")) {
                                     STATE = "delivered";
+                                    //Update state in my message list
                                     mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
                                             .child(dataSnapshot.child("messageID").getValue().toString())
                                             .child("state").setValue(STATE);
+
+                                    //Update state in friends message list
+                                    final String finalSTATE = STATE;
+                                    mRootRef.child("messages").child(key).child(mAuth.getCurrentUser().getUid())
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()){
+                                                dataSnapshot.getRef().setValue(finalSTATE);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
 
                                 }
 
@@ -320,9 +360,29 @@ public class MainActivity extends AppCompatActivity {
 
                                 if (STATE.equals("sent")) {
                                     STATE = "delivered";
+
+                                    //Update state in my message list
                                     mRootRef.child("messages").child(mAuth.getCurrentUser().getUid()).child(key)
                                             .child(dataSnapshot.child("messageID").getValue().toString())
                                             .child("state").setValue(STATE);
+
+                                    //Update state in friends message list
+                                    final String finalSTATE = STATE;
+                                    mRootRef.child("messages").child(key).child(mAuth.getCurrentUser().getUid())
+                                            .child(dataSnapshot.child("messageID").getValue().toString())
+                                            .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()){
+                                                dataSnapshot.getRef().setValue(finalSTATE);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
 
                                 }
 

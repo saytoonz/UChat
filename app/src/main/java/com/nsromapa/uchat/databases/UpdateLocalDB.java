@@ -75,14 +75,14 @@ public class UpdateLocalDB extends AppCompatActivity {
                 if (getUserMessages()){
                     Log.d(TAG, "onCreate: All Messages Added");
                     Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                 }else{
                     Log.d(TAG, "onCreate: could not add Messages Successfully.....");
                     Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                 }
 
@@ -101,8 +101,8 @@ public class UpdateLocalDB extends AppCompatActivity {
 
                         }else{
                             Intent intent = new Intent(UpdateLocalDB.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             finish();
                         }
                     }

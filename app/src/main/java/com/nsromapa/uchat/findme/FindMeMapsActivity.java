@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,6 +47,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.nsromapa.uchat.ChatActivity;
 import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
+import com.nsromapa.uchat.recyclerchatactivity.ChatActivityBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatSendBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -71,6 +75,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
     private final static int UPDATE_INTERVAL = 5000;
     private final static int FASTEST_INTERVAL = 3000;
     private final static int DISTANCE = 10;
+    private static final String TAG = "FindMeMapsActivity";
 
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
@@ -323,17 +328,17 @@ public class FindMeMapsActivity extends AppCompatActivity implements
     }
 
     private void sendUserMessage() {
-        SendMessage(myUid,"findMe","active");
+        SendMessage(myUid,"findMe","active","");
     }
-    public void SendMessage(String messageText,String type, String caption ) {
+    public void SendMessage(final String messageText, final String type, final String caption , final String LOCAL_LOCATION) {
         if (!TextUtils.isEmpty(messageText.trim())){
             Calendar calendarFordate = Calendar.getInstance();
             SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            String currentDate = currentDateFormat.format(calendarFordate.getTime());
+            final String currentDate = currentDateFormat.format(calendarFordate.getTime());
 
             Calendar calendarForTime= Calendar.getInstance();
             SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            String currentTime = currentTimeFormat.format(calendarForTime.getTime());
+            final String currentTime = currentTimeFormat.format(calendarForTime.getTime());
 
 
 
@@ -342,7 +347,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
             DatabaseReference theseUsersMessageTableRef = mRootRef.child("Messages")
                     .child(myUid).child(friendUid);
 
-            String messagePushKey = theseUsersMessageTableRef.push().getKey();
+           final String messagePushKey = String.valueOf(System.currentTimeMillis());
 
 
             Map<String,Object> messageTextBody = new HashMap<>();
@@ -353,6 +358,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
             messageTextBody.put("from",myUid);
             messageTextBody.put("date",currentDate);
             messageTextBody.put("time",currentTime);
+            messageTextBody.put("state","sent");
 
 
 
@@ -368,14 +374,25 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                         if (progressDialog.isShowing()){
                             progressDialog.dismiss();
                         }
+
+                        ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(getApplicationContext());
+                        insertIntoDBBackground.execute("message_db", messagePushKey, myUid, friendUid,
+                                caption, currentDate, currentTime, messageText, type, "sent", LOCAL_LOCATION, "yes");
+                        Log.d(TAG, "fetchMessageFromFriends:  Message " + messagePushKey + " added to table insertion........");
+
+
                         Toast.makeText(FindMeMapsActivity.this, "Message delivered to "+friendName+", wait till he connect you back", Toast.LENGTH_SHORT).show();
-                    }else
-                        Toast.makeText(FindMeMapsActivity.this, "Message could not send....", Toast.LENGTH_SHORT).show();
+                    }else {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                    }   Toast.makeText(FindMeMapsActivity.this, "Message could not send....", Toast.LENGTH_SHORT).show();
                 }
             });
 
         }
     }
+
 
     private void checkIfFriendIsOnline(final String friendUid){
         usersRef.child(friendUid)
@@ -690,15 +707,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
 
     }
 
-    private void updateStatus(String state){
 
-        HashMap<String, Object> onlineState = new HashMap<>();
-        onlineState.put("state",state);
-
-        usersRef.child(myUid).child("userState")
-                .updateChildren(onlineState);
-
-    }
 
 
 
@@ -734,9 +743,6 @@ public class FindMeMapsActivity extends AppCompatActivity implements
         if (mGoogleApiClient!=null)
             mGoogleApiClient.connect();
 
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            updateStatus("online");
-        }
     }
 
     @Override

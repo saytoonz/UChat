@@ -15,7 +15,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -55,6 +57,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,7 +91,11 @@ import com.nsromapa.uchat.recyclerchatactivity.ChatSendBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsAdapter;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsObjects;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -121,10 +128,11 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     private LinearLayout img_capt_aud_rec,attachment_layouout;
     private ImageView attach_photo, attach_video, attach_gallery, attach_record;
     private ImageView attach_audio, attach_document, attach_findUser, attach_location, attach_contact;
-    private RecyclerView messagesRecycler;
+    public RecyclerView messagesRecycler;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mRootRef, theseUsersMessageTableRef;
+    private DatabaseReference mRootRef, theseUsersMessageTableRef,friendMessageChildRootRef,myMessageChildRootRef;
+    private ChildEventListener friendMessageChild,myMessagesChild;
     private String messageSenderRef;
     private String messageReceivererRef;
 
@@ -625,25 +633,42 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
-
-    private void setAllFriendMessagestoRead(String receiver_user_id) {
+    private void setAllFriendMessagestoRead(final String receiver_user_id) {
         if (mAuth.getCurrentUser()!=null && !TextUtils.isEmpty(receiver_user_id)){
 
-//            Query friendMessagesQuery =  mRootRef.child("messsages").child(receiver_user_id)
-//                    .child(mAuth.getCurrentUser().getUid()).orderByChild("state").equalTo("delivered");
-//
-            Query myMessagesQuery =  mRootRef.child("messsages").child(mAuth.getCurrentUser().getUid())
-                    .child(receiver_user_id).orderByChild("state").equalTo("delivered");
 
-            myMessagesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            friendMessageChildRootRef= mRootRef.child("messages").child(receiver_user_id)
+                    .child(mAuth.getCurrentUser().getUid());
+
+            friendMessageChild = friendMessageChildRootRef
+                    .addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-
-                        snapshot.getRef().child("state").setValue("read");
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if (dataSnapshot.exists()){
+                        if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                            dataSnapshot.child("state").getRef().setValue("read");
+                        }
                     }
-                    Log.d(TAG, "onDataChange: All Messeges set to read");
+                    Log.d(TAG, "onDataChange: All messages of "+ receiver_user_name+" marked as seen");
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if (dataSnapshot.exists()){
+                        if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                            dataSnapshot.child("state").getRef().setValue("read");
+                        }
+                    }
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                 }
 
                 @Override
@@ -652,6 +677,47 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             });
 
+
+
+
+            myMessageChildRootRef = mRootRef.child("messages").child(mAuth.getCurrentUser().getUid())
+                    .child(receiver_user_id);
+
+           myMessagesChild = myMessageChildRootRef.addChildEventListener(new ChildEventListener() {
+               @Override
+               public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                   if (dataSnapshot.exists()){
+                       if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                           dataSnapshot.child("state").getRef().setValue("read");
+                       }
+                   }
+               }
+
+               @Override
+               public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                   if (dataSnapshot.exists()){
+                       if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                           dataSnapshot.child("state").getRef().setValue("read");
+                       }
+                   }
+               }
+
+               @Override
+               public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+               }
+
+               @Override
+               public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+               }
+
+               @Override
+               public void onCancelled(@NonNull DatabaseError databaseError) {
+
+               }
+           });
+
         }
     }
 
@@ -665,100 +731,6 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-
-
-
-
-
-
-
-    private void uploadFilesInChat(Uri fileUri, final String fileType, final String caption) {
-        final String messagePushKey = theseUsersMessageTableRef.push().getKey();
-        String folder=fileType;
-
-        if (fileType.equals("image")){
-            folder = "captures";
-        }
-
-        final StorageReference serverFilePath = FirebaseStorage.getInstance().getReference().child(folder).child(messagePushKey);
-
-        if (fileUri != null && !TextUtils.isEmpty(fileType)){
-
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setTitle("Uploading file....");
-            progressDialog.setProgress(0);
-            progressDialog.show();
-
-            UploadTask uploadTask = serverFilePath.putFile(fileUri);
-            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    serverFilePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            String fileUrl = Objects.requireNonNull(task.getResult()).toString();
-
-                            progressDialog.dismiss();
-
-                            Calendar calendarFordate = Calendar.getInstance();
-                            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-                            currentDate = currentDateFormat.format(calendarFordate.getTime());
-
-                            Calendar calendarForTime= Calendar.getInstance();
-                            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-                            currentTime = currentTimeFormat.format(calendarForTime.getTime());
-
-
-                            Map<String,Object> messageTextBody = new HashMap<>();
-                            messageTextBody.put("message",fileUrl);
-                            messageTextBody.put("caption",caption);
-                            messageTextBody.put("type",fileType);
-                            messageTextBody.put("from",sender_user_id);
-                            messageTextBody.put("date",currentDate);
-                            messageTextBody.put("time",currentTime);
-
-
-                            Map<String, Object> messageBodyDetails = new HashMap<>();
-                            messageBodyDetails.put(messageSenderRef + "/" + messagePushKey, messageTextBody);
-                            messageBodyDetails.put(messageReceivererRef + "/" + messagePushKey, messageTextBody);
-
-                            mRootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (!task.isSuccessful()){
-                                        Toast.makeText(ChatActivity.this, "There was an error....", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-
-                        }
-                    });
-
-                }
-            })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(ChatActivity.this, "There was an error....", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            int currentProgress = (int)(100*taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            progressDialog.setProgress(currentProgress);
-                        }
-                    });
-
-
-        }else{
-            Toast.makeText(this, "Unknown error...", Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     private void DisplayLastSeen(){
         if (mAuth.getCurrentUser() != null) {
@@ -1181,7 +1153,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     }
     private void copyFileToSentFolderAndUpload(Uri data) {
 
-        String fileName = null;
+        String sourceFilename= getRealPathFromUri(this,data);
+        String destinationFilename = null;
         String fileMediaType = null;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMMddhhmmss");
@@ -1196,29 +1169,167 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
             if (fileType.contains("image")){
                 fileMediaType = "image";
-                fileName = getExternalDirectory_andFolder("UChat/Image/Sent","IMG" +date+"."+ext);
+//                fileName = getExternalDirectory_andFolder("UChat/Image/Sent","IMG" +date+"."+ext);
+                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
+                        +"UChat/Image/Sent"+File.separatorChar+"IMG" +date+"."+ext;
+
             }else if (fileType.contains("video")){
-                fileName = getExternalDirectory_andFolder("UChat/Video/Sent","VID" +date+"."+ext);
+//                fileName = getExternalDirectory_andFolder("UChat/Video/Sent","VID" +date+"."+ext);
+                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
+                        +"UChat/Video/Sent"+File.separatorChar+"VID" +date+"."+ext;
+
                 fileMediaType = "video";
 
             }else if (fileType.contains("audio")){
-                fileName = getExternalDirectory_andFolder("UChat/Audio/Sent","AUD_FILE" +date+"."+ext);
+//                fileName = getExternalDirectory_andFolder("UChat/Audio/Sent","AUD_FILE" +date+"."+ext);
+                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
+                        +"UChat/Audio/Sent"+File.separatorChar+"AUD_FILE" +date+"."+ext;
+
                 fileMediaType = "audio";
 
             }else if (fileType.contains("application")){
-                fileName = getExternalDirectory_andFolder("UChat/Documents/Sent","DOC" +date+"."+ext);
+               // fileName = getExternalDirectory_andFolder("UChat/Documents/Sent","DOC" +date+"."+ext);
+                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
+                        +"UChat/Documents/Sent"+File.separatorChar+"DOC" +date+"."+ext;
+
                 fileMediaType = "document";
             }
 
         //Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
 
-        assert fileMediaType != null;
-        uploadFilesInChat(data,fileMediaType,itsLocalName);
+//        assert fileMediaType != null;
+//        uploadFilesInChat(data,fileMediaType,itsLocalName);
+//
 
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
 
+        try {
+            bis = new BufferedInputStream(new FileInputStream(sourceFilename));
+            bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
+            byte[] buf = new byte[1024];
+            bis.read(buf);
+            do {
+                bos.write(buf);
+            } while(bis.read(buf) != -1);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bis != null) bis.close();
+                if (bos != null) bos.close();
+                Log.d(TAG, "copyFileToSentFolderAndUpload: File copied successfully......new file location is "+destinationFilename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 
     }
+    public static String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private void uploadFilesInChat(Uri fileUri, final String fileType, final String caption) {
+        final String messagePushKey = theseUsersMessageTableRef.push().getKey();
+        String folder=fileType;
+
+        if (fileType.equals("image")){
+            folder = "captures";
+        }
+
+        final StorageReference serverFilePath = FirebaseStorage.getInstance().getReference().child(folder).child(messagePushKey);
+
+        if (fileUri != null && !TextUtils.isEmpty(fileType)){
+
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setTitle("Uploading file....");
+            progressDialog.setProgress(0);
+            progressDialog.show();
+
+            UploadTask uploadTask = serverFilePath.putFile(fileUri);
+            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    serverFilePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            String fileUrl = Objects.requireNonNull(task.getResult()).toString();
+
+                            progressDialog.dismiss();
+
+                            Calendar calendarFordate = Calendar.getInstance();
+                            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+                            currentDate = currentDateFormat.format(calendarFordate.getTime());
+
+                            Calendar calendarForTime= Calendar.getInstance();
+                            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+                            currentTime = currentTimeFormat.format(calendarForTime.getTime());
+
+
+                            Map<String,Object> messageTextBody = new HashMap<>();
+                            messageTextBody.put("message",fileUrl);
+                            messageTextBody.put("caption",caption);
+                            messageTextBody.put("type",fileType);
+                            messageTextBody.put("from",sender_user_id);
+                            messageTextBody.put("date",currentDate);
+                            messageTextBody.put("time",currentTime);
+
+
+                            Map<String, Object> messageBodyDetails = new HashMap<>();
+                            messageBodyDetails.put(messageSenderRef + "/" + messagePushKey, messageTextBody);
+                            messageBodyDetails.put(messageReceivererRef + "/" + messagePushKey, messageTextBody);
+
+                            mRootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (!task.isSuccessful()){
+                                        Toast.makeText(ChatActivity.this, "There was an error....", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ChatActivity.this, "There was an error....", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            int currentProgress = (int)(100*taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            progressDialog.setProgress(currentProgress);
+                        }
+                    });
+
+
+        }else{
+            Toast.makeText(this, "Unknown error...", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 
     public void showToast(String message) {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
@@ -1233,6 +1344,28 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 .child("users").child(sender_user_id).child("userState")
                 .updateChildren(onlineState);
 
+    }
+
+
+    @Override
+    protected void onPause() {
+        myMessageChildRootRef.removeEventListener(myMessagesChild);
+        friendMessageChildRootRef.removeEventListener(friendMessageChild);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        myMessageChildRootRef.removeEventListener(myMessagesChild);
+        friendMessageChildRootRef.removeEventListener(friendMessageChild);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        myMessageChildRootRef.removeEventListener(myMessagesChild);
+        friendMessageChildRootRef.removeEventListener(friendMessageChild);
+        super.onStop();
     }
 
     @Override
