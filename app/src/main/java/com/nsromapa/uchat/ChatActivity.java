@@ -1151,10 +1151,72 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         return filePath;
 
     }
+
+    public static String getRealPathFromUri(Context context, Uri contentUri,String fileMediaType) {
+        Cursor cursor = null;
+
+
+        switch (fileMediaType){
+            case "image":{
+                try {
+                    String[] proj = { MediaStore.Images.Media.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+            case "video":{
+                try {
+                    String[] proj = { MediaStore.Video.Media.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+            case "audio":{
+                try {
+                    String[] proj = { MediaStore.Audio.Media.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+            default:{
+                try {
+                    String[] proj = { MediaStore.Files.FileColumns.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+        }
+
+    }
+
     private void copyFileToSentFolderAndUpload(Uri data) {
 
-        String sourceFilename= getRealPathFromUri(this,data);
-        String destinationFilename = null;
+        String sourceFilename = null;
+        String fileName = null;
         String fileMediaType = null;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMMddhhmmss");
@@ -1168,45 +1230,32 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         itsLocalName = itsLocalName.substring(itsLocalName.lastIndexOf("/")+1);
 
             if (fileType.contains("image")){
+                fileName = getExternalDirectory_andFolder("UChat/Image/Sent","IMG" +date+"."+ext);
                 fileMediaType = "image";
-//                fileName = getExternalDirectory_andFolder("UChat/Image/Sent","IMG" +date+"."+ext);
-                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
-                        +"UChat/Image/Sent"+File.separatorChar+"IMG" +date+"."+ext;
+                sourceFilename= getRealPathFromUri(this,data,fileMediaType);
 
             }else if (fileType.contains("video")){
-//                fileName = getExternalDirectory_andFolder("UChat/Video/Sent","VID" +date+"."+ext);
-                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
-                        +"UChat/Video/Sent"+File.separatorChar+"VID" +date+"."+ext;
-
+                fileName = getExternalDirectory_andFolder("UChat/Video/Sent","VID" +date+"."+ext);
                 fileMediaType = "video";
+                sourceFilename= getRealPathFromUri(this,data,fileMediaType);
 
             }else if (fileType.contains("audio")){
-//                fileName = getExternalDirectory_andFolder("UChat/Audio/Sent","AUD_FILE" +date+"."+ext);
-                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
-                        +"UChat/Audio/Sent"+File.separatorChar+"AUD_FILE" +date+"."+ext;
-
+                fileName = getExternalDirectory_andFolder("UChat/Audio/Sent","AUD_FILE" +date+"."+ext);
                 fileMediaType = "audio";
+                sourceFilename= data.getPath();
 
             }else if (fileType.contains("application")){
-               // fileName = getExternalDirectory_andFolder("UChat/Documents/Sent","DOC" +date+"."+ext);
-                destinationFilename = Environment.getExternalStorageDirectory().getPath()+File.separatorChar
-                        +"UChat/Documents/Sent"+File.separatorChar+"DOC" +date+"."+ext;
-
+                fileName = getExternalDirectory_andFolder("UChat/Documents/Sent","DOC" +date+"."+ext);
                 fileMediaType = "document";
+                sourceFilename= data.getPath();
             }
-
-        //Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
-
-//        assert fileMediaType != null;
-//        uploadFilesInChat(data,fileMediaType,itsLocalName);
-//
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
 
         try {
             bis = new BufferedInputStream(new FileInputStream(sourceFilename));
-            bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
+            bos = new BufferedOutputStream(new FileOutputStream(fileName, false));
             byte[] buf = new byte[1024];
             bis.read(buf);
             do {
@@ -1219,7 +1268,11 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
             try {
                 if (bis != null) bis.close();
                 if (bos != null) bos.close();
-                Log.d(TAG, "copyFileToSentFolderAndUpload: File copied successfully......new file location is "+destinationFilename);
+                Log.d(TAG, "copyFileToSentFolderAndUpload: File copied successfully......new file location is "+fileName);
+                //Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
+
+//        assert fileMediaType != null;
+//        uploadFilesInChat(data,fileMediaType,itsLocalName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -1227,23 +1280,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     }
-    public static String getRealPathFromUri(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 
     private void uploadFilesInChat(Uri fileUri, final String fileType, final String caption) {
-        final String messagePushKey = theseUsersMessageTableRef.push().getKey();
+        final String messagePushKey = String.valueOf(System.currentTimeMillis());
         String folder=fileType;
 
         if (fileType.equals("image")){
@@ -1282,11 +1321,13 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             Map<String,Object> messageTextBody = new HashMap<>();
                             messageTextBody.put("message",fileUrl);
+                            messageTextBody.put("messageID",messagePushKey);
                             messageTextBody.put("caption",caption);
                             messageTextBody.put("type",fileType);
                             messageTextBody.put("from",sender_user_id);
                             messageTextBody.put("date",currentDate);
                             messageTextBody.put("time",currentTime);
+                            messageTextBody.put("state","sent");
 
 
                             Map<String, Object> messageBodyDetails = new HashMap<>();

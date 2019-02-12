@@ -111,8 +111,6 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
         //For both user and reciever
         String  messageSenderRef = "messages/"+FirebaseAuth.getInstance().getCurrentUser().getUid()  +"/"+ FriendReceiver;
         String messageReceivererRef = "messages/"+ FriendReceiver +"/"+ FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference theseUsersMessageTableRef = FirebaseDatabase.getInstance().getReference().child("Messages")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(values[0].getFrom());
 
         ////Get unique key for message
 //        final String messagePushKey = theseUsersMessageTableRef.push().getKey();
