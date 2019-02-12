@@ -87,6 +87,7 @@ import com.nsromapa.uchat.LocationUtil.PermissionUtils;
 import com.nsromapa.uchat.customizations.CustomIntent;
 import com.nsromapa.uchat.findme.FindMeMapsActivity;
 import com.nsromapa.uchat.recyclerchatactivity.ChatActivityBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatSendAttachmentBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatSendBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsAdapter;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsObjects;
@@ -1218,6 +1219,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         String sourceFilename = null;
         String fileName = null;
         String fileMediaType = null;
+        String local_loc = null;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMMddhhmmss");
         String date = simpleDateFormat.format(new Date());
@@ -1231,21 +1233,25 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
             if (fileType.contains("image")){
                 fileName = getExternalDirectory_andFolder("UChat/Image/Sent","IMG" +date+"."+ext);
+                local_loc = "UChat/Image/Sent/IMG" +date+"."+ext;
                 fileMediaType = "image";
                 sourceFilename= getRealPathFromUri(this,data,fileMediaType);
 
             }else if (fileType.contains("video")){
                 fileName = getExternalDirectory_andFolder("UChat/Video/Sent","VID" +date+"."+ext);
+                local_loc = "UChat/Video/Sent/VID" +date+"."+ext;
                 fileMediaType = "video";
                 sourceFilename= getRealPathFromUri(this,data,fileMediaType);
 
             }else if (fileType.contains("audio")){
                 fileName = getExternalDirectory_andFolder("UChat/Audio/Sent","AUD_FILE" +date+"."+ext);
+                local_loc = "UChat/Audio/Sent/AUD_FILE" +date+"."+ext;
                 fileMediaType = "audio";
                 sourceFilename= data.getPath();
 
             }else if (fileType.contains("application")){
                 fileName = getExternalDirectory_andFolder("UChat/Documents/Sent","DOC" +date+"."+ext);
+                local_loc = "UChat/Documents/Sent/DOC" +date+"."+ext;
                 fileMediaType = "document";
                 sourceFilename= data.getPath();
             }
@@ -1271,8 +1277,25 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.d(TAG, "copyFileToSentFolderAndUpload: File copied successfully......new file location is "+fileName);
                 //Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show();
 
-//        assert fileMediaType != null;
-//        uploadFilesInChat(data,fileMediaType,itsLocalName);
+                Calendar calendarFordate = Calendar.getInstance();
+                SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+                currentDate = currentDateFormat.format(calendarFordate.getTime());
+
+                Calendar calendarForTime= Calendar.getInstance();
+                SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+                currentTime = currentTimeFormat.format(calendarForTime.getTime());
+
+
+                String messageLocalKey = String.valueOf(System.currentTimeMillis());
+                String SYNCHRONIZED = "no";
+                String caption= itsLocalName;
+                String messageText ="upload";
+
+                assert fileMediaType != null;
+                new ChatSendAttachmentBackground(messagesRecycler,this,receiver_user_id)
+                        .execute("sendMessageAttachment", messageLocalKey, sender_user_id, receiver_user_id,
+                                caption, currentDate, currentTime, messageText, fileMediaType, local_loc, SYNCHRONIZED);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

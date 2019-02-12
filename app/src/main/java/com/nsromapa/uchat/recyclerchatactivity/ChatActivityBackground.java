@@ -65,6 +65,8 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
         String date;
         String time;
         String state;
+        String local_loc;
+        String sync_ed;
 
         String selectedFriendUid = params[0];
 
@@ -83,12 +85,14 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
             date = cursor.getString(cursor.getColumnIndex(DBObjects.DBHelperObjects.DATE));
             time = cursor.getString(cursor.getColumnIndex(DBObjects.DBHelperObjects.TIME));
             state = cursor.getString(cursor.getColumnIndex(DBObjects.DBHelperObjects.STATE));
+            local_loc = cursor.getString(cursor.getColumnIndex(DBObjects.DBHelperObjects.LOCAL_LOCATION));
+            sync_ed = cursor.getString(cursor.getColumnIndex(DBObjects.DBHelperObjects.SYNCHRONIZED));
 
             if ((from.equals(selectedFriendUid) && toUid.equals(mAuth.getCurrentUser().getUid()) ||
                     toUid.equals(selectedFriendUid) && from.equals(mAuth.getCurrentUser().getUid()))) {
 
 
-                publishProgress(new ChatsObjects(messageID, from, message, type, caption, date, time,state));
+                publishProgress(new ChatsObjects(messageID, from, message, type, caption, date, time,state,local_loc,sync_ed));
                 Timber.d("ChatActivityBackground: In doInBackground " + messageID + " now Published");
 
                 try {

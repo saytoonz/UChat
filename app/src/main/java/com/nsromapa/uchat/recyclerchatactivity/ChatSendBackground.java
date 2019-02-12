@@ -81,7 +81,7 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
             dbOperations.AddMessage(database, messageId, fromId, toId, caption,
                     _date, _time, message, type, state, local_loc, sync_ed);
 
-            publishProgress(new ChatsObjects(messageId, fromId, message, type, caption, _date, _time,state));
+            publishProgress(new ChatsObjects(messageId, fromId, message, type, caption, _date, _time,state,local_loc,sync_ed));
             Timber.d("ChatActivityBackground: In doInBackground " + messageId + " now Published");
 
         }else{

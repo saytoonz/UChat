@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -159,8 +160,40 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.senderMessageImage.setBackgroundResource(R.drawable.sender_messages_layout);
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
-                Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
-                chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+                if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
+
+
+
+                    File loc =new File(messages.getLocal_location());
+
+                    if (!(loc.exists()) || (!loc.isFile()) ) {
+                        loc.delete();
+                        Glide.with(mContext)
+                                .asBitmap()
+                                .load(messages.getMessage())
+                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                        chatsViewHolder.senderMessageImage.setImageBitmap(resource);
+
+                                    }
+                                });
+
+                    }else {
+                        Glide.with(mContext)
+                                .asBitmap()
+                                .load(loc)
+                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                                .into(chatsViewHolder.senderMessageImage);
+                    }
+
+                    chatsViewHolder.senderMessageDateTime.setText(messages.getLocal_location()+"  "+loc);
+                }else{
+                    Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
+                }
+
+//                chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
 
 
 
@@ -192,7 +225,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.receiver_message_ImageFull.setBackgroundResource(R.drawable.receiver_messages_layout);
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.receiverMessageImage);
-                Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.receiverMessageImage);
+                if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
+                    Glide.with(mContext).asBitmap().load(messages.getLocal_location()).into(chatsViewHolder.receiverMessageImage);
+                }else{
+                    Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.receiverMessageImage);
+                }
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
 

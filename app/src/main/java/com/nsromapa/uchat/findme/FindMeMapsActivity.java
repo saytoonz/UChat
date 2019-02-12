@@ -1,13 +1,11 @@
 package com.nsromapa.uchat.findme;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -43,12 +41,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.nsromapa.uchat.ChatActivity;
-import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
-import com.nsromapa.uchat.recyclerchatactivity.ChatActivityBackground;
-import com.nsromapa.uchat.recyclerchatactivity.ChatSendBackground;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
 
 import java.io.IOException;
