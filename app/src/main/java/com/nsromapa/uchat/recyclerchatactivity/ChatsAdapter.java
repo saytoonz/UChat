@@ -164,8 +164,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
 
-                    File loc =new File(messages.getLocal_location());
-
+                    File SDCard = Environment.getExternalStorageDirectory();
+                    File loc = new File(SDCard, messages.getLocal_location());
                     if (!(loc.exists()) || (!loc.isFile()) ) {
                         loc.delete();
                         Glide.with(mContext)
