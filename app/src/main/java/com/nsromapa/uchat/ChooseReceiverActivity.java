@@ -208,6 +208,7 @@ public class ChooseReceiverActivity extends AppCompatActivity {
                     mapToUpload.put("timestampEnd", endTimestamp);
                     mapToUpload.put("date",currentDate);
                     mapToUpload.put("time",currentTime);
+                    mapToUpload.put("state","sent");
                     userStoryDb.child(key).setValue(mapToUpload);
                 }
                 for(int i = 0; i< results.size(); i++){
@@ -253,6 +254,7 @@ public class ChooseReceiverActivity extends AppCompatActivity {
         messageTextBody.put("from",sender_user_id);
         messageTextBody.put("date",currentDate);
         messageTextBody.put("time",currentTime);
+        messageTextBody.put("state","sent");
 
 
         Map<String, Object> messageBodyDetails = new HashMap<>();
@@ -303,9 +305,9 @@ public class ChooseReceiverActivity extends AppCompatActivity {
                     if (which==0){
                         time = (12*60*60*1000);
                     }else if (which==2){
-                        time = ((24*60*60*1000)*2);
+                        time = (48*60*60*1000);
                     }else if (which==3){
-                        time = ((24*60*60*1000)*3);
+                        time = (72*60*60*1000);
                     }
                     endTimestamp = currentTimestamp + time;
 

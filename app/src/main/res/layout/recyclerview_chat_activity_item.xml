@@ -54,9 +54,8 @@
                     <ImageView
                         android:id="@+id/receiver_message_Image"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="170dp"
                         android:adjustViewBounds="true"
-                        android:maxHeight="250dp"
                         android:scaleType="centerCrop" />
 
                     <ImageView
@@ -369,9 +368,8 @@
                     <ImageView
                         android:id="@+id/sender_message_Image"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="170dp"
                         android:adjustViewBounds="true"
-                        android:maxHeight="250dp"
                         android:scaleType="centerCrop" />
 
                     <ImageView
@@ -380,6 +378,19 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"/>
+
+                    <ProgressBar
+                        android:id="@+id/sender_imageVideo_progressBar"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="bottom|start"/>
+
+                    <ImageView
+                        android:id="@+id/sender_message_imageVideoUpload"
+                        android:src="@drawable/ic_file_upload_black_24dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="bottom|start"/>
                 </FrameLayout>
             </LinearLayout>
 
@@ -390,7 +401,7 @@
                 android:id="@+id/sender_sticker_gif_Image"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:layout_marginTop="10dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/sticker_gif_background"

@@ -36,14 +36,14 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
     private RecyclerView.Adapter adapter;
     private ArrayList<ChatsObjects> chatsObjects = MessagesArrayList.chatsObjects;
     private FirebaseAuth mAuth;
-    private String FriendReceiver;
+    private String FriendId;
     private static final String TAG = "ChatSendBackground";
 
 
     public ChatSendBackground(RecyclerView recyclerView, Context context, String FriendId) {
         this.recyclerView = recyclerView;
         this.context = context;
-        this.FriendReceiver =FriendId;
+        this.FriendId =FriendId;
         Timber.d("ChatSendBackground: In CONSTRUCTOR");
     }
 
@@ -51,7 +51,7 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context,chatsObjects);
+        adapter = new ChatsAdapter(context,chatsObjects,recyclerView,FriendId);
         recyclerView.setAdapter(adapter);
     }
 
@@ -109,8 +109,8 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
 
         //Firebase Database References for messages
         //For both user and reciever
-        String  messageSenderRef = "messages/"+FirebaseAuth.getInstance().getCurrentUser().getUid()  +"/"+ FriendReceiver;
-        String messageReceivererRef = "messages/"+ FriendReceiver +"/"+ FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String  messageSenderRef = "messages/"+FirebaseAuth.getInstance().getCurrentUser().getUid()  +"/"+ FriendId;
+        String messageReceivererRef = "messages/"+ FriendId +"/"+ FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         ////Get unique key for message
 //        final String messagePushKey = theseUsersMessageTableRef.push().getKey();
@@ -167,7 +167,7 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
                         //Then Add Value listerner to the message state
                         FirebaseDatabase.getInstance().getReference().child("messages")
                                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .child(FriendReceiver).child(messagePushKey).child("state")
+                                .child(FriendId).child(messagePushKey).child("state")
                                 .addValueEventListener(new ValueEventListener() {
 
                                     @Override

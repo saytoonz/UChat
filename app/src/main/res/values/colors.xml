@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">@color/color_option_menu</color>
+    <color name="colorAccent2">#003569</color>
 
     <color name="loading_background">#424242</color>
     <color name="chat_recycler_background">#e5e5e5</color>
@@ -25,7 +26,7 @@
     
     <color name="selected_filter">#221f20</color>
     <color name="normal_filter">#8a8889</color>
-    <color name="color_option_menu">#ff3399</color>
+    <color name="color_option_menu">#8B0C4C</color>
     <color name="cardview_background">#333639</color>
     <color name="halfwhite">#84FFFFFF</color>
 </resources>

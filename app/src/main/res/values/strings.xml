@@ -1,54 +1,57 @@
 <resources>
-    <string name="app_name">UChat</string>
-    <string name="search">Search</string>
-    <string name="set_as_wallpaper">Set as Wallpaper</string>
-    <string name="caption">Add caption....</string>
-    <string name="edit">Edit</string>
-    <string name="photoeditorview">PhotoEditorView</string>
-    <string name="add_a_story">Add a Story</string>
-    <string name="logo">Logo</string>
-    <string name="login">Login</string>
-    <string name="activate_new_account">Activate new Account</string>
-    <string name="user_id">Index Number</string>
-    <string name="password">Password</string>
-    <string name="signup">SignUp</string>
-    <string name="login_account">Have Account? Login</string>
-    <string name="conent">conent</string>
-    <string name="add_to_post_board">Add to Posts</string>
-    <string name="campus_market">Campus Market</string>
-    <string name="find_friends">Find Friends</string>
-    <string name="logout">Log Out</string>
-    <string name="profile">Profile</string>
-    <string name="create_group">Create Group</string>
-    <string name="type_a_message">Type a message...</string>
-    <string name="send_chat_message">Send Chat Message</string>
-    <string name="back_to_parent">Back to parent</string>
-    <string name="chat_image">chat image</string>
-    <string name="picture">Picture</string>
-    <string name="description_info">Info</string>
-    <string name="request_permission">This sample needs camera permission.</string>
-    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
-    <string name="permission_request">This sample needs permission for camera and audio recording.</string>
-    <string name="capture_image_video">Capture image / video</string>
-    <string name="rotate_camera">Rotate camera</string>
-    <string name="toggle_flash">Toggle Flash</string>
-    <string name="my_stoies">My Stories</string>
-    <string name="my_story">My Story</string>
-    <string name="title_activity_sing_location">Map</string>
-    <string name="forgPass">Forget Password</string>
-    <string name="title_activity_find_me_maps">Map</string>
-    <string name="toggle_map_view">Toggle Map View</string>
+    <string name="app_name" translatable="false">UChat</string>
+    <string name="search" translatable="false">Search</string>
+    <string name="set_as_wallpaper" translatable="false">Set as Wallpaper</string>
+    <string name="caption" translatable="false">Add caption....</string>
+    <string name="edit" translatable="false">Edit</string>
+    <string name="photoeditorview" translatable="false">PhotoEditorView</string>
+    <string name="add_a_story" translatable="false">Add a Story</string>
+    <string name="logo" translatable="false">Logo</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="activate_new_account" translatable="false">Activate new Account</string>
+    <string name="user_id" translatable="false">Index Number</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="signup" translatable="false">SignUp</string>
+    <string name="login_account" translatable="false">Have Account? Login</string>
+    <string name="conent" translatable="false">conent</string>
+    <string name="add_to_post_board" translatable="false">Add to Posts</string>
+    <string name="campus_market" translatable="false">Campus Market</string>
+    <string name="find_friends" translatable="false">Find Friends</string>
+    <string name="logout" translatable="false">Log Out</string>
+    <string name="profile" translatable="false">Profile</string>
+    <string name="create_group" translatable="false">Create Group</string>
+    <string name="type_a_message" translatable="false">Type a message...</string>
+    <string name="send_chat_message" translatable="false">Send Chat Message</string>
+    <string name="back_to_parent" translatable="false">Back to parent</string>
+    <string name="chat_image" translatable="false">chat image</string>
+    <string name="picture" translatable="false">Picture</string>
+    <string name="description_info" translatable="false">Info</string>
+    <string name="request_permission" translatable="false">This sample needs camera permission.</string>
+    <string name="camera_error" translatable="false">This device doesn\'t support Camera2 API.</string>
+    <string name="permission_request" translatable="false">This sample needs permission for camera and audio recording.</string>
+    <string name="capture_image_video" translatable="false">Capture image / video</string>
+    <string name="rotate_camera" translatable="false">Rotate camera</string>
+    <string name="toggle_flash" translatable="false">Toggle Flash</string>
+    <string name="my_stoies" translatable="false">My Stories</string>
+    <string name="my_story" translatable="false">My Story</string>
+    <string name="title_activity_sing_location" translatable="false">Map</string>
+    <string name="forgPass" translatable="false">Forget Password</string>
+    <string name="title_activity_find_me_maps" translatable="false">Map</string>
+    <string name="toggle_map_view" translatable="false">Toggle Map View</string>
 
 
     <!--    Permissions    -->
-    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my FindMe\' feature, which shows your current location on the map.</string>
-    <string name="location_permission_denied">This sample requires location permission to enable the \'my FindMe\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'UChat\'.</string>
-    <string name="permission_required_toast">Location permission is required for this feature.</string>
-    <string name="hi_we_are_setting_up_things_for_you">Hi, we are setting up things for you....</string>
-    <string name="todo">TODO</string>
-    <string name="yes">Yes</string>
-    <string name="no">no</string>
-    <string name="please_be_patient_as_we_set_up_your_account_for_you">Please be patient as we set up your account for you...</string>
-    <string name="this_process_will_take_some_time">This process will take some time...</string>
+    <string name="permission_rationale_location" translatable="false">Access to the location service is required to demonstrate the \'my FindMe\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied" translatable="false">This sample requires location permission to enable the \'my FindMe\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'UChat\'.</string>
+    <string name="permission_required_toast" translatable="false">Location permission is required for this feature.</string>
+    <string name="hi_we_are_setting_up_things_for_you" translatable="false">Hi, we are setting up things for you....</string>
+    <string name="todo" translatable="false">TODO</string>
+    <string name="yes" translatable="false">Yes</string>
+    <string name="no" translatable="false">no</string>
+    <string name="please_be_patient_as_we_set_up_your_account_for_you" translatable="false">Please be patient as we set up your account for you...</string>
+    <string name="this_process_will_take_some_time" translatable="false">This process will take some time...</string>
+    <string name="post_time" translatable="false">Post Time</string>
+    <string name="post_imageView" translatable="false">Post ImageView</string>
+    <string name="Username" translatable="false">Username of the poster</string>
 
 </resources>

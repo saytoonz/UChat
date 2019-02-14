@@ -40,10 +40,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
+    private  RecyclerView recyclerView;
+    private String friendId;
 
-    public ChatsAdapter(Context context,List<ChatsObjects> userChatList) {
+    public  ChatsAdapter(Context context,List<ChatsObjects> userChatList, RecyclerView recyclerView, String friendId) {
         this.userChatList = userChatList;
         this.mContext = context;
+        this.recyclerView = recyclerView;
+        this.friendId = friendId;
     }
 
 
@@ -57,9 +61,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ChatsViewHolder chatsViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ChatsViewHolder chatsViewHolder, final int position) {
         String currentUserID = mAuth.getCurrentUser().getUid();
-        final ChatsObjects messages = userChatList.get(i);
+        final ChatsObjects messages = userChatList.get(position);
 
         userRef = FirebaseDatabase.getInstance().getReference().child("users").child(messages.getFrom());
 //        userRef.addValueEventListener(new ValueEventListener() {
@@ -80,9 +84,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         chatsViewHolder.senderMessage.setVisibility(View.GONE);
         chatsViewHolder.receiver_message_ImageFull.setVisibility(View.GONE);
         chatsViewHolder.sender_message_ImageFull.setVisibility(View.GONE);
-        chatsViewHolder.senderMessageImage.setVisibility(View.GONE);
         chatsViewHolder.receiver_message_VideoThumbnail_play.setVisibility(View.GONE);
         chatsViewHolder.sender_message_VideoThumbnail_play.setVisibility(View.GONE);
+        chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
+        chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
         chatsViewHolder.receiverMessageDateTime.setVisibility(View.GONE);
         chatsViewHolder.senderMessageDateTime.setVisibility(View.GONE);
         chatsViewHolder.senderStickerSoundGifImage.setVisibility(View.GONE);
@@ -145,7 +150,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
 
-        else if (messages.getType().equals("image") || messages.getType().equals("video")){
+        else if (messages.getType().equals("image") || messages.getType().equals("video")) {
+
 
             if ( messages.getFrom().equals(currentUserID)){
                 if (messages.getType().equals("video")){
@@ -154,7 +160,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                     chatsViewHolder.sender_message_VideoThumbnail_play.setVisibility(View.GONE);
                 }
 
-                chatsViewHolder.senderMessageImage.setVisibility(View.VISIBLE);
+
+
+                chatsViewHolder.sender_message_ImageFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
@@ -162,16 +170,17 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
                 if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
 
-
-
-                    File SDCard = Environment.getExternalStorageDirectory();
-                    File loc = new File(SDCard, messages.getLocal_location());
-                    if (!(loc.exists()) || (!loc.isFile()) ) {
+                    File loc = new File(messages.getLocal_location());
+                    if ((!loc.exists()) || (!loc.isFile()) ) {
                         loc.delete();
+
+                        chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
+                        chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
+
                         Glide.with(mContext)
                                 .asBitmap()
                                 .load(messages.getMessage())
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                                .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
                                 .into(new SimpleTarget<Bitmap>() {
                                     @Override
                                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -179,21 +188,61 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                     }
                                 });
-
                     }else {
+
+
+                        if (messages.state.equals("not sent") && !messages.getMessage().equals("uploading")){
+
+                            if (messages.getMessage().equals("uploading")){
+                                chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.VISIBLE);
+                                chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
+                            }else{
+                                chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.VISIBLE);
+                                chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
+                            }
+
+                            chatsViewHolder.sender_message_imageVideoUpload.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
+                                    chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.VISIBLE);
+
+                                    new ChatUploadAttachment(ChatsAdapter.this,recyclerView, mContext, friendId,
+                                            chatsViewHolder.sender_imageVideo_progressBar,
+                                            chatsViewHolder.sender_message_imageVideoUpload)
+                                            .execute("upload_attachment",
+                                                    messages.getMessageID(),
+                                                    messages.getLocal_location(),
+                                                    messages.getType(),
+                                                    messages.getCaption(),
+                                                    String.valueOf(position));
+                                }
+                            });
+
+                        }
+                        else{
+                            chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
+                            chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
+                        }
+
+
                         Glide.with(mContext)
                                 .asBitmap()
-                                .load(loc)
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                                .load(messages.getLocal_location())
+                                .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
                                 .into(chatsViewHolder.senderMessageImage);
                     }
 
-                    chatsViewHolder.senderMessageDateTime.setText(messages.getLocal_location()+"  "+loc);
                 }else{
-                    Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
+                            .load("https://firebasestorage.googleapis.com/v0/b/unerchatapp.appspot.com/o/stickers%2Fcup_cry.png?alt=media&token=e66c4517-ff68-426b-8796-3e174a6554b1")
+                            .into(chatsViewHolder.senderMessageImage);
+
                 }
 
-//                chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+                chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
 
 
 
@@ -214,29 +263,26 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
 
-            }else{
-                if (messages.getType().equals("video")){
+            } else {
+                if (messages.getType().equals("video")) {
                     chatsViewHolder.receiver_message_VideoThumbnail_play.setVisibility(View.VISIBLE);
-                }else{
+                } else {
+
                     chatsViewHolder.receiver_message_VideoThumbnail_play.setVisibility(View.GONE);
                 }
                 chatsViewHolder.receiver_message_ImageFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.receiver_message_ImageFull.setBackgroundResource(R.drawable.receiver_messages_layout);
-//                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.receiverMessageImage);
-                if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
-                    Glide.with(mContext).asBitmap().load(messages.getLocal_location()).into(chatsViewHolder.receiverMessageImage);
-                }else{
-                    Glide.with(mContext).asBitmap().load(messages.getMessage()).into(chatsViewHolder.receiverMessageImage);
-                }
-                chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
+
+
+                Glide.with(mContext)
+                        .asBitmap()
+                        .load("https://firebasestorage.googleapis.com/v0/b/unerchatapp.appspot.com/o/stickers%2Fcup_cry.png?alt=media&token=e66c4517-ff68-426b-8796-3e174a6554b1")
+                        .into(chatsViewHolder.receiverMessageImage);
+                chatsViewHolder.receiverMessageDateTime.setText(messages.getDate() + "  " + messages.getTime());
             }
-
         }
-
-
-
 
 
 
@@ -275,7 +321,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.recieverStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
-//                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.recieverStickerSoundGifImage);
+
                 Glide.with(mContext).asGif().load(messages.getMessage()).into(chatsViewHolder.recieverStickerSoundGifImage);
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
             }
@@ -294,7 +340,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
-//                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
+
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
 
 
@@ -346,7 +392,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.recieverStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
-//                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.recieverStickerSoundGifImage);
+
                 chatsViewHolder.receiverMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
 
                     File stickerFile =new File(String.valueOf(mContext
@@ -389,7 +435,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
-//                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
+
                 chatsViewHolder.senderMessageDateTime.setText(messages.getDate()+"  "+messages.getTime());
 
 

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
@@ -20,6 +21,8 @@ public class ChatsViewHolder extends RecyclerView.ViewHolder {
     LinearLayout receiver_message_ImageFull,sender_message_ImageFull;
     ImageView senderMessageImage, receiverMessageImage;
     ImageView receiver_message_VideoThumbnail_play,sender_message_VideoThumbnail_play;
+    ImageView sender_message_imageVideoUpload;
+    ProgressBar sender_imageVideo_progressBar;
 
     ImageView senderStickerSoundGifImage, recieverStickerSoundGifImage;
     ImageView senderSoundImage, recieverSoundImage;
@@ -55,6 +58,8 @@ public class ChatsViewHolder extends RecyclerView.ViewHolder {
         receiver_message_VideoThumbnail_play = itemView.findViewById(R.id.receiver_message_VideoThumbnail_play);
         senderMessageImage = itemView.findViewById(R.id.sender_message_Image);
         receiverMessageImage = itemView.findViewById(R.id.receiver_message_Image);
+        sender_message_imageVideoUpload = itemView.findViewById(R.id.sender_message_imageVideoUpload);
+        sender_imageVideo_progressBar = itemView.findViewById(R.id.sender_imageVideo_progressBar);
 
         senderMessageDateTime = itemView.findViewById(R.id.senderMessage_dateTime);
         receiverMessageDateTime = itemView.findViewById(R.id.receiverMessage_dateTime);

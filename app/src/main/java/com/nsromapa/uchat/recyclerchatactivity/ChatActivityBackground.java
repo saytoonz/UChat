@@ -22,17 +22,18 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
     private ArrayList<ChatsObjects> chatsObjects = new ArrayList<>();
     private Context context;
     private FirebaseAuth mAuth;
+    private String friendId;
 
-    public ChatActivityBackground(RecyclerView recyclerView, Context context) {
+    public ChatActivityBackground(RecyclerView recyclerView, Context context, String friendId) {
         this.recyclerView = recyclerView;
         this.context = context;
-        Log.d(TAG, "ChatActivityBackground: In CONSTRUCTOR");
+        this.friendId = friendId;
     }
 
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context, chatsObjects);
+        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,friendId);
         recyclerView.setAdapter(adapter);
     }
 
@@ -96,7 +97,7 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
                 Timber.d("ChatActivityBackground: In doInBackground " + messageID + " now Published");
 
                 try {
-                    Thread.sleep(70);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

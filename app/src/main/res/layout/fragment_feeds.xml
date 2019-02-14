@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/yellow">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorAccent2"
+    android:orientation="vertical">
 
 
     <FrameLayout
@@ -24,9 +25,19 @@
                             android:layout_height="wrap_content" />
 
 
+
             </android.support.v4.widget.SwipeRefreshLayout>
 
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_addPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/colorAccent2"
+            app:backgroundTint="@color/colorAccent2"
+            android:src="@drawable/ic_add_white_24dp" />
     </FrameLayout>
 
 
