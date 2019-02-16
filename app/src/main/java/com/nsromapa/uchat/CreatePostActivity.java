@@ -1,5 +1,6 @@
 package com.nsromapa.uchat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,6 +34,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.nsromapa.uchat.databases.DBObjects;
 import com.nsromapa.uchat.databases.DBOperations;
 import com.nsromapa.uchat.recyclerfeeds.SendPostBackground;
@@ -40,6 +46,7 @@ import com.nsromapa.uchat.usersInfos.MyUserInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -295,10 +302,26 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
 
     private void openGellary() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*,video/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*,video/*"});
-        startActivityForResult(intent, SELECTED_FROM_GALLERY_CODE);
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()){
+                            Intent intent = new Intent(Intent.ACTION_PICK);
+                            intent.setType("image/*,video/*");
+                            intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*,video/*"});
+                            startActivityForResult(intent, SELECTED_FROM_GALLERY_CODE);
+                        }else{
+                            Toast.makeText(CreatePostActivity.this, "Permission needed to access you Storage!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+
+                    }
+                }).check();
     }
 
 

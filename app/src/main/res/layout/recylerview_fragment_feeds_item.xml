@@ -24,7 +24,7 @@
             android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/homePostUserFromPFP"
+                android:id="@+id/PostedUserFromPFP"
                 android:layout_width="60dp"
                 android:layout_height="60dp"/>
         </LinearLayout>
@@ -38,7 +38,7 @@
             android:layout_marginStart="10dp">
 
             <TextView
-                android:id="@+id/homePostUserFrom"
+                android:id="@+id/PosterUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/Username"
@@ -52,7 +52,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/homePostUserPostedTo"
+                    android:id="@+id/PostCreationTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -70,12 +70,31 @@
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/homePostPostedImage"
+            android:id="@+id/PostImageVideo_ImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:contentDescription="@string/post_imageView" />
+
+        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+            android:id="@+id/PostTextpost_TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:padding="7dp"
+            android:textStyle="bold"/>
+
+        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+            android:id="@+id/PostCaption_TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            />
 
 
 
@@ -95,6 +114,7 @@
         android:gravity="fill_horizontal">
 
         <LinearLayout
+            android:id="@+id/PostActionButtons_likeUnlike"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -103,7 +123,6 @@
             android:gravity="center">
 
             <ImageButton
-                android:id="@+id/homePostActionButtons_like"
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -126,7 +145,7 @@
 
 
             <TextView
-                android:id="@+id/home_likers"
+                android:id="@+id/postTotal_likers"
                 android:textColor="@color/colorAccent2"
                 android:textSize="13sp"
                 android:text="0"
@@ -140,6 +159,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/PostActionButtons_hate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -148,7 +168,6 @@
             android:gravity="center">
 
             <ImageButton
-                android:id="@+id/homePostActionButtons_hate"
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -158,7 +177,7 @@
                 android:layout_gravity="center"/>
 
             <TextView
-                android:id="@+id/home_haters"
+                android:id="@+id/postTotal_haters"
                 android:textColor="@color/colorAccent2"
                 android:textSize="13sp"
                 android:text="0"
@@ -174,6 +193,7 @@
 
 
         <LinearLayout
+            android:id="@+id/PostActionButtons_comment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -182,7 +202,6 @@
             android:gravity="center">
 
             <ImageButton
-                android:id="@+id/homePostActionButtons_comment"
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -192,7 +211,7 @@
                 android:layout_gravity="center"/>
 
             <TextView
-                android:id="@+id/home_commenters"
+                android:id="@+id/postTotal_commenters"
                 android:textColor="@color/colorAccent2"
                 android:textSize="14sp"
                 android:text="0"
@@ -207,7 +226,7 @@
 
 
         <ImageButton
-            android:id="@+id/homePostActionButtons_delete"
+            android:id="@+id/PostActionButtons_delete"
             android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
