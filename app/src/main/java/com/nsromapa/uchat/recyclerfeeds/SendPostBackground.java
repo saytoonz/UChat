@@ -133,15 +133,19 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                     folder = "captures";
                 }
 
+                Uri uploadUri = Uri.fromFile(new File(fileUrl));
+
                 final StorageReference serverFilePath = FirebaseStorage.getInstance().getReference().child(folder).child(postId);
-                if (Uri.fromFile(new File(fileUrl)) != null && !TextUtils.isEmpty(fileType)) {
-                    UploadTask uploadTask = serverFilePath.putFile(Uri.parse(fileUrl));
+
+                if (uploadUri != null && !TextUtils.isEmpty(fileType)) {
+                    UploadTask uploadTask = serverFilePath.putFile(uploadUri);
                     uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             serverFilePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()){
                                     final String fileUrl = Objects.requireNonNull(task.getResult()).toString();
 
                                     publishProgress("File Uploaded now....");
@@ -182,6 +186,9 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                                         }
                                     });
 
+                                }else{
+                                    publishProgress(fileType+" could not upload...");
+                                }
 
                                 }
                             });

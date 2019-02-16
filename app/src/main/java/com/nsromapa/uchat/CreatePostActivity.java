@@ -316,10 +316,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private void getAttachmentFile(Uri data) {
         if (data!=null){
-            String sourceFilename= getRealPathFromUri(this,data,selectedFileType);
 
             setEditTexttoDefault();
-            ImageVideoSelected = sourceFilename;
             customize_EditText_Background.setVisibility(View.GONE);
 
             String fileType = getContentResolver().getType(data);
@@ -329,16 +327,15 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 post_VideoThumbnail_play.setVisibility(View.GONE);
                 selectedFileType="image";
 
-                Glide.with(CreatePostActivity.this)
-                        .asBitmap()
-                        .load(data.getPath())
-                        .apply(new RequestOptions().placeholder(R.drawable.profile_image))
-                        .into(image_video_imageView);
+                ImageVideoSelected = getRealPathFromUri(this,data,selectedFileType);
 
             }else if (fileType.contains("video")){
                 file_postFrame.setVisibility(View.VISIBLE);
                 post_VideoThumbnail_play.setVisibility(View.VISIBLE);
                 selectedFileType="video";
+
+                ImageVideoSelected = getRealPathFromUri(this,data,selectedFileType);
+
             }else{
                 customize_EditText_Background.setVisibility(View.VISIBLE);
                 file_postFrame.setVisibility(View.GONE);
@@ -346,6 +343,15 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 selectedFileType="";
                 ImageVideoSelected="";
             }
+
+
+
+            Glide.with(CreatePostActivity.this)
+                    .asBitmap()
+                    .load(ImageVideoSelected)
+                    .apply(new RequestOptions().placeholder(R.drawable.profile_image))
+                    .into(image_video_imageView);
+
 
             post_imageVideoRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -359,13 +365,6 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 }
             });
 
-
-
-            Glide.with(CreatePostActivity.this)
-                    .asBitmap()
-                    .load(sourceFilename)
-                    .apply(new RequestOptions().placeholder(R.drawable.profile_image))
-                    .into(image_video_imageView);
 
         }
     }
@@ -403,17 +402,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 }
             }
             default:{
-                try {
-                    String[] proj = { MediaStore.Files.FileColumns.DATA };
-                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-                    cursor.moveToFirst();
-                    return cursor.getString(column_index);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
+                return null;
             }
         }
 
