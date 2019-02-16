@@ -33,7 +33,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="5dp">
+                android:paddingStart="5dp"
+                android:layout_marginTop="2dp">
 
 
                 <TextView
@@ -44,7 +45,7 @@
                     android:text="Display user name"
                     android:textAllCaps="false"
                     android:textColor="@color/colorAccent2"
-                    android:textSize="15sp"/>
+                    android:textSize="16sp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -59,7 +60,7 @@
                         android:text="Share with"
                         android:textAllCaps="false"
                         android:textColor="@color/colorAccent2"
-                        android:textSize="13sp" />
+                        android:textSize="14sp" />
 
                     <Spinner
                         android:id="@+id/select_shareWith"
@@ -112,6 +113,7 @@
 
         <!-- Backgrounds for Text-->
         <HorizontalScrollView
+            android:id="@+id/customize_EditText_Background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbarSize="1dp">
@@ -230,11 +232,39 @@
 
         <!-- Image View to display
         image and videos when selected-->
-        <ImageView
-            android:id="@+id/image_video_imageView"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:id="@+id/file_postFrame"
+            android:foregroundGravity="center"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxHeight="110dp"/>
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/image_video_imageView"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:maxHeight="110dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"/>
+
+            <ImageView
+                android:id="@+id/post_VideoThumbnail_play"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play"
+                android:visibility="gone"/>
+
+
+            <ImageView
+                android:id="@+id/post_imageVideoRemove"
+                android:src="@drawable/ic_remove"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="top|end"/>
+        </FrameLayout>
+
 
 
         <!-- Select Image or Video -->

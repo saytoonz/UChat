@@ -1,8 +1,11 @@
 package com.nsromapa.uchat;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -51,7 +56,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private TextView user_profile_name;
 
     private EditText postTest_Caption;
+    private FrameLayout file_postFrame;
+    private ImageView image_video_imageView, post_VideoThumbnail_play, post_imageVideoRemove;
     private LinearLayout SelectImage_Video,Tag_a_friend,add_location,fontSize_and_fontfamily;
+    private HorizontalScrollView customize_EditText_Background;
 
     private Button create_post;
 
@@ -60,10 +68,12 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     private String fontSize = "16";
     private String backgroundSelected = "post_background_transparent";
     private String ImageVideoSelected="";
+    private String selectedFileType = "";
 
     private FirebaseAuth mAuth;
     private DatabaseReference mPostRef;
 
+    private static final int SELECTED_FROM_GALLERY_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +87,19 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         select_fontFamily_for_Text = findViewById(R.id.select_fontFamily_for_Text);
         select_fontSize_for_Text = findViewById(R.id.select_fontSize_for_Text);
         postTest_Caption = findViewById(R.id.postTest_Caption);
+
+        file_postFrame = findViewById(R.id.file_postFrame);
+        image_video_imageView = findViewById(R.id.image_video_imageView);
+        post_VideoThumbnail_play = findViewById(R.id.post_VideoThumbnail_play);
+        post_imageVideoRemove = findViewById(R.id.post_imageVideoRemove);
+
         create_post = findViewById(R.id.create_post);
 
         SelectImage_Video = findViewById(R.id.SelectImage_Video);
         Tag_a_friend = findViewById(R.id.Tag_a_friend);
         add_location = findViewById(R.id.add_location);
         fontSize_and_fontfamily= findViewById(R.id.fontSize_and_fontfamily);
+        customize_EditText_Background = findViewById(R.id.customize_EditText_Background);
 
         user_profile_name = findViewById(R.id.user_profile_name);
         post_profileImageView = findViewById(R.id.post_profileImageView);
@@ -219,19 +236,27 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-
+        SelectImage_Video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGellary();
+            }
+        });
         create_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createNewPost();
+                if (TextUtils.isEmpty(selectedFileType)){
+                    createNewPost("PostText");
+                }else{
+                    createNewPost(selectedFileType);
+                }
             }
         });
 
     }
 
 
-
-    private void createNewPost() {
+    private void createNewPost(String type) {
         String textPost_caption = postTest_Caption.getText().toString();
         
         if (!TextUtils.isEmpty(textPost_caption.trim()) || !TextUtils.isEmpty(ImageVideoSelected.trim())){
@@ -246,10 +271,17 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
             SendPostBackground sendPostBackground = new SendPostBackground(CreatePostActivity.this);
 
-            if (!TextUtils.isEmpty(textPost_caption.trim())&& TextUtils.isEmpty(ImageVideoSelected.trim())){
+            if (!TextUtils.isEmpty(textPost_caption.trim())&& TextUtils.isEmpty(ImageVideoSelected.trim()) && type.equals("PostText")){
 
-                sendPostBackground.execute("uploadText",textPost_caption,shareWithText,fontFamily,fontSize,
+                sendPostBackground.execute(type,textPost_caption,shareWithText,fontFamily,fontSize,
                         backgroundSelected,_time,_date);
+            }else if (TextUtils.isEmpty(ImageVideoSelected.trim()) && (type.equals("image") || type.equals("video"))){
+
+                sendPostBackground.execute(type,textPost_caption,shareWithText,fontFamily,fontSize,
+                        backgroundSelected,_time,_date,type,ImageVideoSelected);
+
+            }else{
+                Toast.makeText(this, "Error: Unknow post type", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -258,6 +290,67 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(this, "Please add something and try again", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    private void openGellary() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*,video/*");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*,video/*"});
+        startActivityForResult(intent, SELECTED_FROM_GALLERY_CODE);
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        super.startActivityForResult(intent, requestCode, options);
+        assert intent.getData() !=null;
+        if (requestCode == SELECTED_FROM_GALLERY_CODE){
+            getAttachmentFile(intent.getData());
+        }
+    }
+
+    private void getAttachmentFile(Uri data) {
+        Glide.with(this)
+                .asBitmap()
+                .load(data)
+                .into(image_video_imageView);
+
+        setEditTexttoDefault();
+        ImageVideoSelected = data.getPath();
+        customize_EditText_Background.setVisibility(View.GONE);
+
+        String fileType = getContentResolver().getType(data);
+        assert fileType != null;
+        if (fileType.contains("image")){
+            file_postFrame.setVisibility(View.VISIBLE);
+            post_VideoThumbnail_play.setVisibility(View.GONE);
+            selectedFileType="image";
+
+        }else if (fileType.contains("video")){
+            file_postFrame.setVisibility(View.VISIBLE);
+            post_VideoThumbnail_play.setVisibility(View.VISIBLE);
+            selectedFileType="video";
+
+        }else{
+            customize_EditText_Background.setVisibility(View.VISIBLE);
+            file_postFrame.setVisibility(View.GONE);
+            post_VideoThumbnail_play.setVisibility(View.GONE);
+            selectedFileType="";
+            ImageVideoSelected="";
+        }
+
+        post_imageVideoRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                file_postFrame.setVisibility(View.GONE);
+                post_VideoThumbnail_play.setVisibility(View.GONE);
+                image_video_imageView.setImageBitmap(null);
+                ImageVideoSelected="";
+                selectedFileType="";
+                customize_EditText_Background.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
 
 
     @Override
@@ -277,27 +370,12 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
         switch (v.getId()){
             case R.id.post_background_transparent:{
-                Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
-                        "fonts/sans_.ttf");
-                postTest_Caption.setTypeface(typeface);
-                postTest_Caption.setTextSize(14f);
-                postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.black));
-                fontSize_and_fontfamily.setVisibility(View.GONE);
-                fontFamily = "sans_.ttf";
+               setEditTexttoDefault();
             }
             break;
             default:
             {
-                Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
-                        "fonts/AlexBrush_Regular.ttf");
-                postTest_Caption.setTypeface(typeface);
-                postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.white));
-                fontSize_and_fontfamily.setVisibility(View.VISIBLE);
-                fontFamily = "AlexBrush_Regular.ttf";
-                select_fontFamily_for_Text.setSelection(0);
-                select_fontSize_for_Text.setSelection(0);
+                setEditTexttoCustomized();
             }
             break;
         }
@@ -393,5 +471,28 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 backgroundSelected = "post_background_transparent";
             }
         }
+    }
+
+    private void setEditTexttoCustomized() {
+        Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
+                "fonts/AlexBrush_Regular.ttf");
+        postTest_Caption.setTypeface(typeface);
+        postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.white));
+        fontFamily = "AlexBrush_Regular.ttf";
+        select_fontFamily_for_Text.setSelection(0);
+        select_fontSize_for_Text.setSelection(0);
+        fontSize_and_fontfamily.setVisibility(View.VISIBLE);
+    }
+
+    private void setEditTexttoDefault() {
+        Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
+                "fonts/sans_.ttf");
+        postTest_Caption.setTypeface(typeface);
+        postTest_Caption.setTextSize(14f);
+        postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.black));
+        fontSize_and_fontfamily.setVisibility(View.GONE);
+        fontFamily = "sans_.ttf";
     }
 }
