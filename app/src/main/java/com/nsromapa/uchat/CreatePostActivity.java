@@ -299,56 +299,62 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         startActivityForResult(intent, SELECTED_FROM_GALLERY_CODE);
     }
 
+
     @Override
-    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
-        super.startActivityForResult(intent, requestCode, options);
-        assert intent.getData() !=null;
-        if (requestCode == SELECTED_FROM_GALLERY_CODE){
-            getAttachmentFile(intent.getData());
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK){
+
+            assert data.getData() !=null;
+            if (requestCode == SELECTED_FROM_GALLERY_CODE){
+                getAttachmentFile(data.getData());
+            }
         }
     }
 
     private void getAttachmentFile(Uri data) {
-        Glide.with(this)
-                .asBitmap()
-                .load(data)
-                .into(image_video_imageView);
+        if (data!=null){
+            Glide.with(this)
+                    .asBitmap()
+                    .load(data)
+                    .into(image_video_imageView);
 
-        setEditTexttoDefault();
-        ImageVideoSelected = data.getPath();
-        customize_EditText_Background.setVisibility(View.GONE);
+            setEditTexttoDefault();
+            ImageVideoSelected = data.getPath();
+            customize_EditText_Background.setVisibility(View.GONE);
 
-        String fileType = getContentResolver().getType(data);
-        assert fileType != null;
-        if (fileType.contains("image")){
-            file_postFrame.setVisibility(View.VISIBLE);
-            post_VideoThumbnail_play.setVisibility(View.GONE);
-            selectedFileType="image";
+            String fileType = getContentResolver().getType(data);
+            assert fileType != null;
+            if (fileType.contains("image")){
+                file_postFrame.setVisibility(View.VISIBLE);
+                post_VideoThumbnail_play.setVisibility(View.GONE);
+                selectedFileType="image";
 
-        }else if (fileType.contains("video")){
-            file_postFrame.setVisibility(View.VISIBLE);
-            post_VideoThumbnail_play.setVisibility(View.VISIBLE);
-            selectedFileType="video";
+            }else if (fileType.contains("video")){
+                file_postFrame.setVisibility(View.VISIBLE);
+                post_VideoThumbnail_play.setVisibility(View.VISIBLE);
+                selectedFileType="video";
 
-        }else{
-            customize_EditText_Background.setVisibility(View.VISIBLE);
-            file_postFrame.setVisibility(View.GONE);
-            post_VideoThumbnail_play.setVisibility(View.GONE);
-            selectedFileType="";
-            ImageVideoSelected="";
-        }
-
-        post_imageVideoRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            }else{
+                customize_EditText_Background.setVisibility(View.VISIBLE);
                 file_postFrame.setVisibility(View.GONE);
                 post_VideoThumbnail_play.setVisibility(View.GONE);
-                image_video_imageView.setImageBitmap(null);
-                ImageVideoSelected="";
                 selectedFileType="";
-                customize_EditText_Background.setVisibility(View.VISIBLE);
+                ImageVideoSelected="";
             }
-        });
+
+            post_imageVideoRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    file_postFrame.setVisibility(View.GONE);
+                    post_VideoThumbnail_play.setVisibility(View.GONE);
+                    image_video_imageView.setImageBitmap(null);
+                    ImageVideoSelected="";
+                    selectedFileType="";
+                    customize_EditText_Background.setVisibility(View.VISIBLE);
+                }
+            });
+        }
     }
 
 
