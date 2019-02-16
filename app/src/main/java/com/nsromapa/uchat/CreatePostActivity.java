@@ -144,7 +144,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         postTest_Caption.setTypeface(typeface);
 
         String[] itemsforShareWith = new String[]{"Followers/Friends", "Friends only"};
-        String[] itemsforFontSize = new String[]{"14", "16", "18", "20", "22", "24"};
+        String[] itemsforFontSize = new String[]{"14", "16", "18", "20", "22", "24","26","28"};
         final String[] itemsforFont = new String[]{"AlexBrush_Regular.ttf", "amita_bold.ttf", "berkshireswash_regular.ttf",
                 "bokr35w.ttf", "Bookmndi.TTF", "Carrington.ttf", "CHASB___.TTF", "Cookie_Regular.ttf",
                 "DancingScript_Regular.otf", "Diploma.TTF", "FREEBSCA.ttf", "ITCKrist.TTF", "JohnHandy.TTF","Jokerman.TTF", "kidnap.TTF",
@@ -232,6 +232,16 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                     case 5:
                         postTest_Caption.setTextSize(22f);
                         fontSize = "24";
+                        break;
+
+                    case 6:
+                        postTest_Caption.setTextSize(26f);
+                        fontSize = "26";
+                        break;
+
+                    case 7:
+                        postTest_Caption.setTextSize(28f);
+                        fontSize = "28";
                         break;
                     default:
                         postTest_Caption.setTextSize(16f);

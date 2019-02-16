@@ -25,13 +25,13 @@
 
                <TextView
                    android:id="@+id/postNotification"
-                   android:text="no internet"
+                   android:text="@string/getting_you_necessary_feeds"
                    android:layout_width="match_parent"
                    android:textAlignment="center"
                    android:layout_height="wrap_content" />
 
                <android.support.v7.widget.RecyclerView
-                   android:id="@+id/homePostRecyclerView"
+                   android:id="@+id/feed_PostRecyclerView"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content" />
 

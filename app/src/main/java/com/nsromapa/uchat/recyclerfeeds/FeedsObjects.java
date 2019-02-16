@@ -21,7 +21,6 @@ public class FeedsObjects {
     String url;
     List<String> likers;
     List<String> haters;
-    List<String> comments;
 
     public FeedsObjects(String background, String date, String from, String hates,
                         String likes, String locLat, String locLong, String postId,
@@ -193,11 +192,4 @@ public class FeedsObjects {
         this.haters = haters;
     }
 
-    public List<String> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<String> comments) {
-        this.comments = comments;
-    }
 }

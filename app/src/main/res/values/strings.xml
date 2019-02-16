@@ -57,5 +57,6 @@
     <string name="create_post" translatable="false">Create Post</string>
     <string name="tag_a_friend" translatable="false">Tag a Friend</string>
     <string name="add_location" translatable="false">Add Location</string>
+    <string name="getting_you_necessary_feeds">Getting you necessary feeds</string>
 
 </resources>
