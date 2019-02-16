@@ -1,10 +1,12 @@
 package com.nsromapa.uchat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -275,7 +277,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
                 sendPostBackground.execute(type,textPost_caption,shareWithText,fontFamily,fontSize,
                         backgroundSelected,_time,_date);
-            }else if (TextUtils.isEmpty(ImageVideoSelected.trim()) && (type.equals("image") || type.equals("video"))){
+            }else if (!TextUtils.isEmpty(ImageVideoSelected.trim()) && (type.equals("image") || type.equals("video"))){
 
                 sendPostBackground.execute(type,textPost_caption,shareWithText,fontFamily,fontSize,
                         backgroundSelected,_time,_date,type,ImageVideoSelected);
@@ -314,13 +316,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private void getAttachmentFile(Uri data) {
         if (data!=null){
-            Glide.with(this)
-                    .asBitmap()
-                    .load(data)
-                    .into(image_video_imageView);
+            String sourceFilename= getRealPathFromUri(this,data,selectedFileType);
 
             setEditTexttoDefault();
-            ImageVideoSelected = data.getPath();
+            ImageVideoSelected = sourceFilename;
             customize_EditText_Background.setVisibility(View.GONE);
 
             String fileType = getContentResolver().getType(data);
@@ -330,11 +329,16 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 post_VideoThumbnail_play.setVisibility(View.GONE);
                 selectedFileType="image";
 
+                Glide.with(CreatePostActivity.this)
+                        .asBitmap()
+                        .load(data.getPath())
+                        .apply(new RequestOptions().placeholder(R.drawable.profile_image))
+                        .into(image_video_imageView);
+
             }else if (fileType.contains("video")){
                 file_postFrame.setVisibility(View.VISIBLE);
                 post_VideoThumbnail_play.setVisibility(View.VISIBLE);
                 selectedFileType="video";
-
             }else{
                 customize_EditText_Background.setVisibility(View.VISIBLE);
                 file_postFrame.setVisibility(View.GONE);
@@ -354,9 +358,66 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                     customize_EditText_Background.setVisibility(View.VISIBLE);
                 }
             });
+
+
+
+            Glide.with(CreatePostActivity.this)
+                    .asBitmap()
+                    .load(sourceFilename)
+                    .apply(new RequestOptions().placeholder(R.drawable.profile_image))
+                    .into(image_video_imageView);
+
         }
     }
 
+
+    public static String getRealPathFromUri(Context context, Uri contentUri, String fileMediaType) {
+        Cursor cursor = null;
+
+
+        switch (fileMediaType){
+            case "image":{
+                try {
+                    String[] proj = { MediaStore.Images.Media.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+            case "video":{
+                try {
+                    String[] proj = { MediaStore.Video.Media.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+            default:{
+                try {
+                    String[] proj = { MediaStore.Files.FileColumns.DATA };
+                    cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+                    cursor.moveToFirst();
+                    return cursor.getString(column_index);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+        }
+
+    }
 
 
     @Override
