@@ -90,30 +90,30 @@ public class FeedsFragment extends BaseFragment {
 
         mPostRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-               if (dataSnapshot.hasChildren()){
+            public void onChildAdded(@NonNull DataSnapshot snapShot, @Nullable String s) {
+               if (snapShot.hasChildren()){
 
                    postNotification.setText("");
                    postNotification.setVisibility(View.GONE);
 
-                   for (DataSnapshot snapShot : dataSnapshot.getChildren()) {
+//                   for (DataSnapshot snapShot : dataSnapshot.getChildren()) {
 
                        String background = snapShot.child("background").getValue().toString();
-                       String date = snapShot.child("background").getValue().toString();
-                       String from = snapShot.child("background").getValue().toString();
-                       String hates = snapShot.child("background").getValue().toString();
-                       String likes = snapShot.child("background").getValue().toString();
-                       String locLat = snapShot.child("background").getValue().toString();
-                       String locLong = snapShot.child("background").getValue().toString();
-                       String postId = snapShot.child("background").getValue().toString();
-                       String privacy = snapShot.child("background").getValue().toString();
-                       String size = snapShot.child("background").getValue().toString();
-                       String state = snapShot.child("background").getValue().toString();
-                       String style = snapShot.child("background").getValue().toString();
-                       String text = snapShot.child("background").getValue().toString();
-                       String time = snapShot.child("background").getValue().toString();
-                       String type = snapShot.child("background").getValue().toString();
-                       String url = snapShot.child("background").getValue().toString();
+                       String date = snapShot.child("date").getValue().toString();
+                       String from = snapShot.child("from").getValue().toString();
+                       String hates = snapShot.child("hates").getValue().toString();
+                       String likes = snapShot.child("likes").getValue().toString();
+                       String locLat = snapShot.child("locLat").getValue().toString();
+                       String locLong = snapShot.child("locLong").getValue().toString();
+                       String postId = snapShot.child("postId").getValue().toString();
+                       String privacy = snapShot.child("privacy").getValue().toString();
+                       String size = snapShot.child("size").getValue().toString();
+                       String state = snapShot.child("state").getValue().toString();
+                       String style = snapShot.child("style").getValue().toString();
+                       String text = snapShot.child("text").getValue().toString();
+                       String time = snapShot.child("time").getValue().toString();
+                       String type = snapShot.child("type").getValue().toString();
+                       String url = snapShot.child("url").getValue().toString();
                        final List<String> likers = new ArrayList<>();
                        final List<String> haters = new ArrayList<>();;
 
@@ -195,7 +195,7 @@ public class FeedsFragment extends BaseFragment {
                        postsList.add(feedsObjects);
                        mAdapter.notifyDataSetChanged();
 
-                   }
+//                   }
                }else{
                    postNotification.setText("You do not have any post to display.\n" +
                            " Connect with friends and start following those you know to enhance your posts...");

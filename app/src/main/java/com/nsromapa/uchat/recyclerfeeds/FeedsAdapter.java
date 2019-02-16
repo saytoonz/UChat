@@ -46,6 +46,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         String currentUserID = mAuth.getCurrentUser().getUid();
         final FeedsObjects post = postLists.get(position);
 
+        feedViewHolder.PostCreationTime.setText(post.getDate()+" - "+post.getTime());
+
 
         feedViewHolder.PostImageVideo_ImageView.setVisibility(View.GONE);
         feedViewHolder.PostTextpost_TextView.setVisibility(View.GONE);

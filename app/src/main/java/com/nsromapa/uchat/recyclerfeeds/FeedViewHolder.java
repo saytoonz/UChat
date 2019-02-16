@@ -3,6 +3,7 @@ package com.nsromapa.uchat.recyclerfeeds;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,7 +22,8 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public EmoticonTextView PostCaption_TextView;
 
     public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hate;
-    public LinearLayout PostActionButtons_comment, PostActionButtons_delete;
+    public LinearLayout PostActionButtons_comment;
+    public ImageButton PostActionButtons_delete;
     public TextView postTotal_likers, postTotal_haters, postTotal_commenters;
 
     public FeedViewHolder(@NonNull View itemView) {
