@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorAccent2"
     android:orientation="vertical">
 
@@ -13,20 +13,31 @@
         android:layout_marginTop="@dimen/statusbar_plus_toolbar_height"
         android:background="@color/white">
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshFriends"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshFriends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
 
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/homePostRecyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+               <TextView
+                   android:id="@+id/postNotification"
+                   android:text="no internet"
+                   android:layout_width="match_parent"
+                   android:textAlignment="center"
+                   android:layout_height="wrap_content" />
 
+               <android.support.v7.widget.RecyclerView
+                   android:id="@+id/homePostRecyclerView"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content" />
 
+           </LinearLayout>
 
-            </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
 
         <android.support.design.widget.FloatingActionButton
@@ -36,8 +47,8 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:backgroundTint="@color/colorAccent2"
-            app:backgroundTint="@color/colorAccent2"
-            android:src="@drawable/ic_add_white_24dp" />
+            android:src="@drawable/ic_add_white_24dp"
+            app:backgroundTint="@color/colorAccent2" />
     </FrameLayout>
 
 

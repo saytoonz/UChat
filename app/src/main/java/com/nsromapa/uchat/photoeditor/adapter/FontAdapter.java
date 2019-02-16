@@ -33,16 +33,36 @@ public class FontAdapter extends RecyclerView.Adapter<FontAdapter.FontViewHolder
 
     private List<String> loadFontList() {
         List<String> result = new ArrayList<>();
-            result.add("Jokerman.TTF");
-            result.add("JohnHandy.TTF");
-            result.add("Orange.TTF");
+        result.add("Jokerman.TTF");
+        result.add("JohnHandy.TTF");
+        result.add("Orange.TTF");
+        result.add("AlexBrush_Regular.ttf");
+        result.add("amita_bold.ttf");
+        result.add("berkshireswash_regular.ttf");
+        result.add("bokr35w.ttf");
+        result.add("Bookmndi.TTF");
+        result.add("Carrington.ttf");
+        result.add("CHASB___.TTF");
+        result.add("Cookie_Regular.ttf");
+        result.add("DancingScript_Regular.otf");
+        result.add("Diploma.TTF");
+        result.add("FREEBSCA.ttf");
+        result.add("ITCKrist.TTF");
+        result.add("kidnap.TTF");
+        result.add("latha.ttf");
+        result.add("lucasr.ttf");
+        result.add("Nautilus.otf");
+        result.add("NEWS701I.TTF");
+        result.add("OpenSans-Bold.ttf");
+        result.add("sans_.ttf");
+        result.add("times.ttf");
         return result;
     }
 
     @NonNull
     @Override
     public FontViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(context).inflate(R.layout.font_item,viewGroup,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.font_item, viewGroup, false);
         return new FontViewHolder(view);
     }
 
@@ -54,8 +74,8 @@ public class FontAdapter extends RecyclerView.Adapter<FontAdapter.FontViewHolder
             fontViewHolder.image_check.setVisibility(View.INVISIBLE);
 
 
-        Typeface typeface = Typeface.createFromAsset(context.getAssets(),new StringBuilder("fonts/")
-        .append(fontList.get(i)).toString());
+        Typeface typeface = Typeface.createFromAsset(context.getAssets(), new StringBuilder("fonts/")
+                .append(fontList.get(i)).toString());
 
         //fontViewHolder.text_font_name.setText(fontList.get(i));
         fontViewHolder.text_font_demo.setTypeface(typeface);
@@ -70,11 +90,12 @@ public class FontAdapter extends RecyclerView.Adapter<FontAdapter.FontViewHolder
     public class FontViewHolder extends RecyclerView.ViewHolder {
         TextView text_font_name, text_font_demo;
         ImageView image_check;
+
         public FontViewHolder(View itemView) {
             super(itemView);
 
             text_font_demo = (TextView) itemView.findViewById(R.id.text_font_demo);
-            text_font_name = (TextView) itemView.findViewById(R.id.text_font_name);
+//            text_font_name = (TextView) itemView.findViewById(R.id.text_font_name);
             image_check = (ImageView) itemView.findViewById(R.id.image_check);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +109,7 @@ public class FontAdapter extends RecyclerView.Adapter<FontAdapter.FontViewHolder
         }
     }
 
-    public interface FontAdapterClickListener{
-        void  onFontSelected(String fontName);
+    public interface FontAdapterClickListener {
+        void onFontSelected(String fontName);
     }
 }

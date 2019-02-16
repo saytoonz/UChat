@@ -53,5 +53,9 @@
     <string name="post_time" translatable="false">Post Time</string>
     <string name="post_imageView" translatable="false">Post ImageView</string>
     <string name="Username" translatable="false">Username of the poster</string>
+    <string name="photo_video" translatable="false">Photo / Video</string>
+    <string name="create_post" translatable="false">Create Post</string>
+    <string name="tag_a_friend" translatable="false">Tag a Friend</string>
+    <string name="add_location" translatable="false">Add Location</string>
 
 </resources>

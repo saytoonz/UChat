@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -40,6 +41,7 @@ import com.nsromapa.uchat.adapter.MainPagerAdapter;
 import com.nsromapa.uchat.fragment.CameraFragment;
 import com.nsromapa.uchat.loginsignupsplash.LoginActivity;
 import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
+import com.nsromapa.uchat.usersInfos.MyUserInfo;
 import com.nsromapa.uchat.view.MyTabsView;
 
 import java.io.File;
@@ -152,9 +154,9 @@ public class MainActivity extends AppCompatActivity {
                     ma_toolbar_menu_framelayout.setAlpha(0);
 
                     myTabsView.setVisibility(View.GONE);
-
-                    CameraFragment cameraFragment = CameraFragment.create();
-                    cameraFragment.setHiddenBool(true);
+//
+//                    CameraFragment cameraFragment = CameraFragment.create();
+//                    cameraFragment.setHiddenBool(true);
 
                 } else if (position == 1) {
                     background.setBackgroundColor(colorblue);
@@ -164,29 +166,22 @@ public class MainActivity extends AppCompatActivity {
                     mSearchEditText.setAlpha(1 - positionOffset);
 
                     myTabsView.setVisibility(View.VISIBLE);
-                    CameraFragment cameraFragment = CameraFragment.create();
-                    cameraFragment.setHiddenBool(false);
 
                 } else if (position == 2) {
                     background.setBackgroundColor(colorpurple);
                     background.setAlpha(positionOffset);
 
-
                     //Hide search box
                     mSearchEditText.setEnabled(false);
                     mSearchEditText.setAlpha(positionOffset);
 
-                    myTabsView.setVisibility(View.VISIBLE);
-                    CameraFragment cameraFragment = CameraFragment.create();
-                    cameraFragment.setHiddenBool(false);
+                    myTabsView.setVisibility(View.GONE);
 
                 } else if (position == 3) {
                     background.setAlpha(1 - positionOffset);
                     mSearchEditText.setEnabled(true);
 
                     myTabsView.setVisibility(View.VISIBLE);
-                    CameraFragment cameraFragment = CameraFragment.create();
-                    cameraFragment.setHiddenBool(false);
                 }
 
 
@@ -265,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                                             .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()){
+                                            if (dataSnapshot.exists()) {
                                                 dataSnapshot.getRef().setValue(finalSTATE);
                                             }
                                         }
@@ -320,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                                             .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()){
+                                            if (dataSnapshot.exists()) {
                                                 dataSnapshot.getRef().setValue(finalSTATE);
                                             }
                                         }
@@ -373,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
                                             .child("state").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()){
+                                            if (dataSnapshot.exists()) {
                                                 dataSnapshot.getRef().setValue(finalSTATE);
                                             }
                                         }
@@ -417,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                             fetchMessageFromFriends(dataSnapshot.getKey());
-                            Log.d(TAG, "onChildAdded: messages added = ..........."+dataSnapshot.getKey());
+                            Log.d(TAG, "onChildAdded: messages added = ..........." + dataSnapshot.getKey());
 
                         }
 
@@ -461,8 +456,12 @@ public class MainActivity extends AppCompatActivity {
                                 String userState = " ";
                                 String welcomed = dataSnapshot.child("welcomed").getValue().toString();
 
-                                InsertIntoDBBackground insertIntoDBBackground = new InsertIntoDBBackground(MainActivity.this);
-                                insertIntoDBBackground.execute("user_db", uid, indexNo, name, profileImage, userState, welcomed);
+                                //Set user Info into the app
+                                new MyUserInfo(name, indexNo, profileImage);
+
+                                new InsertIntoDBBackground(MainActivity.this)
+                                        .execute("user_db", uid, indexNo, name, profileImage, userState, welcomed);
+
 
                                 Log.d(TAG, "onDataChange: user " + name + " inserted into table........");
 
@@ -597,6 +596,8 @@ public class MainActivity extends AppCompatActivity {
                             if (!(stickerFile.exists()) || (!stickerFile.isFile())) {
                                 stickerFile.delete();
 
+                                writeNoMediaFile("/Images/Stickers/");
+
                                 String loc = dataSnapshot.child("loc").getValue().toString();
                                 StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
                                 stickersSoundBackground.execute(stickerName + ".png", loc, "/Images/Stickers/");
@@ -651,6 +652,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!(soundImageFile.exists()) || (!soundImageFile.isFile())) {
                                 soundImageFile.delete();
 
+                                writeNoMediaFile("/Sounds/SoundImages/");
                                 String imageUrl = dataSnapshot.child("image").getValue().toString();
                                 StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
                                 stickersSoundBackground.execute(soundName + ".png", imageUrl, "/Sounds/SoundImages/");
@@ -660,6 +662,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!(soundAudioFile.exists()) || (!soundAudioFile.isFile())) {
                                 soundAudioFile.delete();
 
+                                writeNoMediaFile("/Sounds/SoundAudios/");
                                 final String audioUrl = dataSnapshot.child("audio").getValue().toString();
                                 StickersSoundBackground stickersSoundBackground = new StickersSoundBackground(MainActivity.this);
                                 stickersSoundBackground.execute(soundName + ".mp3", audioUrl, "/Sounds/SoundAudios/");
@@ -751,6 +754,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public boolean writeNoMediaFile( String directoryPath )
+    {
+        String storageState = Environment.getExternalStorageState();
+
+        if ( Environment.MEDIA_MOUNTED.equals( storageState ) )
+        {
+            try
+            {
+                File noMedia =new File(String.valueOf(getExternalFilesDir( directoryPath + ".nomedia")));
+
+                if ( noMedia.exists() )
+                {
+                    Log.d ( TAG, ".no media appears to exist already, returning without writing a new file" );
+                    return true;
+                }
+
+                FileOutputStream noMediaOutStream = new FileOutputStream ( noMedia );
+                noMediaOutStream.write ( 0 );
+                noMediaOutStream.close ( );
+                Log.d( TAG, "writing .nomedia file done" );
+            }
+            catch ( Exception e )
+            {
+                Log.d( TAG, "error writing .nomedia file" );
+               e.printStackTrace();
+                return false;
+            }
+        }
+        else
+        {
+            Log.e( TAG, "storage appears unwritable" );
+            return false;
+        }
+
+        return true;
+
+    }
     @Override
     protected void onStart() {
         super.onStart();
