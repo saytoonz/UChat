@@ -301,31 +301,31 @@ public class ChooseReceiverActivity extends AppCompatActivity {
 
                     currentTimestamp = System.currentTimeMillis();
 
-                    int time = (24*60*60*1000);
-                    if (which==0){
-                        time = (12*60*60*1000);
-                    }else if (which==2){
-                        time = (48*60*60*1000);
-                    }else if (which==3){
-                        time = (72*60*60*1000);
+                    int time = (24 * 60 * 60 * 1000);
+                    if (which == 0) {
+                        time = (12 * 60 * 60 * 1000);
+                    } else if (which == 2) {
+                        time = (48 * 60 * 60 * 1000);
+                    } else if (which == 3) {
+                        time = (72 * 60 * 60 * 1000);
                     }
                     endTimestamp = currentTimestamp + time;
 
-                    //Toast.makeText(ChooseReceiverActivity.this, currentTimestamp+" "+endTimestamp, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChooseReceiverActivity.this, currentTimestamp+" "+endTimestamp, Toast.LENGTH_SHORT).show();
                 }
             });
-
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
                     currentTimestamp = System.currentTimeMillis();
-                    endTimestamp = currentTimestamp + ((24*60*60*1000));
+                    endTimestamp = currentTimestamp + ((24 * 60 * 60 * 1000));
                     mStory.setChecked(false);
-                    full_story_btn.setBackgroundDrawable(ContextCompat.getDrawable(ChooseReceiverActivity.this,R.drawable.select_story_or_feed_background));
+                    full_story_btn.setBackgroundDrawable(ContextCompat.getDrawable(ChooseReceiverActivity.this, R.drawable.select_story_or_feed_background));
                     storyTextView.setTextColor(ContextCompat.getColor(ChooseReceiverActivity.this, R.color.black));
                 }
             });
+
             AlertDialog alert = builder.create();
             alert.show();
 

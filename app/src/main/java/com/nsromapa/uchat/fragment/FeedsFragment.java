@@ -210,14 +210,10 @@ public class FeedsFragment extends BaseFragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                mRecyclerView.getRecycledViewPool().clear();
-                mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                mRecyclerView.getRecycledViewPool().clear();
-                mAdapter.notifyDataSetChanged();
             }
 
             @Override

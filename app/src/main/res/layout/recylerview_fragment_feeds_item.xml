@@ -119,9 +119,13 @@
             android:layout_height="wrap_content"
             android:textStyle="normal"
             android:textSize="14sp"
-            android:padding="5dp"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="7dp"
+            android:background="@color/white"
             android:textColor="@color/black"
-            app:emojiconSize="30sp" />
+            app:emojiconSize="28sp" />
 
 
 

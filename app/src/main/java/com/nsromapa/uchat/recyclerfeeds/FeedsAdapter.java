@@ -85,6 +85,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostTextpost_TextView.setTypeface(typeface);
             feedViewHolder.PostTextpost_TextView.setBackground(GetImage(mContext, background));
             feedViewHolder.PostTextpost_TextView.setTextSize(textSize);
+            feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int)textSize)+12);
 
         } else if (post.getType().equals("video") || post.getType().equals("image")){
             feedViewHolder.PostImageVideo_ImageView.setVisibility(View.VISIBLE);
