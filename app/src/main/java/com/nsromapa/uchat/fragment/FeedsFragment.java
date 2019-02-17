@@ -95,7 +95,6 @@ public class FeedsFragment extends BaseFragment {
                     postNotification.setText("");
                     postNotification.setVisibility(View.GONE);
 
-//                   for (DataSnapshot snapShot : dataSnapshot.getChildren()) {
 
                     String background = snapShot.child("background").getValue().toString();
                     String date = snapShot.child("date").getValue().toString();
@@ -186,6 +185,7 @@ public class FeedsFragment extends BaseFragment {
                                 }
                             });
 
+
                     likes = String.valueOf(likers.size());
                     hates = String.valueOf(haters.size());
 
@@ -200,8 +200,9 @@ public class FeedsFragment extends BaseFragment {
                     }
                     mAdapter.notifyDataSetChanged();
 
-//                   }
+
                 } else {
+
                     postNotification.setText("You do not have any post to display.\n" +
                             " Connect with friends and start following those you know to enhance your posts...");
                 }
@@ -209,12 +210,12 @@ public class FeedsFragment extends BaseFragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override

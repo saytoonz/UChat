@@ -73,12 +73,28 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <ImageView
-            android:id="@+id/PostImageVideo_ImageView"
+
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/post_imageView" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/PostImageVideo_ImageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/post_imageView" />
+
+            <ImageView
+                android:id="@+id/post_VideoThumbnail_play"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play" />
+
+        </FrameLayout>
+
 
         <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
             android:id="@+id/PostTextpost_TextView"
@@ -133,7 +149,7 @@
             android:layout_marginEnd="5dp"
             android:gravity="center">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/PostActionButtons_likeUnlike_Image"
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
@@ -142,19 +158,6 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="5dp"
                 android:layout_gravity="center"/>
-
-
-            <ImageButton
-                android:id="@+id/homePostActionButtons_unlike"
-                android:background="@android:color/transparent"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_unlike2"
-                android:paddingStart="8dp"
-                android:paddingEnd="5dp"
-                android:visibility="gone"
-                android:layout_gravity="center"/>
-
 
             <TextView
                 android:id="@+id/postTotal_likers"
@@ -171,7 +174,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/PostActionButtons_hate"
+            android:id="@+id/PostActionButtons_hateUnhate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -179,7 +182,8 @@
             android:layout_marginEnd="5dp"
             android:gravity="center">
 
-            <ImageButton
+            <ImageView
+                android:id="@+id/PostActionButtons_hateUnhate_Image"
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
@@ -213,7 +217,7 @@
             android:layout_marginEnd="5dp"
             android:gravity="center">
 
-            <ImageButton
+            <ImageView
                 android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
