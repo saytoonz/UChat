@@ -191,13 +191,13 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(mContext, "Error: Post was not deleted...", Toast.LENGTH_SHORT).show();
                             } else {
-                                postLists.remove(position-1);
+//                                postLists.remove(position-1);
+                                Toast.makeText(mContext, "Message deleted...\n It will disappear when you restart you app", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
                 }
             });
-
         }
     }
 
