@@ -44,6 +44,8 @@
     <string name="permission_rationale_location" translatable="false">Access to the location service is required to demonstrate the \'my FindMe\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied" translatable="false">This sample requires location permission to enable the \'my FindMe\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'UChat\'.</string>
     <string name="permission_required_toast" translatable="false">Location permission is required for this feature.</string>
+
+
     <string name="hi_we_are_setting_up_things_for_you" translatable="false">Hi, we are setting up things for you....</string>
     <string name="todo" translatable="false">TODO</string>
     <string name="yes" translatable="false">Yes</string>
@@ -57,6 +59,8 @@
     <string name="create_post" translatable="false">Create Post</string>
     <string name="tag_a_friend" translatable="false">Tag a Friend</string>
     <string name="add_location" translatable="false">Add Location</string>
-    <string name="getting_you_necessary_feeds">Getting you necessary feeds</string>
+    <string name="getting_you_necessary_feeds" translatable="false">Getting you necessary feeds</string>
+    <string name="add_a_comment" translatable="false">Add a comment</string>
+    <string name="post" translatable="false">Post</string>
 
 </resources>

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/statusbar_plus_toolbar_height"
-        android:background="@color/white">
+        android:background="@color/post_white">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshFriends"
@@ -34,7 +34,8 @@
                <android.support.v7.widget.RecyclerView
                    android:id="@+id/feed_PostRecyclerView"
                    android:layout_width="match_parent"
-                   android:layout_height="wrap_content" />
+                   android:layout_height="wrap_content"
+                   android:paddingBottom="70dp"/>
 
            </LinearLayout>
 

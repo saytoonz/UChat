@@ -23,6 +23,9 @@
     <color name="dark_grey">#9e9e9e</color>
     <color name="card_background_color">@color/white</color>
 
+
+    <color name="post_white">#fafafa</color>
+
     
     <color name="selected_filter">#221f20</color>
     <color name="normal_filter">#8a8889</color>
