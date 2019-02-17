@@ -22,6 +22,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public EmoticonTextView PostCaption_TextView;
 
     public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hate;
+    public ImageView PostActionButtons_likeUnlike_Image;
     public LinearLayout PostActionButtons_comment;
     public ImageButton PostActionButtons_delete;
     public TextView postTotal_likers, postTotal_haters, postTotal_commenters;
@@ -38,14 +39,13 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
         PostCaption_TextView = itemView.findViewById(R.id.PostCaption_TextView);
 
         PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
+        PostActionButtons_likeUnlike_Image = itemView.findViewById(R.id.PostActionButtons_likeUnlike_Image);
         postTotal_likers = itemView.findViewById(R.id.postTotal_likers);
         PostActionButtons_hate = itemView.findViewById(R.id.PostActionButtons_hate);
         postTotal_haters = itemView.findViewById(R.id.postTotal_haters);
         PostActionButtons_comment = itemView.findViewById(R.id.PostActionButtons_comment);
         postTotal_commenters = itemView.findViewById(R.id.postTotal_commenters);
         PostActionButtons_delete = itemView.findViewById(R.id.PostActionButtons_delete);
-        PostActionButtons_comment = itemView.findViewById(R.id.PostActionButtons_comment);
-        PostActionButtons_comment = itemView.findViewById(R.id.PostActionButtons_comment);
 
     }
 }
