@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.CreatePostActivity;
 import com.nsromapa.uchat.R;
 import com.nsromapa.uchat.recyclerfeeds.FeedsAdapter;
@@ -85,9 +86,9 @@ public class FeedsFragment extends BaseFragment {
     }
 
     private void startGettingPosts() {
-        DatabaseReference mPostRef = FirebaseDatabase.getInstance().getReference().child("posts");
+        final DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
 
-        mPostRef.addChildEventListener(new ChildEventListener() {
+        mRootRef.child("posts").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapShot, @Nullable String s) {
                 if (snapShot.hasChildren()) {
@@ -96,25 +97,26 @@ public class FeedsFragment extends BaseFragment {
                     postNotification.setVisibility(View.GONE);
 
 
-                    String background = snapShot.child("background").getValue().toString();
-                    String date = snapShot.child("date").getValue().toString();
-                    String from = snapShot.child("from").getValue().toString();
-                    String hates = snapShot.child("hates").getValue().toString();
-                    String likes =String.valueOf(0);
-                    String locLat = snapShot.child("locLat").getValue().toString();
-                    String locLong = snapShot.child("locLong").getValue().toString();
-                    String postId = snapShot.child("postId").getValue().toString();
-                    String privacy = snapShot.child("privacy").getValue().toString();
-                    String size = snapShot.child("size").getValue().toString();
-                    String state = snapShot.child("state").getValue().toString();
-                    String style = snapShot.child("style").getValue().toString();
-                    String text = snapShot.child("text").getValue().toString();
-                    String time = snapShot.child("time").getValue().toString();
-                    String type = snapShot.child("type").getValue().toString();
-                    String url = snapShot.child("url").getValue().toString();
+                    final String background = snapShot.child("background").getValue().toString();
+                    final String date = snapShot.child("date").getValue().toString();
+                    final String from = snapShot.child("from").getValue().toString();
+                    final String[] hates = {snapShot.child("hates").getValue().toString()};
+                    final String[] likes = {String.valueOf(0)};
+                    final String locLat = snapShot.child("locLat").getValue().toString();
+                    final String locLong = snapShot.child("locLong").getValue().toString();
+                    final String postId = snapShot.child("postId").getValue().toString();
+                    final String privacy = snapShot.child("privacy").getValue().toString();
+                    final String size = snapShot.child("size").getValue().toString();
+                    final String state = snapShot.child("state").getValue().toString();
+                    final String style = snapShot.child("style").getValue().toString();
+                    final String text = snapShot.child("text").getValue().toString();
+                    final String time = snapShot.child("time").getValue().toString();
+                    final String type = snapShot.child("type").getValue().toString();
+                    final String url = snapShot.child("url").getValue().toString();
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
-                    ;
+
+
 
                     snapShot.getRef().child("likers")
                             .addChildEventListener(new ChildEventListener() {
@@ -185,20 +187,35 @@ public class FeedsFragment extends BaseFragment {
                                 }
                             });
 
+                    mRootRef.child("users").child(from)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String posterName = dataSnapshot.child("name").getValue().toString();
+                                    String posterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
 
-                    likes = String.valueOf(likers.size());
-                    hates = String.valueOf(haters.size());
+                                    likes[0] = String.valueOf(likers.size());
+                                    hates[0] = String.valueOf(haters.size());
 
-                    FeedsObjects feedsObjects = new FeedsObjects(background, date, from, hates,
-                            likes, locLat, locLong, postId,
-                            privacy, size, state, style,
-                            text, time, type, url,
-                            likers, haters);
+                                    FeedsObjects feedsObjects = new FeedsObjects(background, date, from,
+                                            posterName, posterImage, hates[0],
+                                            likes[0], locLat, locLong, postId,
+                                            privacy, size, state, style,
+                                            text, time, type, url,
+                                            likers, haters);
 
-                    if (!postsList.contains(feedsObjects)) {
-                        postsList.add(feedsObjects);
-                    }
-                    mAdapter.notifyDataSetChanged();
+                                    if (!postsList.contains(feedsObjects)) {
+                                        postsList.add(feedsObjects);
+                                    }
+                                    mAdapter.notifyDataSetChanged();
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
 
 
                 } else {

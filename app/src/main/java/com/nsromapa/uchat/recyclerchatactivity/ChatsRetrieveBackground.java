@@ -142,6 +142,10 @@ public class ChatsRetrieveBackground extends AsyncTask<String,Void,String>{
                 database.close();
                 return "One row for messages deleted......";
             }
+            default:{
+
+            }
+            break;
         }
 
         return null;

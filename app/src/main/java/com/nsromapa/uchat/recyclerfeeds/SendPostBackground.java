@@ -148,8 +148,6 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                                 if (task.isSuccessful()){
                                     final String fileUrl = Objects.requireNonNull(task.getResult()).toString();
 
-                                    publishProgress("File Uploaded now....");
-
                                     HashMap<String, Object> postInfo = new HashMap<>();
                                     postInfo.put("text", textPost_caption);
                                     postInfo.put("size", fontSize);

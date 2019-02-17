@@ -7,8 +7,8 @@
     android:orientation="vertical"
     android:background="@android:color/transparent"
     android:gravity="fill_horizontal"
-    android:layout_marginTop="3dp"
-    android:layout_marginBottom="7dp">
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="10dp">
 
 
     <LinearLayout
@@ -108,7 +108,7 @@
             android:textStyle="bold"
             android:minHeight="200dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="5dp"
             android:paddingStart="7dp"
             android:paddingEnd="7dp"
             app:emojiconSize="30sp"/>
@@ -245,7 +245,8 @@
         android:id="@+id/comment_Holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_margin="10dp">
 
         <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
             android:id="@+id/PostCaption_TextView"
@@ -256,27 +257,33 @@
             android:textSize="14sp"
             android:paddingStart="7dp"
             android:paddingEnd="7dp"
-            android:paddingTop="15dp"
-            android:paddingBottom="7dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="10dp"
             android:textColor="@color/black"
             app:emojiconSize="28sp" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/comments_Recycler"
+            android:id="@+id/comments_RecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:padding="10dp"/>
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/create_Comment"
+        android:id="@+id/create_New_Comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_margin="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:visibility="gone">
         <View
             android:background="#999"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
 
@@ -288,6 +295,8 @@
             android:gravity="center">
 
             <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText
+               android:id="@+id/CreateComment_TextEdit"
+                android:background="@android:color/transparent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -295,13 +304,14 @@
                 android:hint="@string/add_a_comment"
                 android:inputType="textMultiLine"
                 android:minHeight="40dp"
+                android:maxHeight="150dp"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textAlignment="textStart"
                 tools:ignore="RtlCompat" />
 
             <Button
-                style="@style/AppTheme"
+                android:id="@+id/Send_Comment_Btn"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:layout_width="60dp"

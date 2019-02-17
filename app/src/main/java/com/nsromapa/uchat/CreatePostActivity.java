@@ -568,10 +568,10 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         postTest_Caption.setTypeface(typeface);
         postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.white));
-        fontFamily = "AlexBrush_Regular.ttf";
-        select_fontFamily_for_Text.setSelection(0);
-        select_fontSize_for_Text.setSelection(0);
-        fontSize_and_fontfamily.setVisibility(View.VISIBLE);
+
+        if (fontSize_and_fontfamily.getVisibility()!= View.VISIBLE){
+            fontSize_and_fontfamily.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setEditTexttoDefault() {
@@ -583,5 +583,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.black));
         fontSize_and_fontfamily.setVisibility(View.GONE);
         fontFamily = "sans_.ttf";
+        select_fontFamily_for_Text.setSelection(21);
+        select_fontSize_for_Text.setSelection(0);
     }
 }
