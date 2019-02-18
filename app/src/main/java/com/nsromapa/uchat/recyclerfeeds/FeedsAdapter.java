@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -37,6 +38,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private Context mContext;
     private String currentUserID;
 
+    private InputMethodManager inputMethodManager;
     public FeedsAdapter(List<FeedsObjects> postLists, Context mContext) {
         this.postLists = postLists;
         this.mContext = mContext;
@@ -50,6 +52,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
+        inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         return new FeedViewHolder(view);
     }
 
@@ -134,6 +137,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         ////Show total likes and hates
         feedViewHolder.postTotal_likers.setText(String.valueOf(post.getLikers().size()));
         feedViewHolder.postTotal_haters.setText(String.valueOf(post.getHaters().size()));
+        feedViewHolder.postTotal_commenters.setText(String.valueOf(post.getComments().size()));
 
         ////Show whether user has liked already and display the unlike image
         ///else display the like image
@@ -227,8 +231,11 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 if (feedViewHolder.create_New_Comment.getVisibility()!= View.VISIBLE){
                     feedViewHolder.create_New_Comment.setVisibility(View.VISIBLE);
                 }
-                feedViewHolder.CreateComment_TextEdit.requestFocus();
 
+                feedViewHolder.CreateComment_TextEdit.requestFocus();
+//                if (inputMethodManager != null){
+//                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//                }
 
                 ///Hide post button if EditText is empty
                 if (TextUtils.isEmpty(feedViewHolder.CreateComment_TextEdit.getText().toString())){
@@ -272,6 +279,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             @Override
             public void onClick(View v) {
                 String comment = feedViewHolder.CreateComment_TextEdit.getText().toString();
+                feedViewHolder.CreateComment_TextEdit.setText("");
 
                 if (TextUtils.isEmpty(comment)){
                     Toast.makeText(mContext, "Can't create empty comment", Toast.LENGTH_SHORT).show();
@@ -279,8 +287,11 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 }else{
                     Toast.makeText(mContext, "Posting Comment...", Toast.LENGTH_SHORT).show();
 
+
+                    String commentId = String.valueOf(System.currentTimeMillis());
+
                     DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
-                            .child("posts").child(post.getPostId()).child("comments");
+                            .child("posts").child(post.getPostId()).child("comments").child(commentId);
 
                     Calendar calendarFordate = Calendar.getInstance();
                     SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
@@ -291,7 +302,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                     String _time = currentTimeFormat.format(calendarForTime.getTime());
 
                     HashMap<String,Object> commentMap = new HashMap<>();
-                    commentMap.put("commentId",String.valueOf(System.currentTimeMillis()));
+                    commentMap.put("commentId",commentId);
                     commentMap.put("sender",mAuth.getCurrentUser().getUid());
                     commentMap.put("date",_date);
                     commentMap.put("time",_time);
@@ -308,9 +319,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                         }
                     });
 
-
-
-                    Toast.makeText(mContext, comment, Toast.LENGTH_SHORT).show();
                 }
             }
         });

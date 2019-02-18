@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -30,6 +32,7 @@ import com.nsromapa.uchat.recyclerfeeds.FeedsObjects;
 import com.nsromapa.uchat.usersInfos.UserInformation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class FeedsFragment extends BaseFragment {
@@ -115,6 +118,7 @@ public class FeedsFragment extends BaseFragment {
                     final String url = snapShot.child("url").getValue().toString();
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
+                    final ArrayList<Object> comments = new ArrayList<>();
 
 
 
@@ -187,6 +191,72 @@ public class FeedsFragment extends BaseFragment {
                                 }
                             });
 
+
+                    snapShot.getRef().child("comments")
+                            .addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    final String comment = dataSnapshot.child("comment").getValue().toString();
+                                    final String _date = dataSnapshot.child("date").getValue().toString();
+                                    final String _time = dataSnapshot.child("time").getValue().toString();
+                                    final String commentId = dataSnapshot.child("commentId").getValue().toString();
+                                    final String sender = dataSnapshot.child("sender").getValue().toString();
+
+                                    mRootRef.child("users").child(sender)
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    String commnterName = dataSnapshot.child("name").getValue().toString();
+                                                    String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+
+                                                    HashMap<String,String> commennt= new HashMap<>();
+                                                    commennt.put("comment",comment);
+                                                    commennt.put("_date",_date);
+                                                    commennt.put("_time",_time);
+                                                    commennt.put("commentId",commentId);
+                                                    commennt.put("sender",sender);
+                                                    commennt.put("commnterName",commnterName);
+                                                    commennt.put("commenterImage",commenterImage);
+
+                                                    comments.add(commennt);
+                                                    mAdapter.notifyDataSetChanged();
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
+
+                                }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                    String hater = dataSnapshot.getValue().toString();
+                                    comments.remove(hater);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    String hater = dataSnapshot.getValue().toString();
+                                    comments.remove(hater);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
                     mRootRef.child("users").child(from)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -194,15 +264,15 @@ public class FeedsFragment extends BaseFragment {
                                     String posterName = dataSnapshot.child("name").getValue().toString();
                                     String posterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
 
-                                    likes[0] = String.valueOf(likers.size());
-                                    hates[0] = String.valueOf(haters.size());
+                                    String likes = String.valueOf(likers.size());
+                                    String hates = String.valueOf(haters.size());
 
                                     FeedsObjects feedsObjects = new FeedsObjects(background, date, from,
-                                            posterName, posterImage, hates[0],
-                                            likes[0], locLat, locLong, postId,
+                                            posterName, posterImage, hates,
+                                            likes, locLat, locLong, postId,
                                             privacy, size, state, style,
                                             text, time, type, url,
-                                            likers, haters);
+                                            likers, haters,comments);
 
                                     if (!postsList.contains(feedsObjects)) {
                                         postsList.add(feedsObjects);
