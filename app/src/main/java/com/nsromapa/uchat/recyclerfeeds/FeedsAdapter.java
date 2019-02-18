@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +24,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
+import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
 
 import java.text.SimpleDateFormat;
@@ -65,8 +69,9 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.post_VideoThumbnail_play.setVisibility(View.GONE);
         feedViewHolder.PostTextpost_TextView.setVisibility(View.GONE);
         feedViewHolder.PostCaption_TextView.setVisibility(View.GONE);
+        feedViewHolder.UserName_TextView.setVisibility(View.GONE);
         feedViewHolder.PostActionButtons_delete.setVisibility(View.GONE);
-        feedViewHolder.comments_RecyclerView.setVisibility(View.GONE);
+//        feedViewHolder.comments_LinearLayout.setVisibility(View.GONE);
 
 
         feedViewHolder.PosterUserName.setText(post.getPosterName());
@@ -109,6 +114,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             ///Show caption if file has....
             if (!TextUtils.isEmpty(post.getText())){
                 feedViewHolder.PostCaption_TextView.setVisibility(View.VISIBLE);
+                feedViewHolder.UserName_TextView.setVisibility(View.VISIBLE);
+                feedViewHolder.UserName_TextView.setText(post.getPosterName());
                 feedViewHolder.PostCaption_TextView.setText(post.getText());
             }
             //Show play icon on videos
@@ -324,9 +331,43 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
 
 
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        feedViewHolder.comments_LinearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        for (int i=0; i < post.getComments().size(); i++){
+//            Object comment = post.getComments().get(i);
+
+            EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
+            commenterTextView.setId(i);
+            commenterTextView.setText("commenter Name");
+            commenterTextView.setLayoutParams(params);
+            commenterTextView.setEmoticonSize(25);
+            commenterTextView.setTextSize(12);
+            commenterTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
+            commenterTextView.setTypeface(commenterTextView.getTypeface(),Typeface.BOLD);
+            commenterTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
 
 
+            EmoticonTextView commentTextView = new EmoticonTextView(mContext);
+            commentTextView.setId(i+100000);
+            commentTextView.setText("commenter Comment Posted "+i);
+            commentTextView.setLayoutParams(params);
+            commentTextView.setEmoticonSize(28);
+            commentTextView.setTextSize(14);
+            commentTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
+            commentTextView.setTypeface(commentTextView.getTypeface(),Typeface.NORMAL);
+            commentTextView.setPadding(0,0,0,5);
+            commentTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
 
+            feedViewHolder.comments_LinearLayout.addView(commenterTextView);
+            feedViewHolder.comments_LinearLayout.addView(commentTextView);
+        }
+
+//        style="@style/Base.TextAppearance.AppCompat.Large"
+
+
+//        style="@style/Base.TextAppearance.AppCompat.Medium"
 
     }
 

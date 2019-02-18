@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="10dp"
     android:background="@android:color/transparent"
     android:gravity="fill_horizontal"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="10dp">
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="2dp">
+        android:layout_marginBottom="2dp"
+        android:orientation="horizontal">
 
 
         <LinearLayout
@@ -28,21 +28,21 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/PostedUserFromPFP"
-                android:src="@drawable/profile_image"
                 android:layout_width="50dp"
-                app:civ_border_overlay="false"
+                android:layout_height="50dp"
+                android:src="@drawable/profile_image"
                 app:civ_border_color="@color/colorAccent2"
-                app:civ_border_width="2dp"
-                android:layout_height="50dp"/>
+                app:civ_border_overlay="false"
+                app:civ_border_width="2dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:orientation="vertical"
-            android:layout_marginStart="10dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/PosterUserName"
@@ -63,10 +63,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:textColor="#262626"
-                    android:textSize="12sp"
                     android:lineHeight="15dp"
                     android:text="@string/post_time"
+                    android:textColor="#262626"
+                    android:textSize="12sp"
                     tools:targetApi="p" />
             </LinearLayout>
 
@@ -77,17 +77,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/PostImageVideo_ImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/post_imageView" />
+
             <ImageView
                 android:id="@+id/post_VideoThumbnail_play"
                 android:layout_width="50dp"
@@ -102,61 +105,57 @@
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             android:gravity="center"
+            android:minHeight="200dp"
+            android:paddingStart="7dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="5dp"
+            android:textAlignment="center"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:minHeight="200dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            app:emojiconSize="30sp"/>
+            app:emojiconSize="30sp" />
     </LinearLayout>
-
-
-
-
 
 
     <LinearLayout
         android:id="@+id/PostImageViewerActionButtons"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:gravity="fill_horizontal"
         android:orientation="horizontal"
-        android:padding="5dp"
-        android:gravity="fill_horizontal">
+        android:padding="5dp">
 
         <LinearLayout
             android:id="@+id/PostActionButtons_likeUnlike"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_weight="1"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/PostActionButtons_likeUnlike_Image"
-                android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_like2"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
                 android:paddingStart="8dp"
                 android:paddingEnd="5dp"
-                android:layout_gravity="center"/>
+                app:srcCompat="@drawable/ic_like2" />
 
             <TextView
                 android:id="@+id/postTotal_likers"
-                android:textColor="@color/colorAccent2"
-                android:textSize="13sp"
-                android:text="0"
-                android:textAlignment="center"
-                android:gravity="center"
-                android:layout_marginStart="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent2"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
@@ -164,110 +163,121 @@
             android:id="@+id/PostActionButtons_hateUnhate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_weight="1"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/PostActionButtons_hateUnhate_Image"
-                android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_hate2"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
                 android:paddingStart="8dp"
                 android:paddingEnd="5dp"
-                android:layout_gravity="center"/>
+                app:srcCompat="@drawable/ic_hate2" />
 
             <TextView
                 android:id="@+id/postTotal_haters"
-                android:textColor="@color/colorAccent2"
-                android:textSize="13sp"
-                android:text="0"
-                android:textAlignment="center"
-                android:gravity="center"
-                android:layout_marginStart="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent2"
+                android:textSize="13sp" />
 
         </LinearLayout>
-
 
 
         <LinearLayout
             android:id="@+id/PostActionButtons_comment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_weight="1"
             android:gravity="center">
 
             <ImageView
-                android:background="@android:color/transparent"
                 android:layout_width="32dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_comment2"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
                 android:paddingStart="8dp"
                 android:paddingEnd="5dp"
-                android:layout_gravity="center"/>
+                app:srcCompat="@drawable/ic_comment2" />
 
             <TextView
                 android:id="@+id/postTotal_commenters"
-                android:textColor="@color/colorAccent2"
-                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
                 android:text="0"
                 android:textAlignment="center"
-                android:gravity="center"
-                android:layout_marginStart="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:textColor="@color/colorAccent2"
+                android:textSize="14sp" />
 
         </LinearLayout>
 
 
-
         <ImageButton
             android:id="@+id/PostActionButtons_delete"
-            android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_delete_forever2"/>
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_delete_forever2" />
 
     </LinearLayout>
-
-
 
 
     <LinearLayout
         android:id="@+id/comment_Holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
-        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
-            android:id="@+id/PostCaption_TextView"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+
+        <LinearLayout
+            android:id="@+id/comments_LinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="normal"
-            android:textSize="14sp"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:paddingTop="7dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/black"
-            app:emojiconSize="28sp" />
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/comments_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"/>
+                <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                    android:id="@+id/UserName_TextView"
+                    style="@style/Base.TextAppearance.AppCompat.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:emojiconSize="25sp"
+                    android:text="User comment on post"/>
 
+
+                <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                    android:id="@+id/PostCaption_TextView"
+                    style="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    android:paddingBottom="5dp"
+                    app:emojiconSize="28sp"
+                    android:text="User comment on post"/>
+
+
+
+        </LinearLayout>
     </LinearLayout>
 
 
@@ -275,55 +285,55 @@
         android:id="@+id/create_New_Comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_margin="5dp"
+        android:orientation="vertical"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
         android:visibility="gone">
+
         <View
-            android:background="#999"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+            android:background="#999" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText
-               android:id="@+id/CreateComment_TextEdit"
-                android:background="@android:color/transparent"
+                android:id="@+id/CreateComment_TextEdit"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:textColor="#262626"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:gravity="center"
                 android:hint="@string/add_a_comment"
                 android:inputType="textMultiLine"
-                android:minHeight="40dp"
                 android:maxHeight="150dp"
-                android:layout_gravity="center"
-                android:gravity="center"
+                android:minHeight="40dp"
                 android:textAlignment="textStart"
+                android:textColor="#262626"
                 tools:ignore="RtlCompat" />
 
             <Button
                 android:id="@+id/Send_Comment_Btn"
-                android:layout_gravity="center"
-                android:gravity="center"
                 android:layout_width="60dp"
                 android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:gravity="center"
                 android:text="@string/post"
-                android:textStyle="normal"
                 android:textAllCaps="false"
                 android:textColor="#3897f0"
-                android:background="@android:color/transparent"/>
+                android:textStyle="normal" />
         </LinearLayout>
     </LinearLayout>
-
 
 
 </LinearLayout>

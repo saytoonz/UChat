@@ -24,6 +24,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public ImageView post_VideoThumbnail_play;
     public EmoticonTextView PostTextpost_TextView;
     public EmoticonTextView PostCaption_TextView;
+    public EmoticonTextView UserName_TextView;
 
     public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hateUnhate;
     public ImageView PostActionButtons_likeUnlike_Image,PostActionButtons_hateUnhate_Image;
@@ -31,7 +32,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public ImageButton PostActionButtons_delete;
     public TextView postTotal_likers, postTotal_haters, postTotal_commenters;
 
-    public RecyclerView comments_RecyclerView;
+    public LinearLayout comments_LinearLayout;
     public LinearLayout create_New_Comment;
     public EmoticonEditText CreateComment_TextEdit;
     public Button Send_Comment_Btn;
@@ -49,6 +50,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
         post_VideoThumbnail_play = itemView.findViewById(R.id.post_VideoThumbnail_play);
         PostTextpost_TextView = itemView.findViewById(R.id.PostTextpost_TextView);
         PostCaption_TextView = itemView.findViewById(R.id.PostCaption_TextView);
+        UserName_TextView = itemView.findViewById(R.id.UserName_TextView);
 
         PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
         PostActionButtons_likeUnlike_Image = itemView.findViewById(R.id.PostActionButtons_likeUnlike_Image);
@@ -69,7 +71,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
 
 
 
-        comments_RecyclerView = itemView.findViewById(R.id.comments_RecyclerView);
+        comments_LinearLayout = itemView.findViewById(R.id.comments_LinearLayout);
         create_New_Comment = itemView.findViewById(R.id.create_New_Comment);
         CreateComment_TextEdit = itemView.findViewById(R.id.CreateComment_TextEdit);
         Send_Comment_Btn = itemView.findViewById(R.id.Send_Comment_Btn);
