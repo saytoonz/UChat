@@ -28,6 +28,7 @@ import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -336,7 +337,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.comments_LinearLayout.setOrientation(LinearLayout.VERTICAL);
 
         for (int i=0; i < post.getComments().size(); i++){
-//            Object comment = post.getComments().get(i);
+            Object comment = post.getComments().get(i);
+
 
             EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
             commenterTextView.setId(i);
