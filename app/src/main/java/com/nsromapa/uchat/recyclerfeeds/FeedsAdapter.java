@@ -30,6 +30,7 @@ import com.nsromapa.uchat.R;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private FirebaseAuth mAuth;
     private DatabaseReference mRootRef;
 
-    List<FeedsObjects> postLists;
+    private List<FeedsObjects> postLists;
     private Context mContext;
     private String currentUserID;
+
+    private List<String> shownComments;
+
 
     private InputMethodManager inputMethodManager;
     public FeedsAdapter(List<FeedsObjects> postLists, Context mContext) {
@@ -336,34 +340,45 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
         feedViewHolder.comments_LinearLayout.setOrientation(LinearLayout.VERTICAL);
 
+        shownComments = new ArrayList<>();
+
         for (int i=0; i < post.getComments().size(); i++){
-            Object comment = post.getComments().get(i);
+
+            CommentObjects comment = post.getComments().get(i);
+
+            if (!shownComments.contains(comment.commentId)
+                && comment.getPostId().equals(post.getPostId())){
+
+                shownComments.add(comment.commentId);
+
+                EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
+                commenterTextView.setId(i);
+                commenterTextView.setText(comment.getCommnterName());
+                commenterTextView.setLayoutParams(params);
+                commenterTextView.setEmoticonSize(25);
+                commenterTextView.setTextSize(12);
+                commenterTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
+                commenterTextView.setTypeface(commenterTextView.getTypeface(),Typeface.BOLD);
+                commenterTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
 
 
-            EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
-            commenterTextView.setId(i);
-            commenterTextView.setText("commenter Name");
-            commenterTextView.setLayoutParams(params);
-            commenterTextView.setEmoticonSize(25);
-            commenterTextView.setTextSize(12);
-            commenterTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-            commenterTextView.setTypeface(commenterTextView.getTypeface(),Typeface.BOLD);
-            commenterTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
+                EmoticonTextView commentTextView = new EmoticonTextView(mContext);
+                commentTextView.setId(i+100000);
+                commentTextView.setText(comment.getComment());
+                commentTextView.setLayoutParams(params);
+                commentTextView.setEmoticonSize(28);
+                commentTextView.setTextSize(14);
+                commentTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
+                commentTextView.setTypeface(commentTextView.getTypeface(),Typeface.NORMAL);
+                commentTextView.setPadding(0,0,0,5);
+                commentTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
 
+                feedViewHolder.comments_LinearLayout.addView(commenterTextView);
+                feedViewHolder.comments_LinearLayout.addView(commentTextView);
+            }else{
+                Log.d(TAG, "onBindViewHolder: Comment Exists Already");
+            }
 
-            EmoticonTextView commentTextView = new EmoticonTextView(mContext);
-            commentTextView.setId(i+100000);
-            commentTextView.setText("commenter Comment Posted "+i);
-            commentTextView.setLayoutParams(params);
-            commentTextView.setEmoticonSize(28);
-            commentTextView.setTextSize(14);
-            commentTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-            commentTextView.setTypeface(commentTextView.getTypeface(),Typeface.NORMAL);
-            commentTextView.setPadding(0,0,0,5);
-            commentTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
-
-            feedViewHolder.comments_LinearLayout.addView(commenterTextView);
-            feedViewHolder.comments_LinearLayout.addView(commentTextView);
         }
 
 //        style="@style/Base.TextAppearance.AppCompat.Large"

@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.CreatePostActivity;
 import com.nsromapa.uchat.R;
+import com.nsromapa.uchat.recyclerfeeds.CommentObjects;
 import com.nsromapa.uchat.recyclerfeeds.FeedsAdapter;
 import com.nsromapa.uchat.recyclerfeeds.FeedsObjects;
 import com.nsromapa.uchat.usersInfos.UserInformation;
@@ -118,7 +119,7 @@ public class FeedsFragment extends BaseFragment {
                     final String url = snapShot.child("url").getValue().toString();
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
-                    final ArrayList<Object> comments = new ArrayList<>();
+                    final ArrayList<CommentObjects> comments = new ArrayList<>();
 
 
 
@@ -217,8 +218,12 @@ public class FeedsFragment extends BaseFragment {
                                                     commennt.put("sender",sender);
                                                     commennt.put("commnterName",commnterName);
                                                     commennt.put("commenterImage",commenterImage);
+                                                    commennt.put("postId",postId);
 
-                                                    comments.add(commennt);
+                                                    CommentObjects commentObjects= new CommentObjects(commentId,comment,_date,_time,sender,
+                                                            commnterName,commenterImage,postId);
+
+                                                    comments.add(commentObjects);
                                                     mAdapter.notifyDataSetChanged();
 
                                                 }

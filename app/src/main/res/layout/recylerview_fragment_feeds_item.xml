@@ -291,7 +291,7 @@
         android:orientation="vertical"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        android:visibility="gone">
+        android:visibility="invisible ">
 
         <View
             android:layout_width="match_parent"
