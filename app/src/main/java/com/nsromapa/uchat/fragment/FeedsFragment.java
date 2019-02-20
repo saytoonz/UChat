@@ -27,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.CreatePostActivity;
 import com.nsromapa.uchat.R;
-import com.nsromapa.uchat.recyclerfeeds.CommentObjects;
 import com.nsromapa.uchat.recyclerfeeds.FeedsAdapter;
 import com.nsromapa.uchat.recyclerfeeds.FeedsObjects;
 import com.nsromapa.uchat.usersInfos.UserInformation;
@@ -119,7 +118,7 @@ public class FeedsFragment extends BaseFragment {
                     final String url = snapShot.child("url").getValue().toString();
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
-                    final ArrayList<CommentObjects> comments = new ArrayList<>();
+                    final ArrayList<Object> comments = new ArrayList<>();
 
 
 
@@ -193,73 +192,69 @@ public class FeedsFragment extends BaseFragment {
                             });
 
 
-                    snapShot.getRef().child("comments")
-                            .addChildEventListener(new ChildEventListener() {
-                                @Override
-                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    final String comment = dataSnapshot.child("comment").getValue().toString();
-                                    final String _date = dataSnapshot.child("date").getValue().toString();
-                                    final String _time = dataSnapshot.child("time").getValue().toString();
-                                    final String commentId = dataSnapshot.child("commentId").getValue().toString();
-                                    final String sender = dataSnapshot.child("sender").getValue().toString();
-
-                                    mRootRef.child("users").child(sender)
-                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    String commnterName = dataSnapshot.child("name").getValue().toString();
-                                                    String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-
-                                                    HashMap<String,String> commennt= new HashMap<>();
-                                                    commennt.put("comment",comment);
-                                                    commennt.put("_date",_date);
-                                                    commennt.put("_time",_time);
-                                                    commennt.put("commentId",commentId);
-                                                    commennt.put("sender",sender);
-                                                    commennt.put("commnterName",commnterName);
-                                                    commennt.put("commenterImage",commenterImage);
-                                                    commennt.put("postId",postId);
-
-                                                    CommentObjects commentObjects= new CommentObjects(commentId,comment,_date,_time,sender,
-                                                            commnterName,commenterImage,postId);
-
-                                                    comments.add(commentObjects);
-                                                    mAdapter.notifyDataSetChanged();
-
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                }
-                                            });
-
-                                }
-
-                                @Override
-                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                }
-
-                                @Override
-                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                    String hater = dataSnapshot.getValue().toString();
-                                    comments.remove(hater);
-                                    mAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String hater = dataSnapshot.getValue().toString();
-                                    comments.remove(hater);
-                                    mAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
+//                    snapShot.getRef().child("comments")
+//                            .addChildEventListener(new ChildEventListener() {
+//                                    @Override
+//                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                                        final String comment = dataSnapshot.child("comment").getValue().toString();
+//                                        final String _date = dataSnapshot.child("date").getValue().toString();
+//                                        final String _time = dataSnapshot.child("time").getValue().toString();
+//                                        final String commentId = dataSnapshot.child("commentId").getValue().toString();
+//                                        final String sender = dataSnapshot.child("sender").getValue().toString();
+//
+//                                        mRootRef.child("users").child(sender)
+//                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                    @Override
+//                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                                        String commnterName = dataSnapshot.child("name").getValue().toString();
+//                                                        String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+//
+//                                                        HashMap<String,String> commennt= new HashMap<>();
+//                                                        commennt.put("comment",comment);
+//                                                        commennt.put("_date",_date);
+//                                                        commennt.put("_time",_time);
+//                                                        commennt.put("commentId",commentId);
+//                                                        commennt.put("sender",sender);
+//                                                        commennt.put("commnterName",commnterName);
+//                                                        commennt.put("commenterImage",commenterImage);
+//
+//                                                        comments.add(commennt);
+//                                                        mAdapter.notifyDataSetChanged();
+//
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                                    }
+//                                                });
+//
+//                                    }
+//
+//                                @Override
+//                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//                                    String hater = dataSnapshot.getValue().toString();
+//                                    comments.remove(hater);
+//                                    mAdapter.notifyDataSetChanged();
+//                                }
+//
+//                                @Override
+//                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                                    String hater = dataSnapshot.getValue().toString();
+//                                    comments.remove(hater);
+//                                    mAdapter.notifyDataSetChanged();
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
 
 
                     mRootRef.child("users").child(from)

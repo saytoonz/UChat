@@ -24,7 +24,7 @@ public class FeedsObjects {
     String url;
     List<String> likers;
     List<String> haters;
-    ArrayList<CommentObjects> comments;
+    ArrayList<Object> comments;
 
 
     public FeedsObjects(String background, String date, String from,
@@ -33,7 +33,7 @@ public class FeedsObjects {
                         String locLong, String postId, String privacy,
                         String size, String state, String style,
                         String text, String time, String type, String url,
-                        List<String> likers, List<String> haters, ArrayList<CommentObjects> comments) {
+                        List<String> likers, List<String> haters, ArrayList<Object> comments) {
         this.background = background;
         this.date = date;
         this.from = from;
@@ -217,11 +217,11 @@ public class FeedsObjects {
         this.haters = haters;
     }
 
-    public ArrayList<CommentObjects> getComments() {
+    public ArrayList<Object> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<CommentObjects> comments) {
+    public void setComments(ArrayList<Object> comments) {
         this.comments = comments;
     }
 }
