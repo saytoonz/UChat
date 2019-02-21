@@ -58,6 +58,8 @@ public class FeedsFragment extends BaseFragment {
 
     ArrayList<FeedsObjects> postsList = new ArrayList<>();
 
+    String commentString = "";
+
 
     @Override
     public void inOnCreateView(View view, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState) {
@@ -192,69 +194,71 @@ public class FeedsFragment extends BaseFragment {
                             });
 
 
-//                    snapShot.getRef().child("comments")
-//                            .addChildEventListener(new ChildEventListener() {
-//                                    @Override
-//                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                                        final String comment = dataSnapshot.child("comment").getValue().toString();
-//                                        final String _date = dataSnapshot.child("date").getValue().toString();
-//                                        final String _time = dataSnapshot.child("time").getValue().toString();
-//                                        final String commentId = dataSnapshot.child("commentId").getValue().toString();
-//                                        final String sender = dataSnapshot.child("sender").getValue().toString();
-//
-//                                        mRootRef.child("users").child(sender)
-//                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                    @Override
-//                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                        String commnterName = dataSnapshot.child("name").getValue().toString();
-//                                                        String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-//
-//                                                        HashMap<String,String> commennt= new HashMap<>();
-//                                                        commennt.put("comment",comment);
-//                                                        commennt.put("_date",_date);
-//                                                        commennt.put("_time",_time);
-//                                                        commennt.put("commentId",commentId);
-//                                                        commennt.put("sender",sender);
-//                                                        commennt.put("commnterName",commnterName);
-//                                                        commennt.put("commenterImage",commenterImage);
-//
-//                                                        comments.add(commennt);
-//                                                        mAdapter.notifyDataSetChanged();
-//
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                                    }
-//                                                });
-//
-//                                    }
-//
-//                                @Override
-//                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//                                    String hater = dataSnapshot.getValue().toString();
-//                                    comments.remove(hater);
-//                                    mAdapter.notifyDataSetChanged();
-//                                }
-//
-//                                @Override
-//                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                                    String hater = dataSnapshot.getValue().toString();
-//                                    comments.remove(hater);
-//                                    mAdapter.notifyDataSetChanged();
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                }
-//                            });
+                    snapShot.getRef().child("comments")
+                            .addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        final String comment = dataSnapshot.child("comment").getValue().toString();
+                                        final String _date = dataSnapshot.child("date").getValue().toString();
+                                        final String _time = dataSnapshot.child("time").getValue().toString();
+                                        final String commentId = dataSnapshot.child("commentId").getValue().toString();
+                                        final String sender = dataSnapshot.child("sender").getValue().toString();
+
+                                        mRootRef.child("users").child(sender)
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        String commnterName = dataSnapshot.child("name").getValue().toString();
+                                                        String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+
+                                                        HashMap<String,String> commennt= new HashMap<>();
+                                                        commennt.put("comment",comment);
+                                                        commennt.put("_date",_date);
+                                                        commennt.put("_time",_time);
+                                                        commennt.put("commentId",commentId);
+                                                        commennt.put("sender",sender);
+                                                        commennt.put("commnterName",commnterName);
+                                                        commennt.put("commenterImage",commenterImage);
+
+                                                        commentString = commentString+"\n\n<b>"+commnterName+"</b> | "+commennt;
+
+                                                        comments.add(commennt);
+                                                        mAdapter.notifyDataSetChanged();
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+                                    }
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                    String hater = dataSnapshot.getValue().toString();
+                                    comments.remove(hater);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    String hater = dataSnapshot.getValue().toString();
+                                    comments.remove(hater);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
 
 
                     mRootRef.child("users").child(from)
@@ -272,7 +276,7 @@ public class FeedsFragment extends BaseFragment {
                                             likes, locLat, locLong, postId,
                                             privacy, size, state, style,
                                             text, time, type, url,
-                                            likers, haters,comments);
+                                            likers, haters,comments,commentString);
 
                                     if (!postsList.contains(feedsObjects)) {
                                         postsList.add(feedsObjects);

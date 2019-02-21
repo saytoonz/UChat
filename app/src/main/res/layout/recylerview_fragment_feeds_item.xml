@@ -280,6 +280,18 @@
 
 
         </LinearLayout>
+
+
+
+        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+            android:id="@+id/Post_comments_all"
+            style="@style/Base.TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:emojiconSize="25sp"
+            android:text="User comment on post"/>
     </LinearLayout>
 
 

@@ -33,6 +33,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public TextView postTotal_likers, postTotal_haters, postTotal_commenters;
 
     public LinearLayout comments_LinearLayout;
+    public EmoticonTextView Post_comments_all;
     public LinearLayout create_New_Comment;
     public EmoticonEditText CreateComment_TextEdit;
     public Button Send_Comment_Btn;
@@ -75,5 +76,7 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
         create_New_Comment = itemView.findViewById(R.id.create_New_Comment);
         CreateComment_TextEdit = itemView.findViewById(R.id.CreateComment_TextEdit);
         Send_Comment_Btn = itemView.findViewById(R.id.Send_Comment_Btn);
+
+        Post_comments_all = itemView.findViewById(R.id.Post_comments_all);
     }
 }
