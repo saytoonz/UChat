@@ -211,18 +211,18 @@ public class FeedsFragment extends BaseFragment {
                                                         String commnterName = dataSnapshot.child("name").getValue().toString();
                                                         String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
 
-                                                        HashMap<String,String> commennt= new HashMap<>();
-                                                        commennt.put("comment",comment);
-                                                        commennt.put("_date",_date);
-                                                        commennt.put("_time",_time);
-                                                        commennt.put("commentId",commentId);
-                                                        commennt.put("sender",sender);
-                                                        commennt.put("commnterName",commnterName);
-                                                        commennt.put("commenterImage",commenterImage);
+                                                        HashMap<String,String> commentHash= new HashMap<>();
+                                                        commentHash.put("comment",comment);
+                                                        commentHash.put("_date",_date);
+                                                        commentHash.put("_time",_time);
+                                                        commentHash.put("commentId",commentId);
+                                                        commentHash.put("sender",sender);
+                                                        commentHash.put("commnterName",commnterName);
+                                                        commentHash.put("commenterImage",commenterImage);
 
-                                                        commentString = commentString+"\n\n<b>"+commnterName+"</b> | "+commennt;
+                                                        commentString = commentString+"\n\n<b>"+commnterName+"</b> | "+comment;
 
-                                                        comments.add(commennt);
+                                                        comments.add(commentHash);
                                                         mAdapter.notifyDataSetChanged();
 
                                                     }
