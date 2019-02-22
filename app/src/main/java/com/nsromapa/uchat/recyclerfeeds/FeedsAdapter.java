@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
+import com.nsromapa.uchat.utils.FormatterUtil;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -86,9 +87,11 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 .apply(new RequestOptions().placeholder(R.drawable.profile_image))
                 .load(post.posterImage)
                 .into(feedViewHolder.PostedUserFromPFP);
-        feedViewHolder.PostCreationTime.setText(post.getDate() + " - " + post.getTime());
+//        feedViewHolder.PostCreationTime.setText(post.getDate() + " - " + post.getTime());
 
 
+        CharSequence date = FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(post.getPostId()));
+        feedViewHolder.PostCreationTime.setText(date);
 
         if (post.getType().equals("test_post")) {
             feedViewHolder.PostTextpost_TextView.setVisibility(View.VISIBLE);

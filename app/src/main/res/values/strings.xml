@@ -63,4 +63,14 @@
     <string name="add_a_comment" translatable="false">Add a comment</string>
     <string name="post" translatable="false">Post</string>
 
+
+
+
+    <string name="now_time_range">now</string>
+
+    <string name="duration_minutes_shortest">%1$d m</string>
+    <string name="duration_hours_shortest">%1$d h</string>
+    <string name="duration_days_shortest">%1$d d</string>
+    <string name="duration_week_shortest">%1$d w</string>
+
 </resources>
