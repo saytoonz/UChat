@@ -50,6 +50,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private String currentUserID;
 
     private InputMethodManager inputMethodManager;
+
     public FeedsAdapter(List<FeedsObjects> postLists, Context mContext) {
         this.postLists = postLists;
         this.mContext = mContext;
@@ -89,14 +90,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 .into(feedViewHolder.PostedUserFromPFP);
 
 
-
-
-
-
-
-
-
-    //        feedViewHolder.PostCreationTime.setText(post.getDate() + " - " + post.getTime());
+        //        feedViewHolder.PostCreationTime.setText(post.getDate() + " - " + post.getTime());
 
 
         CharSequence date = FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(post.getPostId()));
@@ -124,13 +118,13 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostTextpost_TextView.setTypeface(typeface);
             feedViewHolder.PostTextpost_TextView.setBackground(GetImage(mContext, background));
             feedViewHolder.PostTextpost_TextView.setTextSize(textSize);
-            feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int)textSize)+12);
+            feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int) textSize) + 12);
 
-        } else if (post.getType().equals("video") || post.getType().equals("image")){
+        } else if (post.getType().equals("video") || post.getType().equals("image")) {
             feedViewHolder.PostImageVideo_ImageView.setVisibility(View.VISIBLE);
 
             ///Show caption if file has....
-            if (!TextUtils.isEmpty(post.getText())){
+            if (!TextUtils.isEmpty(post.getText())) {
                 feedViewHolder.PostCaption_TextView.setVisibility(View.VISIBLE);
                 feedViewHolder.UserName_TextView.setVisibility(View.VISIBLE);
                 feedViewHolder.UserName_TextView.setText(post.getPosterName());
@@ -139,7 +133,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             //Show play icon on videos
             if (post.getType().equals("video")) {
                 feedViewHolder.post_VideoThumbnail_play.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 feedViewHolder.post_VideoThumbnail_play.setVisibility(View.GONE);
             }
 
@@ -151,18 +145,16 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                     .into(feedViewHolder.PostImageVideo_ImageView);
 
 
-
-        }else{
+        } else {
             Log.d(TAG, "onBindViewHolder: Unkown Post type");
 
         }
 
 
-
         ////Show total likes and hates
         feedViewHolder.postTotal_likers.setText(String.valueOf(post.getLikers().size()));
         feedViewHolder.postTotal_haters.setText(String.valueOf(post.getHaters().size()));
-        feedViewHolder.postTotal_commenters.setText(post.commentCounter());
+        feedViewHolder.postTotal_commenters.setText(post.getCommentCounter());
 
         ////Show whether user has liked already and display the unlike image
         ///else display the like image
@@ -216,7 +208,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
 
 
-
         //Show Delete button and add OnClickListener
         if (!post.getFrom().equals(currentUserID)) {
             feedViewHolder.PostActionButtons_delete.setVisibility(View.GONE);
@@ -245,25 +236,20 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         }
 
 
-
-
-
-
-
         feedViewHolder.PostActionButtons_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (feedViewHolder.create_New_Comment.getVisibility()!= View.VISIBLE){
+                if (feedViewHolder.create_New_Comment.getVisibility() != View.VISIBLE) {
                     feedViewHolder.create_New_Comment.setVisibility(View.VISIBLE);
                 }
 
                 feedViewHolder.CreateComment_TextEdit.requestFocus();
-                if (inputMethodManager != null){
+                if (inputMethodManager != null) {
                     inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                 }
 
                 ///Hide post button if EditText is empty
-                if (TextUtils.isEmpty(feedViewHolder.CreateComment_TextEdit.getText().toString())){
+                if (TextUtils.isEmpty(feedViewHolder.CreateComment_TextEdit.getText().toString())) {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.GONE);
                 }
             }
@@ -273,27 +259,27 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.CreateComment_TextEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (s.length()<1){
+                if (s.length() < 1) {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.GONE);
-                }else{
+                } else {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length()<1){
+                if (s.length() < 1) {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.GONE);
-                }else{
+                } else {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length()<1){
+                if (s.length() < 1) {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.GONE);
-                }else{
+                } else {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.VISIBLE);
                 }
             }
@@ -306,10 +292,10 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 final String comment = feedViewHolder.CreateComment_TextEdit.getText().toString();
                 feedViewHolder.CreateComment_TextEdit.setText("");
 
-                if (TextUtils.isEmpty(comment)){
+                if (TextUtils.isEmpty(comment)) {
                     Toast.makeText(mContext, "Can't create empty comment", Toast.LENGTH_SHORT).show();
                     v.setVisibility(View.GONE);
-                }else{
+                } else {
                     Toast.makeText(mContext, "Posting Comment...", Toast.LENGTH_SHORT).show();
 
 
@@ -322,99 +308,99 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                     SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
                     String _date = currentDateFormat.format(calendarFordate.getTime());
 
-                    Calendar calendarForTime= Calendar.getInstance();
+                    Calendar calendarForTime = Calendar.getInstance();
                     SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
                     String _time = currentTimeFormat.format(calendarForTime.getTime());
 
-                    HashMap<String,Object> commentMap = new HashMap<>();
-                    commentMap.put("commentId",commentId);
-                    commentMap.put("sender",mAuth.getCurrentUser().getUid());
-                    commentMap.put("date",_date);
-                    commentMap.put("time",_time);
-                    commentMap.put("comment",comment);
+                    HashMap<String, Object> commentMap = new HashMap<>();
+                    commentMap.put("commentId", commentId);
+                    commentMap.put("sender", mAuth.getCurrentUser().getUid());
+                    commentMap.put("date", _date);
+                    commentMap.put("time", _time);
+                    commentMap.put("comment", comment);
 
                     commentRef.updateChildren(commentMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                           if (task.isSuccessful()){
-                               mRootRef.child("posts").child(post.getPostId())
-                                       .addListenerForSingleValueEvent(new ValueEventListener() {
-                                           @Override
-                                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (task.isSuccessful()) {
+                                mRootRef.child("posts").child(post.getPostId())
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                               ////Increase comment counter for the post and insert into db...
-                                               int commentCounter;
-                                               if (dataSnapshot.child("commentCounter").getValue()!=null)
-                                                   commentCounter = Integer.parseInt(dataSnapshot.child("commentCounter").getValue().toString());
-                                               else
-                                                   commentCounter = 0;
+                                                ////Increase comment counter for the post and insert into db...
+                                                int commentCounter;
+                                                if (dataSnapshot.child("commentCounter").getValue() != null)
+                                                    commentCounter = Integer.parseInt(dataSnapshot.child("commentCounter").getValue().toString());
+                                                else
+                                                    commentCounter = 0;
 
-                                               commentCounter++;
-                                               dataSnapshot.getRef().child("commentCounter").setValue(String.valueOf(commentCounter));
-                                               feedViewHolder.postTotal_commenters.setText(String.valueOf(commentCounter));
-
-
-                                               ///Check  if 1st comment is already given.....
-                                               String comment1="";
-                                               if(dataSnapshot.child("comment1").getValue()!= null){
-                                                   comment1 = dataSnapshot.child("comment1").getValue().toString();
-                                               }
-                                               ///Check  if 2nd comment is already given.....
-                                               String comment2="";
-                                               if(dataSnapshot.child("comment2").getValue()!= null){
-                                                   comment2 = dataSnapshot.child("comment2").getValue().toString();
-                                               }
-                                               ///Check  if 3rd comment is already given.....
-                                               String comment3="";
-                                               if(dataSnapshot.child("comment3").getValue()!= null){
-                                                   comment3 = dataSnapshot.child("comment3").getValue().toString();
-                                               }
-                                               ///Check  if 4th comment is already given.....
-                                               String comment4="";
-                                               if(dataSnapshot.child("comment4").getValue()!= null){
-                                                   comment4 = dataSnapshot.child("comment4").getValue().toString();
-                                               }
-
-                                               if (TextUtils.isEmpty(comment1.trim())){
-                                                   dataSnapshot.getRef().child("comment1").setValue(comment);
-                                                   dataSnapshot.getRef().child("comment1Name").setValue(mAuth.getCurrentUser().getUid());
-                                               }else{
-                                                   Log.d(TAG, "onDataChange: First comment already exist...");
-
-                                                   if (TextUtils.isEmpty(comment2.trim())){
-                                                       dataSnapshot.getRef().child("comment2").setValue(comment);
-                                                       dataSnapshot.getRef().child("comment2Name").setValue(mAuth.getCurrentUser().getUid());
-                                                   }else{
-                                                       Log.d(TAG, "onDataChange: Second comment already exist...");
-
-                                                       if (TextUtils.isEmpty(comment3.trim())){
-                                                           dataSnapshot.getRef().child("comment3").setValue(comment);
-                                                           dataSnapshot.getRef().child("comment3Name").setValue(mAuth.getCurrentUser().getUid());
-                                                       }else{
-                                                           Log.d(TAG, "onDataChange: Third comment already exist...");
-
-                                                           if (TextUtils.isEmpty(comment4.trim())){
-                                                               dataSnapshot.getRef().child("comment4").setValue(comment);
-                                                               dataSnapshot.getRef().child("comment4Name").setValue(mAuth.getCurrentUser().getUid());
-                                                           }else{
-                                                               Log.d(TAG, "onDataChange: Four comment already exist...");
-                                                           }
-                                                       }
-                                                   }
-                                               }
-                                           }
-
-                                           @Override
-                                           public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                           }
-                                       });
+                                                commentCounter++;
+                                                dataSnapshot.getRef().child("commentCounter").setValue(String.valueOf(commentCounter));
+                                                feedViewHolder.postTotal_commenters.setText(String.valueOf(commentCounter));
 
 
-                               Toast.makeText(mContext, "Comment sent...", Toast.LENGTH_SHORT).show();
-                           }else{
-                               Toast.makeText(mContext, "Error: Could not comment, please try again", Toast.LENGTH_SHORT).show();
-                           }
+                                                ///Check  if 1st comment is already given.....
+                                                String comment1 = "";
+                                                if (dataSnapshot.child("comment1").getValue() != null) {
+                                                    comment1 = dataSnapshot.child("comment1").getValue().toString();
+                                                }
+                                                ///Check  if 2nd comment is already given.....
+                                                String comment2 = "";
+                                                if (dataSnapshot.child("comment2").getValue() != null) {
+                                                    comment2 = dataSnapshot.child("comment2").getValue().toString();
+                                                }
+                                                ///Check  if 3rd comment is already given.....
+                                                String comment3 = "";
+                                                if (dataSnapshot.child("comment3").getValue() != null) {
+                                                    comment3 = dataSnapshot.child("comment3").getValue().toString();
+                                                }
+                                                ///Check  if 4th comment is already given.....
+                                                String comment4 = "";
+                                                if (dataSnapshot.child("comment4").getValue() != null) {
+                                                    comment4 = dataSnapshot.child("comment4").getValue().toString();
+                                                }
+
+                                                if (TextUtils.isEmpty(comment1.trim())) {
+                                                    dataSnapshot.getRef().child("comment1").setValue(comment);
+                                                    dataSnapshot.getRef().child("comment1Name").setValue(mAuth.getCurrentUser().getUid());
+                                                } else {
+                                                    Log.d(TAG, "onDataChange: First comment already exist...");
+
+                                                    if (TextUtils.isEmpty(comment2.trim())) {
+                                                        dataSnapshot.getRef().child("comment2").setValue(comment);
+                                                        dataSnapshot.getRef().child("comment2Name").setValue(mAuth.getCurrentUser().getUid());
+                                                    } else {
+                                                        Log.d(TAG, "onDataChange: Second comment already exist...");
+
+                                                        if (TextUtils.isEmpty(comment3.trim())) {
+                                                            dataSnapshot.getRef().child("comment3").setValue(comment);
+                                                            dataSnapshot.getRef().child("comment3Name").setValue(mAuth.getCurrentUser().getUid());
+                                                        } else {
+                                                            Log.d(TAG, "onDataChange: Third comment already exist...");
+
+                                                            if (TextUtils.isEmpty(comment4.trim())) {
+                                                                dataSnapshot.getRef().child("comment4").setValue(comment);
+                                                                dataSnapshot.getRef().child("comment4Name").setValue(mAuth.getCurrentUser().getUid());
+                                                            } else {
+                                                                Log.d(TAG, "onDataChange: Four comment already exist...");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
+                                Toast.makeText(mContext, "Comment sent...", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mContext, "Error: Could not comment, please try again", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
 
@@ -423,8 +409,11 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
 
 
-//            feedViewHolder.Post_comments_all.setText(post.commentCounter());
-
+        feedViewHolder.Post_comments_all.setText("");
+        feedViewHolder.Post_comments_all.append(post.getFullcomment1() + "\n\n");
+        feedViewHolder.Post_comments_all.append(post.getFullcomment2() + "\n\n");
+        feedViewHolder.Post_comments_all.append(post.getFullcomment3() + "\n\n");
+        feedViewHolder.Post_comments_all.append(post.getFullcomment4());
 
 
 //        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -562,7 +551,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         return postLists.size();
 
     }
-
 
 
     private static Drawable GetImage(Context c, String ImageName) {

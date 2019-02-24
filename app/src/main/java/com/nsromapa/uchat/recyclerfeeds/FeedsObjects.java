@@ -25,8 +25,10 @@ public class FeedsObjects {
     List<String> likers;
     List<String> haters;
     String commentCounter;
-    ArrayList<String> firstcommentString;
-    String firstcommenter;
+    String fullcomment1;
+    String fullcomment2;
+    String fullcomment3;
+    String fullcomment4;
 
     public FeedsObjects(String background, String date, String from,
                         String posterName, String posterImage,
@@ -35,7 +37,8 @@ public class FeedsObjects {
                         String size, String state, String style,
                         String text, String time, String type, String url,
                         List<String> likers, List<String> haters, String commentCounter,
-                        ArrayList<String> commentString, String firstcommenter) {
+                        String fullcomment1, String fullcomment2,
+                        String fullcomment3, String fullcomment4) {
         this.background = background;
         this.date = date;
         this.from = from;
@@ -57,8 +60,10 @@ public class FeedsObjects {
         this.likers = likers;
         this.haters = haters;
         this.commentCounter = commentCounter;
-        this.firstcommentString = commentString;
-        this.firstcommenter = firstcommenter;
+        this.fullcomment1 = fullcomment1;
+        this.fullcomment2 = fullcomment2;
+        this.fullcomment3 = fullcomment3;
+        this.fullcomment4 = fullcomment4;
     }
 
     public String getBackground() {
@@ -221,7 +226,7 @@ public class FeedsObjects {
         this.haters = haters;
     }
 
-    public String commentCounter() {
+    public String getCommentCounter() {
         return commentCounter;
     }
 
@@ -229,11 +234,35 @@ public class FeedsObjects {
         this.commentCounter = commentCounter;
     }
 
-    public ArrayList<String> getCommentString() {
-        return firstcommentString;
+    public String getFullcomment1() {
+        return fullcomment1;
     }
 
-    public void setCommentString(ArrayList<String> commentString) {
-        this.firstcommentString = commentString;
+    public void setFullcomment1(String fullcomment1) {
+        this.fullcomment1 = fullcomment1;
+    }
+
+    public String getFullcomment2() {
+        return fullcomment2;
+    }
+
+    public void setFullcomment2(String fullcomment2) {
+        this.fullcomment2 = fullcomment2;
+    }
+
+    public String getFullcomment3() {
+        return fullcomment3;
+    }
+
+    public void setFullcomment3(String fullcomment3) {
+        this.fullcomment3 = fullcomment3;
+    }
+
+    public String getFullcomment4() {
+        return fullcomment4;
+    }
+
+    public void setFullcomment4(String fullcomment4) {
+        this.fullcomment4 = fullcomment4;
     }
 }

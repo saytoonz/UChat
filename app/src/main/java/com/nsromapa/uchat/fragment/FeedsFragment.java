@@ -34,6 +34,7 @@ import com.nsromapa.uchat.usersInfos.UserInformation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class FeedsFragment extends BaseFragment {
 
@@ -104,8 +105,8 @@ public class FeedsFragment extends BaseFragment {
                     final String background = snapShot.child("background").getValue().toString();
                     final String date = snapShot.child("date").getValue().toString();
                     final String from = snapShot.child("from").getValue().toString();
-                    final String[] hates = {snapShot.child("hates").getValue().toString()};
-                    final String[] likes = {String.valueOf(0)};
+                    final String hates = snapShot.child("hates").getValue().toString();
+                    final String likes = String.valueOf(0);
                     final String locLat = snapShot.child("locLat").getValue().toString();
                     final String locLong = snapShot.child("locLong").getValue().toString();
                     final String postId = snapShot.child("postId").getValue().toString();
@@ -117,12 +118,21 @@ public class FeedsFragment extends BaseFragment {
                     final String time = snapShot.child("time").getValue().toString();
                     final String type = snapShot.child("type").getValue().toString();
                     final String url = snapShot.child("url").getValue().toString();
+
                     final Object cmtCnter = snapShot.child("commentCounter").getValue();
+                    final Object comment1Obj = snapShot.child("comment1").getValue();
+                    final Object comment2Obj = snapShot.child("comment2").getValue();
+                    final Object comment3Obj = snapShot.child("comment3").getValue();
+                    final Object comment4Obj = snapShot.child("comment4").getValue();
+
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
-                    final ArrayList<String> commentsMessage = new ArrayList<>();
 
                    final String commentCounter;
+                    final String Fullcomment1;
+                    final String Fullcomment2;
+                    final String Fullcomment3;
+                    final String Fullcomment4;
 
                     if (cmtCnter!=null){
                         commentCounter = cmtCnter.toString();
@@ -130,7 +140,108 @@ public class FeedsFragment extends BaseFragment {
                         commentCounter = "0";
                     }
 
+                    if (comment1Obj!=null){
+                        String  comment1 = comment1Obj.toString();
+                        String  comment1Name = snapShot.child("comment1Name").getValue().toString();
 
+                        final ArrayList<String> name1 = new ArrayList<>() ;
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users").child(comment1Name).child("name").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        name1.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
+                                        mAdapter.notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                        Fullcomment1 = comment1Name+" "+comment1;
+                    }else {
+                        Fullcomment1 = "";
+                    }
+
+
+
+                    if (comment2Obj!=null){
+                        String comment2 = comment2Obj.toString();
+                        String comment2Name = Objects.requireNonNull(snapShot.child("comment2Name").getValue()).toString();
+
+                        final ArrayList<String> name2 = new ArrayList<>() ;
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users").child(comment2Name).child("name").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                name2.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
+                                mAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Fullcomment2 = comment2Name+" "+comment2;
+
+                    }else {
+                        Fullcomment2 = "";
+                    }
+
+                    if (comment3Obj!=null){
+                        String comment3 = comment3Obj.toString();
+                        String comment3Name =  Objects.requireNonNull(snapShot.child("comment3Name").getValue()).toString();
+
+                        final ArrayList<String> name3 = new ArrayList<>() ;
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users").child(comment3Name).child("name").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                name3.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
+                                mAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Fullcomment3 = comment3Name+" "+comment3;
+                    }else {
+                        Fullcomment3 = "";
+                    }
+
+
+
+                    if (comment4Obj!=null){
+                        String comment4 = comment4Obj.toString();
+                        String comment4Name =  Objects.requireNonNull(snapShot.child("comment4Name").getValue()).toString();
+
+                        final ArrayList<String> name4 = new ArrayList<>() ;
+                        FirebaseDatabase.getInstance().getReference()
+                                .child("users").child(comment4Name).child("name")
+                                .addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                name4.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
+                                mAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        Fullcomment4 = comment4Name+" "+comment4;
+                    }else {
+                        Fullcomment4 = "";
+                    }
 
                     snapShot.getRef().child("likers")
                             .addChildEventListener(new ChildEventListener() {
@@ -202,71 +313,6 @@ public class FeedsFragment extends BaseFragment {
                             });
 
 
-                    snapShot.getRef().child("comments")
-                            .addChildEventListener(new ChildEventListener() {
-                                    @Override
-                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                        final String comment = dataSnapshot.child("comment").getValue().toString();
-                                        final String _date = dataSnapshot.child("date").getValue().toString();
-                                        final String _time = dataSnapshot.child("time").getValue().toString();
-                                        final String commentId = dataSnapshot.child("commentId").getValue().toString();
-                                        final String sender = dataSnapshot.child("sender").getValue().toString();
-
-                                        mRootRef.child("users").child(sender)
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        String commnterName = dataSnapshot.child("name").getValue().toString();
-                                                        String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-
-                                                        HashMap<String,String> commentHash= new HashMap<>();
-                                                        commentHash.put("comment",comment);
-                                                        commentHash.put("_date",_date);
-                                                        commentHash.put("_time",_time);
-                                                        commentHash.put("commentId",commentId);
-                                                        commentHash.put("sender",sender);
-                                                        commentHash.put("commnterName",commnterName);
-                                                        commentHash.put("commenterImage",commenterImage);
-
-                                                        String commentString = commnterName+"  "+comment;
-
-                                                        commentsMessage.add(commentString);
-                                                        mAdapter.notifyDataSetChanged();
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
-                                                });
-
-                                    }
-
-                                @Override
-                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                }
-
-                                @Override
-                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//                                    String hater = dataSnapshot.getValue().toString();
-//                                    commentCounter--;
-//                                    mAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                                    String comment = dataSnapshot.getValue().toString();
-//                                    commentsId.remove(comment);
-//                                    mAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
 
 
                     mRootRef.child("users").child(from)
@@ -284,7 +330,9 @@ public class FeedsFragment extends BaseFragment {
                                             likes, locLat, locLong, postId,
                                             privacy, size, state, style,
                                             text, time, type, url,
-                                            likers, haters,commentCounter,commentsMessage,"");
+                                            likers, haters,commentCounter,
+                                            Fullcomment1,Fullcomment2,
+                                            Fullcomment3,Fullcomment4);
 
                                     if (!postsList.contains(feedsObjects)) {
                                         postsList.add(feedsObjects);
