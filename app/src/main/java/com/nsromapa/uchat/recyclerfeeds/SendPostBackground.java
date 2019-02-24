@@ -79,6 +79,7 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                 postInfo.put("state", "sent");
                 postInfo.put("locLong", "");
                 postInfo.put("locLat", "");
+                postInfo.put("commentCounter", "0");
                 postInfo.put("likes", "");
                 postInfo.put("hates", "");
                 postInfo.put("type", "test_post");
@@ -161,6 +162,7 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                                     postInfo.put("state", "sent");
                                     postInfo.put("locLong", "");
                                     postInfo.put("locLat", "");
+                                    postInfo.put("commentCounter", "0");
                                     postInfo.put("likes", "");
                                     postInfo.put("hates", "");
                                     postInfo.put("type", fileType);

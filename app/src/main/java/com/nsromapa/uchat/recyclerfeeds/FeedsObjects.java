@@ -24,9 +24,9 @@ public class FeedsObjects {
     String url;
     List<String> likers;
     List<String> haters;
-    ArrayList<Object> comments;
-    String commentString;
-
+    String commentCounter;
+    ArrayList<String> firstcommentString;
+    String firstcommenter;
 
     public FeedsObjects(String background, String date, String from,
                         String posterName, String posterImage,
@@ -34,7 +34,8 @@ public class FeedsObjects {
                         String locLong, String postId, String privacy,
                         String size, String state, String style,
                         String text, String time, String type, String url,
-                        List<String> likers, List<String> haters, ArrayList<Object> comments, String commentString) {
+                        List<String> likers, List<String> haters, String commentCounter,
+                        ArrayList<String> commentString, String firstcommenter) {
         this.background = background;
         this.date = date;
         this.from = from;
@@ -55,8 +56,9 @@ public class FeedsObjects {
         this.url = url;
         this.likers = likers;
         this.haters = haters;
-        this.comments = comments;
-        this.commentString = commentString;
+        this.commentCounter = commentCounter;
+        this.firstcommentString = commentString;
+        this.firstcommenter = firstcommenter;
     }
 
     public String getBackground() {
@@ -219,19 +221,19 @@ public class FeedsObjects {
         this.haters = haters;
     }
 
-    public ArrayList<Object> getComments() {
-        return comments;
+    public String commentCounter() {
+        return commentCounter;
     }
 
-    public void setComments(ArrayList<Object> comments) {
-        this.comments = comments;
+    public void setCommentCounter(String commentCounter) {
+        this.commentCounter = commentCounter;
     }
 
-    public String getCommentString() {
-        return commentString;
+    public ArrayList<String> getCommentString() {
+        return firstcommentString;
     }
 
-    public void setCommentString(String commentString) {
-        this.commentString = commentString;
+    public void setCommentString(ArrayList<String> commentString) {
+        this.firstcommentString = commentString;
     }
 }

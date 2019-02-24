@@ -72,7 +72,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
 
     private Button create_post;
 
-    private String shareWithText = "Followers/Friends";
+    private String shareWithText = "Public";
     private String fontFamily = "sans_.ttf";
     private String fontSize = "16";
     private String backgroundSelected = "post_background_transparent";
@@ -169,13 +169,16 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        shareWithText = "Followers/Friends";
+                        shareWithText = "Public";
                         break;
                     case 1:
+                        shareWithText = "Followers/Friends";
+                        break;
+                    case 2:
                         shareWithText = "Friends";
                         break;
                     default:
-                        shareWithText = "Followers/Friends";
+                        shareWithText = "Public";
                         break;
                 }
             }
@@ -563,9 +566,9 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setEditTexttoCustomized() {
-        Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
-                "fonts/AlexBrush_Regular.ttf");
-        postTest_Caption.setTypeface(typeface);
+//        Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(),
+//                "fonts/AlexBrush_Regular.ttf");
+//        postTest_Caption.setTypeface(typeface);
         postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.white));
 
@@ -581,6 +584,8 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
         postTest_Caption.setTextSize(14f);
         postTest_Caption.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
         postTest_Caption.setTextColor(ContextCompat.getColor(this,R.color.black));
+        postTest_Caption.setBackgroundResource(R.drawable.post_background_transparent);
+        backgroundSelected = "post_background_transparent";
         fontSize_and_fontfamily.setVisibility(View.GONE);
         fontFamily = "sans_.ttf";
         select_fontFamily_for_Text.setSelection(21);

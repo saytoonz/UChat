@@ -58,7 +58,6 @@ public class FeedsFragment extends BaseFragment {
 
     ArrayList<FeedsObjects> postsList = new ArrayList<>();
 
-    String commentString = "";
 
 
     @Override
@@ -118,9 +117,18 @@ public class FeedsFragment extends BaseFragment {
                     final String time = snapShot.child("time").getValue().toString();
                     final String type = snapShot.child("type").getValue().toString();
                     final String url = snapShot.child("url").getValue().toString();
+                    final Object cmtCnter = snapShot.child("commentCounter").getValue();
                     final List<String> likers = new ArrayList<>();
                     final List<String> haters = new ArrayList<>();
-                    final ArrayList<Object> comments = new ArrayList<>();
+                    final ArrayList<String> commentsMessage = new ArrayList<>();
+
+                   final String commentCounter;
+
+                    if (cmtCnter!=null){
+                        commentCounter = cmtCnter.toString();
+                    }else {
+                        commentCounter = "0";
+                    }
 
 
 
@@ -220,9 +228,9 @@ public class FeedsFragment extends BaseFragment {
                                                         commentHash.put("commnterName",commnterName);
                                                         commentHash.put("commenterImage",commenterImage);
 
-                                                        commentString = commentString+"\n\n<b>"+commnterName+"</b> | "+comment;
+                                                        String commentString = commnterName+"  "+comment;
 
-                                                        comments.add(commentHash);
+                                                        commentsMessage.add(commentString);
                                                         mAdapter.notifyDataSetChanged();
 
                                                     }
@@ -242,16 +250,16 @@ public class FeedsFragment extends BaseFragment {
 
                                 @Override
                                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                    String hater = dataSnapshot.getValue().toString();
-                                    comments.remove(hater);
-                                    mAdapter.notifyDataSetChanged();
+//                                    String hater = dataSnapshot.getValue().toString();
+//                                    commentCounter--;
+//                                    mAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
                                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String hater = dataSnapshot.getValue().toString();
-                                    comments.remove(hater);
-                                    mAdapter.notifyDataSetChanged();
+//                                    String comment = dataSnapshot.getValue().toString();
+//                                    commentsId.remove(comment);
+//                                    mAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
@@ -276,7 +284,7 @@ public class FeedsFragment extends BaseFragment {
                                             likes, locLat, locLong, postId,
                                             privacy, size, state, style,
                                             text, time, type, url,
-                                            likers, haters,comments,commentString);
+                                            likers, haters,commentCounter,commentsMessage,"");
 
                                     if (!postsList.contains(feedsObjects)) {
                                         postsList.add(feedsObjects);
