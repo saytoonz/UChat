@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
+import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
@@ -26,7 +27,9 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public EmoticonTextView PostCaption_TextView;
     public EmoticonTextView UserName_TextView;
 
-    public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hateUnhate;
+    public LinearLayout PostActionButtons_hateUnhate;
+    public LikeButton thumb_button_likeButton;
+//    public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hateUnhate;
     public ImageView PostActionButtons_likeUnlike_Image,PostActionButtons_hateUnhate_Image;
     public LinearLayout PostActionButtons_comment;
     public ImageButton PostActionButtons_delete;
@@ -53,8 +56,9 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
         PostCaption_TextView = itemView.findViewById(R.id.PostCaption_TextView);
         UserName_TextView = itemView.findViewById(R.id.UserName_TextView);
 
-        PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
-        PostActionButtons_likeUnlike_Image = itemView.findViewById(R.id.PostActionButtons_likeUnlike_Image);
+//        PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
+//        PostActionButtons_likeUnlike_Image = itemView.findViewById(R.id.PostActionButtons_likeUnlike_Image);
+        thumb_button_likeButton = itemView.findViewById(R.id.thumb_button_likeButton);
         postTotal_likers = itemView.findViewById(R.id.postTotal_likers);
 
         PostActionButtons_hateUnhate = itemView.findViewById(R.id.PostActionButtons_hateUnhate);

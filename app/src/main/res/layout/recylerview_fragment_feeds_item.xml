@@ -135,15 +135,27 @@
             android:layout_weight="1"
             android:gravity="center">
 
-            <ImageView
-                android:id="@+id/PostActionButtons_likeUnlike_Image"
-                android:layout_width="32dp"
+            <com.nsromapa.say.LikeButton
+                android:id="@+id/thumb_button_likeButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:paddingStart="8dp"
-                android:paddingEnd="5dp"
-                app:srcCompat="@drawable/ic_like2" />
+                app:circle_end_color="@color/colorAccent2"
+                app:circle_start_color="@android:color/holo_blue_dark"
+                app:dots_primary_color="@android:color/holo_blue_light"
+                app:dots_secondary_color="@color/colorAccent2"
+                app:icon_size="22dp"
+                app:like_drawable="@drawable/ic_like2"
+                app:unlike_drawable="@drawable/thumb_off" />
+
+            <!--<ImageView-->
+                <!--android:id="@+id/PostActionButtons_likeUnlike_Image"-->
+                <!--android:layout_width="32dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:paddingStart="8dp"-->
+                <!--android:paddingEnd="5dp"-->
+                <!--app:srcCompat="@drawable/ic_like2" />-->
 
             <TextView
                 android:id="@+id/postTotal_likers"

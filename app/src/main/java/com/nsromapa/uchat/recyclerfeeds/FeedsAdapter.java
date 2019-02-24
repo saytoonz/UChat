@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
+import com.nsromapa.say.LikeButton;
+import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
 import com.nsromapa.uchat.utils.FormatterUtil;
@@ -156,12 +158,14 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.postTotal_haters.setText(String.valueOf(post.getHaters().size()));
         feedViewHolder.postTotal_commenters.setText(post.getCommentCounter());
 
-        ////Show whether user has liked already and display the unlike image
-        ///else display the like image
+        //Show whether user has liked already and display the unlike image
+        //else display the like image
         if (post.getLikers().contains(currentUserID)) {
-            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_unlike2);
+            feedViewHolder.thumb_button_likeButton.setLiked(true);
+//            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_unlike2);
         } else {
-            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_like2);
+            feedViewHolder.thumb_button_likeButton.setLiked(true);
+//            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_like2);
         }
 
 
@@ -174,21 +178,48 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         }
 
 
-        //When the like button is clicked
-        feedViewHolder.PostActionButtons_likeUnlike.setOnClickListener(new View.OnClickListener() {
+//        When the like button is clicked
+        feedViewHolder.thumb_button_likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
-            public void onClick(View v) {
+            public void liked(LikeButton likeButton) {
                 if (post.getLikers().contains(currentUserID)) {
                     mRootRef.child("posts").child(post.getPostId())
                             .child("likers")
-                            .child(currentUserID).removeValue();
+                            .child(currentUserID).setValue(currentUserID);
+                    feedViewHolder.thumb_button_likeButton.setLiked(true);
+                }else {
+                    feedViewHolder.thumb_button_likeButton.setLiked(false);
+                }
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                if (post.getLikers().contains(currentUserID)) {
+                    feedViewHolder.thumb_button_likeButton.setLiked(true);
                 } else {
                     mRootRef.child("posts").child(post.getPostId())
                             .child("likers")
-                            .child(currentUserID).setValue(currentUserID);
+                            .child(currentUserID).removeValue();
+                    feedViewHolder.thumb_button_likeButton.setLiked(false);
                 }
             }
         });
+//        feedViewHolder.thumb_button_likeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (post.getLikers().contains(currentUserID)) {
+//                    mRootRef.child("posts").child(post.getPostId())
+//                            .child("likers")
+//                            .child(currentUserID).removeValue();
+//                    feedViewHolder.thumb_button_likeButton.setLiked(false);
+//                } else {
+//                    mRootRef.child("posts").child(post.getPostId())
+//                            .child("likers")
+//                            .child(currentUserID).setValue(currentUserID);
+//                    feedViewHolder.thumb_button_likeButton.setLiked(false);
+//                }
+//            }
+//        });
 
 
         //When the hate button is clicked
@@ -415,133 +446,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.Post_comments_all.append(post.getFullcomment3() + "\n\n");
         feedViewHolder.Post_comments_all.append(post.getFullcomment4());
 
-
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//
-//        feedViewHolder.comments_LinearLayout.setOrientation(LinearLayout.VERTICAL);
-//
-//        for (int i=0; i < post.getComments().size(); i++){
-//            Object comment = post.getComments().get(i);
-//
-//
-//            EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
-//            commenterTextView.setId(i);
-//            commenterTextView.setText("commenter Name");
-//            commenterTextView.setLayoutParams(params);
-//            commenterTextView.setEmoticonSize(25);
-//            commenterTextView.setTextSize(12);
-//            commenterTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-//            commenterTextView.setTypeface(commenterTextView.getTypeface(),Typeface.BOLD);
-//            commenterTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
-//
-//
-//            EmoticonTextView commentTextView = new EmoticonTextView(mContext);
-//            commentTextView.setId(i+100000);
-//            commentTextView.setText("commenter Comment Posted "+i);
-//            commentTextView.setLayoutParams(params);
-//            commentTextView.setEmoticonSize(28);
-//            commentTextView.setTextSize(14);
-//            commentTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-//            commentTextView.setTypeface(commentTextView.getTypeface(),Typeface.NORMAL);
-//            commentTextView.setPadding(0,0,0,5);
-//            commentTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
-//
-//            feedViewHolder.comments_LinearLayout.addView(commenterTextView);
-//            feedViewHolder.comments_LinearLayout.addView(commentTextView);
-//        }
-
-//        style="@style/Base.TextAppearance.AppCompat.Large"
-
-
-//        style="@style/Base.TextAppearance.AppCompat.Medium"
-
-
-//        final int id = (int) System.currentTimeMillis();
-
-//        mRootRef.child("posts").child(post.getPostId()).getRef().child("comments")
-//                .addChildEventListener(new ChildEventListener() {
-//                    @Override
-//                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                        final String comment = dataSnapshot.child("comment").getValue().toString();
-//                        final String _date = dataSnapshot.child("date").getValue().toString();
-//                        final String _time = dataSnapshot.child("time").getValue().toString();
-//                        final String commentId = dataSnapshot.child("commentId").getValue().toString();
-//                        final String sender = dataSnapshot.child("sender").getValue().toString();
-//
-//                        mRootRef.child("users").child(sender)
-//                                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                        String commnterName = dataSnapshot.child("name").getValue().toString();
-//                                        String commenterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
-//
-//                                        LinearLayout.LayoutParams params =
-//                                                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//                                                        LinearLayout.LayoutParams.WRAP_CONTENT);
-//
-//                                        feedViewHolder.comments_LinearLayout.setOrientation(LinearLayout.VERTICAL);
-//
-//
-//
-//                                        EmoticonTextView commenterTextView = new EmoticonTextView(mContext);
-//                                        commenterTextView.setId(id);
-//                                        commenterTextView.setText(commnterName);
-//                                        commenterTextView.setLayoutParams(params);
-//                                        commenterTextView.setEmoticonSize(25);
-//                                        commenterTextView.setTextSize(12);
-//                                        commenterTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-//                                        commenterTextView.setTypeface(commenterTextView.getTypeface(),Typeface.BOLD);
-//                                        commenterTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
-//
-//
-//                                        EmoticonTextView commentTextView = new EmoticonTextView(mContext);
-//                                        commentTextView.setId(id+100000);
-//                                        commentTextView.setText(comment);
-//                                        commentTextView.setLayoutParams(params);
-//                                        commentTextView.setEmoticonSize(28);
-//                                        commentTextView.setTextSize(14);
-//                                        commentTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black));
-//                                        commentTextView.setTypeface(commentTextView.getTypeface(),Typeface.NORMAL);
-//                                        commentTextView.setPadding(0,0,0,5);
-//                                        commentTextView.setEmoticonProvider(SamsungEmoticonProvider.create());
-//
-//                                        feedViewHolder.comments_LinearLayout.addView(commenterTextView);
-//                                        feedViewHolder.comments_LinearLayout.addView(commentTextView);
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//
-//                    }
-//
-//                    @Override
-//                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-////                        String hater = dataSnapshot.getValue().toString();
-////                        comments.remove(hater);
-////                        mAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-////                        String hater = dataSnapshot.getValue().toString();
-////                        comments.remove(hater);
-////                        mAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
 
     }
 
