@@ -66,11 +66,11 @@
 
 
 
-    <string name="now_time_range">now</string>
+    <string name="now_time_range" translatable="false">now</string>
 
-    <string name="duration_minutes_shortest">%1$d m</string>
-    <string name="duration_hours_shortest">%1$d h</string>
-    <string name="duration_days_shortest">%1$d d</string>
-    <string name="duration_week_shortest">%1$d w</string>
+    <string name="duration_minutes_shortest" translatable="false">%1$d minutes ago</string>
+    <string name="duration_hours_shortest" translatable="false">%1$d hours ago</string>
+    <string name="duration_days_shortest" translatable="false">%1$d days ago</string>
+    <string name="duration_week_shortest" translatable="false">%1$d weeks ago</string>
 
 </resources>

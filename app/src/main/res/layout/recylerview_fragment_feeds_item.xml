@@ -50,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/Username"
                 android:textColor="#262626"
+                android:fontFamily="sans-serif"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -65,7 +66,11 @@
                     android:layout_marginTop="5dp"
                     android:lineHeight="15dp"
                     android:text="@string/post_time"
-                    android:textColor="#262626"
+                    android:textColor="#999"
+                    android:textAllCaps="true"
+                    android:textStyle="normal"
+                    android:fontFamily="sans-serif-light"
+                    android:textFontWeight="lighter"
                     android:textSize="12sp"
                     tools:targetApi="p" />
             </LinearLayout>
@@ -262,10 +267,11 @@
                     style="@style/Base.TextAppearance.AppCompat.Large"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="#262626"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:emojiconSize="25sp"
+                    android:fontFamily="sans-serif-black"
                     android:text="User comment on post"/>
 
 
@@ -274,10 +280,11 @@
                     style="@style/Base.TextAppearance.AppCompat.Medium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="#262626"
                     android:textSize="14sp"
                     android:textStyle="normal"
                     android:paddingBottom="5dp"
+                    android:fontFamily="sans-serif"
                     app:emojiconSize="28sp"
                     android:text="User comment on post"/>
 
@@ -293,8 +300,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="12sp"
+            android:textSize="14sp"
             app:emojiconSize="25sp"
+            android:fontFamily="sans-serif"
             android:text="User comment on post"/>
     </LinearLayout>
 
