@@ -76,7 +76,7 @@
             timer:radius="2dp"
             timer:strokeWidth="1dp"
             timer:initialColor="@color/white"
-            timer:progressColor="@color/red" />
+            timer:progressColor="@color/pure_red" />
 
         <TextView
             android:id="@+id/time"

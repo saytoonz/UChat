@@ -161,82 +161,54 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         //Show whether user has liked already and display the unlike image
         //else display the like image
         if (post.getLikers().contains(currentUserID)) {
-            feedViewHolder.thumb_button_likeButton.setLiked(true);
-//            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_unlike2);
+            feedViewHolder.PostActionButtons_likeUnlike.setLiked(true);
         } else {
-            feedViewHolder.thumb_button_likeButton.setLiked(true);
-//            feedViewHolder.PostActionButtons_likeUnlike_Image.setImageResource(R.drawable.ic_like2);
+            feedViewHolder.PostActionButtons_likeUnlike.setLiked(false);
         }
 
 
         ////Show whether user has hated already by display the unhate image
         ///else display the hate image
         if (post.getHaters().contains(currentUserID)) {
-            feedViewHolder.PostActionButtons_hateUnhate_Image.setImageResource(R.drawable.ic_unhate2);
+            feedViewHolder.PostActionButtons_hateUnhate.setLiked(true);
         } else {
-            feedViewHolder.PostActionButtons_hateUnhate_Image.setImageResource(R.drawable.ic_hate2);
+            feedViewHolder.PostActionButtons_hateUnhate.setLiked(false);
         }
 
 
 //        When the like button is clicked
-        feedViewHolder.thumb_button_likeButton.setOnLikeListener(new OnLikeListener() {
+        feedViewHolder.PostActionButtons_likeUnlike.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-                if (post.getLikers().contains(currentUserID)) {
-                    mRootRef.child("posts").child(post.getPostId())
-                            .child("likers")
-                            .child(currentUserID).setValue(currentUserID);
-                    feedViewHolder.thumb_button_likeButton.setLiked(true);
-                }else {
-                    feedViewHolder.thumb_button_likeButton.setLiked(false);
-                }
+                mRootRef.child("posts").child(post.getPostId())
+                        .child("likers").child(currentUserID).setValue(currentUserID);
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
-                if (post.getLikers().contains(currentUserID)) {
-                    feedViewHolder.thumb_button_likeButton.setLiked(true);
-                } else {
-                    mRootRef.child("posts").child(post.getPostId())
-                            .child("likers")
-                            .child(currentUserID).removeValue();
-                    feedViewHolder.thumb_button_likeButton.setLiked(false);
-                }
+                mRootRef.child("posts").child(post.getPostId())
+                        .child("likers").child(currentUserID).removeValue();
+
             }
         });
-//        feedViewHolder.thumb_button_likeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (post.getLikers().contains(currentUserID)) {
-//                    mRootRef.child("posts").child(post.getPostId())
-//                            .child("likers")
-//                            .child(currentUserID).removeValue();
-//                    feedViewHolder.thumb_button_likeButton.setLiked(false);
-//                } else {
-//                    mRootRef.child("posts").child(post.getPostId())
-//                            .child("likers")
-//                            .child(currentUserID).setValue(currentUserID);
-//                    feedViewHolder.thumb_button_likeButton.setLiked(false);
-//                }
-//            }
-//        });
 
 
-        //When the hate button is clicked
-        feedViewHolder.PostActionButtons_hateUnhate.setOnClickListener(new View.OnClickListener() {
+//        When the like button is clicked
+        feedViewHolder.PostActionButtons_hateUnhate.setOnLikeListener(new OnLikeListener() {
             @Override
-            public void onClick(View v) {
-                if (post.getHaters().contains(currentUserID)) {
-                    mRootRef.child("posts").child(post.getPostId())
-                            .child("haters")
-                            .child(currentUserID).removeValue();
-                } else {
-                    mRootRef.child("posts").child(post.getPostId())
-                            .child("haters")
-                            .child(currentUserID).setValue(currentUserID);
-                }
+            public void liked(LikeButton likeButton) {
+                mRootRef.child("posts").child(post.getPostId())
+                        .child("haters").child(currentUserID).setValue(currentUserID);
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                mRootRef.child("posts").child(post.getPostId())
+                        .child("haters").child(currentUserID).removeValue();
             }
         });
+
+
 
 
         //Show Delete button and add OnClickListener

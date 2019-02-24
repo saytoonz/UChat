@@ -127,7 +127,6 @@
         android:padding="5dp">
 
         <LinearLayout
-            android:id="@+id/PostActionButtons_likeUnlike"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
@@ -136,26 +135,17 @@
             android:gravity="center">
 
             <com.nsromapa.say.LikeButton
-                android:id="@+id/thumb_button_likeButton"
+                android:id="@+id/PostActionButtons_likeUnlike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:circle_end_color="@color/colorAccent2"
                 app:circle_start_color="@android:color/holo_blue_dark"
                 app:dots_primary_color="@android:color/holo_blue_light"
-                app:dots_secondary_color="@color/colorAccent2"
+                app:dots_secondary_color="#ff0000"
                 app:icon_size="22dp"
-                app:like_drawable="@drawable/ic_like2"
-                app:unlike_drawable="@drawable/thumb_off" />
+                app:like_drawable="@drawable/ic_unlike2"
+                app:unlike_drawable="@drawable/ic_like2" />
 
-            <!--<ImageView-->
-                <!--android:id="@+id/PostActionButtons_likeUnlike_Image"-->
-                <!--android:layout_width="32dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center"-->
-                <!--android:background="@android:color/transparent"-->
-                <!--android:paddingStart="8dp"-->
-                <!--android:paddingEnd="5dp"-->
-                <!--app:srcCompat="@drawable/ic_like2" />-->
 
             <TextView
                 android:id="@+id/postTotal_likers"
@@ -172,7 +162,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/PostActionButtons_hateUnhate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
@@ -180,15 +169,18 @@
             android:layout_weight="1"
             android:gravity="center">
 
-            <ImageView
-                android:id="@+id/PostActionButtons_hateUnhate_Image"
-                android:layout_width="32dp"
+            <com.nsromapa.say.LikeButton
+                android:id="@+id/PostActionButtons_hateUnhate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:paddingStart="8dp"
-                android:paddingEnd="5dp"
-                app:srcCompat="@drawable/ic_hate2" />
+                app:circle_end_color="#ff0000"
+                app:circle_start_color="@color/yellow"
+                app:dots_primary_color="@color/yellow"
+                app:dots_secondary_color="#ff0000"
+                app:icon_size="22dp"
+                app:like_drawable="@drawable/ic_unhate2"
+                app:unlike_drawable="@drawable/ic_hate2" />
+
 
             <TextView
                 android:id="@+id/postTotal_haters"

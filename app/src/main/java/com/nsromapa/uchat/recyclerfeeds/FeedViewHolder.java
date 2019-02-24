@@ -27,10 +27,9 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
     public EmoticonTextView PostCaption_TextView;
     public EmoticonTextView UserName_TextView;
 
-    public LinearLayout PostActionButtons_hateUnhate;
-    public LikeButton thumb_button_likeButton;
+    public LikeButton PostActionButtons_likeUnlike, PostActionButtons_hateUnhate;
 //    public LinearLayout PostActionButtons_likeUnlike, PostActionButtons_hateUnhate;
-    public ImageView PostActionButtons_likeUnlike_Image,PostActionButtons_hateUnhate_Image;
+//    public ImageView PostActionButtons_likeUnlike_Image,PostActionButtons_hateUnhate_Image;
     public LinearLayout PostActionButtons_comment;
     public ImageButton PostActionButtons_delete;
     public TextView postTotal_likers, postTotal_haters, postTotal_commenters;
@@ -58,11 +57,12 @@ class FeedViewHolder extends RecyclerView.ViewHolder {
 
 //        PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
 //        PostActionButtons_likeUnlike_Image = itemView.findViewById(R.id.PostActionButtons_likeUnlike_Image);
-        thumb_button_likeButton = itemView.findViewById(R.id.thumb_button_likeButton);
+        PostActionButtons_likeUnlike = itemView.findViewById(R.id.PostActionButtons_likeUnlike);
         postTotal_likers = itemView.findViewById(R.id.postTotal_likers);
 
+//        PostActionButtons_hateUnhate = itemView.findViewById(R.id.PostActionButtons_hateUnhate);
+//        PostActionButtons_hateUnhate_Image = itemView.findViewById(R.id.PostActionButtons_hateUnhate_Image);
         PostActionButtons_hateUnhate = itemView.findViewById(R.id.PostActionButtons_hateUnhate);
-        PostActionButtons_hateUnhate_Image = itemView.findViewById(R.id.PostActionButtons_hateUnhate_Image);
         postTotal_haters = itemView.findViewById(R.id.postTotal_haters);
 
         PostActionButtons_comment = itemView.findViewById(R.id.PostActionButtons_comment);
