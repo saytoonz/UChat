@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/custom_bar_poster_image_view"
+        android:layout_width="47dp"
+        android:layout_height="47dp"
+        android:src="@drawable/profile_image"
+        android:cropToPadding="true"
+        android:layout_marginStart="10dp"/>
+
+    <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+        android:id="@+id/custom_bar_poster_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="65dp"
+        android:layout_marginEnd="10dp"
+        android:textStyle="bold"
+        android:text="@string/Username"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/custom_bar_post_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="65dp"
+        android:layout_marginEnd="10dp"
+        android:text="Post time"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:textAllCaps="true"
+        android:layout_marginTop="3dp"
+        android:layout_below="@+id/custom_bar_poster_name"/>
+
+
+</RelativeLayout>

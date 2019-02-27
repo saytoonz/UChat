@@ -143,7 +143,7 @@ public class CreatePostActivity extends AppCompatActivity implements View.OnClic
                 "fonts/sans_.ttf");
         postTest_Caption.setTypeface(typeface);
 
-        String[] itemsforShareWith = new String[]{"Followers/Friends", "Friends only"};
+        String[] itemsforShareWith = new String[]{"Public","Followers/Friends", "Friends only"};
         String[] itemsforFontSize = new String[]{"14", "16", "18", "20", "22", "24","26","28"};
         final String[] itemsforFont = new String[]{"AlexBrush_Regular.ttf", "amita_bold.ttf", "berkshireswash_regular.ttf",
                 "bokr35w.ttf", "Bookmndi.TTF", "Carrington.ttf", "CHASB___.TTF", "Cookie_Regular.ttf",

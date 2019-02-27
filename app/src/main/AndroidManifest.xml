@@ -98,12 +98,16 @@
 
         <activity
             android:name=".LocationUtil.SingLocationActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_sing_location" />
-        <activity android:name=".LocationUtil.MapboxSingleLocationActivity" />
+        <activity android:name=".LocationUtil.MapboxSingleLocationActivity"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".findme.FindMeMapsActivity"
-            android:label="@string/title_activity_find_me_maps" />
-        <activity android:name=".CreatePostActivity" />
+            android:label="@string/title_activity_find_me_maps"
+            android:launchMode="singleTop" />
+        <activity android:name=".CreatePostActivity"
+            android:launchMode="singleTop"/>
     </application>
 
 </manifest>

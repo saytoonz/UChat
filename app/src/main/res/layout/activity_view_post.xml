@@ -1,9 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ViewPostActivity">
 
-</android.support.constraint.ConstraintLayout>
+
+    <include
+        android:id="@+id/view_post_app_bar"
+        layout="@layout/app_bar_layout" />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/PostImageVideo_ImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/post_imageView" />
+
+            <ImageView
+                android:id="@+id/post_VideoThumbnail_play"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play" />
+        </FrameLayout>
+
+
+        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+            android:id="@+id/PostTextpost_TextView"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="200dp"
+            android:paddingStart="7dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="5dp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:emojiconSize="30sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/PostImageViewerActionButtons"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="fill_horizontal"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.nsromapa.say.LikeButton
+                android:id="@+id/PostActionButtons_likeUnlike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:circle_end_color="@color/colorAccent2"
+                app:circle_start_color="@android:color/holo_blue_dark"
+                app:dots_primary_color="@android:color/holo_blue_light"
+                app:dots_secondary_color="#ff0000"
+                app:icon_size="22dp"
+                app:like_drawable="@drawable/ic_unlike2"
+                app:unlike_drawable="@drawable/ic_like2" />
+
+
+            <TextView
+                android:id="@+id/postTotal_likers"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent2"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.nsromapa.say.LikeButton
+                android:id="@+id/PostActionButtons_hateUnhate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:circle_end_color="#ff0000"
+                app:circle_start_color="@color/yellow"
+                app:dots_primary_color="@color/yellow"
+                app:dots_secondary_color="#ff0000"
+                app:icon_size="22dp"
+                app:like_drawable="@drawable/ic_unhate2"
+                app:unlike_drawable="@drawable/ic_hate2" />
+
+
+            <TextView
+                android:id="@+id/postTotal_haters"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent2"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/PostActionButtons_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:paddingStart="8dp"
+                android:paddingEnd="5dp"
+                app:srcCompat="@drawable/ic_comment2" />
+
+            <TextView
+                android:id="@+id/postTotal_commenters"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent2"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+        <ImageButton
+            android:id="@+id/PostActionButtons_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_delete_forever2" />
+
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+
+    </LinearLayout>
+
+</LinearLayout>
