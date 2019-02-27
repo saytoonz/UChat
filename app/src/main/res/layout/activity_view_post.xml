@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,6 +8,9 @@
     android:orientation="vertical"
     tools:context=".ViewPostActivity">
 
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <include
         android:id="@+id/view_post_app_bar"
@@ -16,6 +19,8 @@
 
 
     <LinearLayout
+        android:id="@+id/postShowLayout"
+        android:layout_below="@+id/view_post_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -26,14 +31,14 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/PostImageVideo_ImageView"
+                android:id="@+id/vPostImageVideo_ImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/post_imageView" />
 
             <ImageView
-                android:id="@+id/post_VideoThumbnail_play"
+                android:id="@+id/vpost_VideoThumbnail_play"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
@@ -42,7 +47,7 @@
 
 
         <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
-            android:id="@+id/PostTextpost_TextView"
+            android:id="@+id/vPostTextpost_TextView"
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,6 +65,7 @@
 
     <LinearLayout
         android:id="@+id/PostImageViewerActionButtons"
+        android:layout_below="@+id/postShowLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="fill_horizontal"
@@ -75,7 +81,7 @@
             android:gravity="center">
 
             <com.nsromapa.say.LikeButton
-                android:id="@+id/PostActionButtons_likeUnlike"
+                android:id="@+id/vPostActionButtons_likeUnlike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:circle_end_color="@color/colorAccent2"
@@ -88,7 +94,7 @@
 
 
             <TextView
-                android:id="@+id/postTotal_likers"
+                android:id="@+id/vpostTotal_likers"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -110,7 +116,7 @@
             android:gravity="center">
 
             <com.nsromapa.say.LikeButton
-                android:id="@+id/PostActionButtons_hateUnhate"
+                android:id="@+id/vPostActionButtons_hateUnhate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:circle_end_color="#ff0000"
@@ -123,7 +129,7 @@
 
 
             <TextView
-                android:id="@+id/postTotal_haters"
+                android:id="@+id/vpostTotal_haters"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -137,40 +143,10 @@
         </LinearLayout>
 
 
-        <LinearLayout
-            android:id="@+id/PostActionButtons_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:paddingStart="8dp"
-                android:paddingEnd="5dp"
-                app:srcCompat="@drawable/ic_comment2" />
-
-            <TextView
-                android:id="@+id/postTotal_commenters"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:text="0"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent2"
-                android:textSize="14sp" />
-
-        </LinearLayout>
 
 
         <ImageButton
-            android:id="@+id/PostActionButtons_delete"
+            android:id="@+id/vPostActionButtons_delete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -179,20 +155,72 @@
 
     </LinearLayout>
 
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    
-    
-    
-    <LinearLayout
+    <TextView
+        android:id="@+id/total_comments"
+        android:layout_below="@+id/PostImageViewerActionButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:text="@string/_0_comments"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:textColor="#999"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/total_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 
 
+    <LinearLayout
+        android:id="@+id/newCommentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true">
+
+
+            <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText
+                android:id="@+id/CreateComment_TextEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:hint="@string/add_a_comment"
+                android:inputType="textMultiLine"
+                android:maxHeight="150dp"
+                android:minHeight="40dp"
+                android:textAlignment="textStart"
+                android:textColor="#262626"
+                android:textStyle="normal"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                app:emojiconSize="28sp"
+                tools:ignore="RtlCompat" />
+
+            <Button
+                android:id="@+id/Send_Comment_Btn"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="@string/post"
+                android:textAllCaps="false"
+                android:textColor="#3897f0"
+                android:textStyle="normal" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
+
+</ScrollView>

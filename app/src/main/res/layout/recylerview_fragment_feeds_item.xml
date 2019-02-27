@@ -345,6 +345,10 @@
                 android:minHeight="40dp"
                 android:textAlignment="textStart"
                 android:textColor="#262626"
+                android:textStyle="normal"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                app:emojiconSize="28sp"
                 tools:ignore="RtlCompat" />
 
             <Button

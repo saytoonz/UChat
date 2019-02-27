@@ -70,5 +70,6 @@
     <string name="duration_hours_shortest" translatable="false">%1$d hours ago</string>
     <string name="duration_days_shortest" translatable="false">%1$d days ago</string>
     <string name="duration_week_shortest" translatable="false">%1$d weeks ago</string>
+    <string name="_0_comments">0 comments</string>
 
 </resources>

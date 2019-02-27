@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -24,21 +21,17 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nsromapa.emoticompack.samsung.SamsungEmoticonProvider;
 import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
-import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
 import com.nsromapa.uchat.ViewPostActivity;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -126,7 +119,19 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostTextpost_TextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openPost(post.getPostId(),post.getType(),post.getPosterName(),post.getPosterImage());
+                    String liking="not";
+                    String hating="not";
+                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())){
+                        liking = "liked";
+                    }
+                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())){
+                        hating = "hated";
+                    }
+                    openPost(post.getPostId(), post.getType(),
+                            post.getPosterName(), post.getPosterImage()
+                            ,post.getText(), post.getStyle(), post.getBackground()
+                            ,post.getSize(),post.getUrl(),post.getFrom()
+                            ,hating,liking);
                 }
             });
 
@@ -151,7 +156,18 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openPost(post.getPostId(),post.getType(),post.getPosterName(),post.getPosterImage());
+                    String liking="not";
+                    String hating="not";
+                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())){
+                        liking = "liked";
+                    }
+                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())){
+                        hating = "hated";
+                    }
+                    openPost(post.getPostId(),post.getType(),post.getPosterName(),
+                            post.getPosterImage(), post.getText(), post.getStyle(),
+                            post.getBackground(), post.getSize(),post.getUrl(), post.getFrom(),
+                            hating, liking);
                 }
             });
             Glide.with(mContext)
@@ -207,7 +223,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
 
 
-//        When the like button is clicked
+//        When the hate button is clicked
         feedViewHolder.PostActionButtons_hateUnhate.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -435,12 +451,22 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
     }
 
-    private void openPost(String postId, String postType, String posterName, String posterImage) {
+    private void openPost(String postId, String postType, String posterName, String posterImage,
+                          String postText, String postStyle, String postBackground, String postSize,
+                          String postUrl, String postfrom,String hateState, String likeState) {
         Intent intent = new Intent(mContext, ViewPostActivity.class);
         intent.putExtra("postId",postId);
         intent.putExtra("postType",postType);
         intent.putExtra("posterName",posterName);
         intent.putExtra("posterImage",posterImage);
+        intent.putExtra("postText",postText);
+        intent.putExtra("postStyle",postStyle);
+        intent.putExtra("postBackground",postBackground);
+        intent.putExtra("postSize",postSize);
+        intent.putExtra("postUrl",postUrl);
+        intent.putExtra("postfrom",postfrom);
+        intent.putExtra("hateState",hateState);
+        intent.putExtra("likeState",likeState);
         mContext.startActivity(intent);
     }
 
