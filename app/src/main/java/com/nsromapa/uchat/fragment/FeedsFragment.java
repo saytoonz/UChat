@@ -141,77 +141,19 @@ public class FeedsFragment extends BaseFragment {
                     }
 
                     if (comment1Obj!=null){
-                        String  comment1 = comment1Obj.toString();
-                        String  comment1Name = snapShot.child("comment1Name").getValue().toString();
-
-                        final ArrayList<String> name1 = new ArrayList<>() ;
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("users").child(comment1Name).child("name").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        name1.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
-                                        mAdapter.notifyDataSetChanged();
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-
-                        Fullcomment1 = comment1Name+" "+comment1;
+                        Fullcomment1 = comment1Obj.toString();
                     }else {
                         Fullcomment1 = "";
                     }
 
-
-
                     if (comment2Obj!=null){
-                        String comment2 = comment2Obj.toString();
-                        String comment2Name = Objects.requireNonNull(snapShot.child("comment2Name").getValue()).toString();
-
-                        final ArrayList<String> name2 = new ArrayList<>() ;
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("users").child(comment2Name).child("name").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                name2.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
-                                mAdapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        Fullcomment2 = comment2Name+" "+comment2;
-
+                        Fullcomment2 = "\n\n"+comment2Obj.toString();;
                     }else {
                         Fullcomment2 = "";
                     }
 
                     if (comment3Obj!=null){
-                        String comment3 = comment3Obj.toString();
-                        String comment3Name =  Objects.requireNonNull(snapShot.child("comment3Name").getValue()).toString();
-
-                        final ArrayList<String> name3 = new ArrayList<>() ;
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("users").child(comment3Name).child("name").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                name3.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
-                                mAdapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        Fullcomment3 = comment3Name+" "+comment3;
+                        Fullcomment3 = "\n\n"+ comment3Obj.toString();;
                     }else {
                         Fullcomment3 = "";
                     }
@@ -219,26 +161,7 @@ public class FeedsFragment extends BaseFragment {
 
 
                     if (comment4Obj!=null){
-                        String comment4 = comment4Obj.toString();
-                        String comment4Name =  Objects.requireNonNull(snapShot.child("comment4Name").getValue()).toString();
-
-                        final ArrayList<String> name4 = new ArrayList<>() ;
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("users").child(comment4Name).child("name")
-                                .addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                name4.add(Objects.requireNonNull(dataSnapshot.getValue()).toString());
-                                mAdapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        Fullcomment4 = comment4Name+" "+comment4;
+                        Fullcomment4 = "\n\n"+comment4Obj.toString();;
                     }else {
                         Fullcomment4 = "";
                     }

@@ -89,9 +89,6 @@ dependencies {
     //////----------- PDF Viewer -------------///////
     implementation 'com.github.barteksc:android-pdf-viewer:2.3.0'
 
-
-
-
     ///////------------------- Others -----------//////
     implementation project(path: ':likebutton')
     implementation 'com.jakewharton:butterknife:8.8.1'

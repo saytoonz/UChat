@@ -64,8 +64,6 @@
     <string name="post" translatable="false">Post</string>
 
 
-
-
     <string name="now_time_range" translatable="false">now</string>
 
     <string name="duration_minutes_shortest" translatable="false">%1$d minutes ago</string>

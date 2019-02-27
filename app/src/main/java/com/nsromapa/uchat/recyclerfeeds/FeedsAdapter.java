@@ -1,6 +1,7 @@
 package com.nsromapa.uchat.recyclerfeeds;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -34,6 +35,7 @@ import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.R;
+import com.nsromapa.uchat.ViewPostActivity;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
 import java.lang.reflect.Field;
@@ -121,6 +123,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostTextpost_TextView.setBackground(GetImage(mContext, background));
             feedViewHolder.PostTextpost_TextView.setTextSize(textSize);
             feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int) textSize) + 12);
+            feedViewHolder.PostTextpost_TextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openPost(post.getPostId(),post.getType(),post.getPosterName(),post.getPosterImage());
+                }
+            });
 
         } else if (post.getType().equals("video") || post.getType().equals("image")) {
             feedViewHolder.PostImageVideo_ImageView.setVisibility(View.VISIBLE);
@@ -140,6 +148,12 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             }
 
 
+            feedViewHolder.PostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openPost(post.getPostId(),post.getType(),post.getPosterName(),post.getPosterImage());
+                }
+            });
             Glide.with(mContext)
                     .asBitmap()
                     .load(post.getUrl())
@@ -419,6 +433,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         feedViewHolder.Post_comments_all.append(post.getFullcomment4());
 
 
+    }
+
+    private void openPost(String postId, String postType, String posterName, String posterImage) {
+        Intent intent = new Intent(mContext, ViewPostActivity.class);
+        intent.putExtra("postId",postId);
+        intent.putExtra("postType",postType);
+        intent.putExtra("posterName",posterName);
+        intent.putExtra("posterImage",posterImage);
+        mContext.startActivity(intent);
     }
 
 
