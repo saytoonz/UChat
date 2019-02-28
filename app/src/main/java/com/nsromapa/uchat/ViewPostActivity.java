@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
+import com.nsromapa.uchat.recyclerfeeds.PostCommentObjects;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
 import java.text.SimpleDateFormat;
@@ -80,6 +82,15 @@ public class ViewPostActivity extends AppCompatActivity {
     private TextView total_comments;
     private EmoticonEditText vCreateComment_TextEdit;
     private Button vSend_Comment_Btn;
+
+    private RecyclerView vPost_recycler;
+
+
+    private RecyclerView mRecyclerView;
+    public RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    ArrayList<PostCommentObjects> postsList = new ArrayList<>();
 
     private String currentUserID;
     private DatabaseReference mRootRef;
@@ -126,6 +137,8 @@ public class ViewPostActivity extends AppCompatActivity {
         total_comments = findViewById(R.id.total_comments);
         vCreateComment_TextEdit = findViewById(R.id.vCreateComment_TextEdit);
         vSend_Comment_Btn = findViewById(R.id.vSend_Comment_Btn);
+
+        vPost_recycler = findViewById(R.id.vPost_recycler);
 
 
         if (getIntent() != null) {
@@ -452,25 +465,36 @@ public class ViewPostActivity extends AppCompatActivity {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                                                ////Increase comment counter for the post and insert into db...
+                                                int commentCounter;
+                                                if (dataSnapshot.child("commentCounter").getValue() != null)
+                                                    commentCounter = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("commentCounter").getValue()).toString());
+                                                else
+                                                    commentCounter = 0;
+
+                                                commentCounter++;
+                                                dataSnapshot.getRef().child("commentCounter").setValue(String.valueOf(commentCounter));
+
+
                                                 ///Check  if 1st comment is already given.....
                                                 String comment1 = "";
                                                 if (dataSnapshot.child("comment1").getValue() != null) {
-                                                    comment1 = dataSnapshot.child("comment1").getValue().toString();
+                                                    comment1 = Objects.requireNonNull(dataSnapshot.child("comment1").getValue()).toString();
                                                 }
                                                 ///Check  if 2nd comment is already given.....
                                                 String comment2 = "";
                                                 if (dataSnapshot.child("comment2").getValue() != null) {
-                                                    comment2 = dataSnapshot.child("comment2").getValue().toString();
+                                                    comment2 = Objects.requireNonNull(dataSnapshot.child("comment2").getValue()).toString();
                                                 }
                                                 ///Check  if 3rd comment is already given.....
                                                 String comment3 = "";
                                                 if (dataSnapshot.child("comment3").getValue() != null) {
-                                                    comment3 = dataSnapshot.child("comment3").getValue().toString();
+                                                    comment3 = Objects.requireNonNull(dataSnapshot.child("comment3").getValue()).toString();
                                                 }
                                                 ///Check  if 4th comment is already given.....
                                                 String comment4 = "";
                                                 if (dataSnapshot.child("comment4").getValue() != null) {
-                                                    comment4 = dataSnapshot.child("comment4").getValue().toString();
+                                                    comment4 = Objects.requireNonNull(dataSnapshot.child("comment4").getValue()).toString();
                                                 }
 
                                                 if (TextUtils.isEmpty(comment1.trim())) {
@@ -507,9 +531,6 @@ public class ViewPostActivity extends AppCompatActivity {
 
                                             }
                                         });
-
-
-                                Toast.makeText(ViewPostActivity.this, "Comment sent...", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(ViewPostActivity.this, "Error: Could not comment, please try again", Toast.LENGTH_SHORT).show();
                             }
