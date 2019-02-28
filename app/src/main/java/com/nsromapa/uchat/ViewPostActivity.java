@@ -447,6 +447,68 @@ public class ViewPostActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                mRootRef.child("posts").child(postId)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                ///Check  if 1st comment is already given.....
+                                                String comment1 = "";
+                                                if (dataSnapshot.child("comment1").getValue() != null) {
+                                                    comment1 = dataSnapshot.child("comment1").getValue().toString();
+                                                }
+                                                ///Check  if 2nd comment is already given.....
+                                                String comment2 = "";
+                                                if (dataSnapshot.child("comment2").getValue() != null) {
+                                                    comment2 = dataSnapshot.child("comment2").getValue().toString();
+                                                }
+                                                ///Check  if 3rd comment is already given.....
+                                                String comment3 = "";
+                                                if (dataSnapshot.child("comment3").getValue() != null) {
+                                                    comment3 = dataSnapshot.child("comment3").getValue().toString();
+                                                }
+                                                ///Check  if 4th comment is already given.....
+                                                String comment4 = "";
+                                                if (dataSnapshot.child("comment4").getValue() != null) {
+                                                    comment4 = dataSnapshot.child("comment4").getValue().toString();
+                                                }
+
+                                                if (TextUtils.isEmpty(comment1.trim())) {
+                                                    dataSnapshot.getRef().child("comment1").setValue(comment);
+                                                    dataSnapshot.getRef().child("comment1Name").setValue(currentUserID);
+                                                } else {
+                                                    Log.d(TAG, "onDataChange: First comment already exist...");
+
+                                                    if (TextUtils.isEmpty(comment2.trim())) {
+                                                        dataSnapshot.getRef().child("comment2").setValue(comment);
+                                                        dataSnapshot.getRef().child("comment2Name").setValue(currentUserID);
+                                                    } else {
+                                                        Log.d(TAG, "onDataChange: Second comment already exist...");
+
+                                                        if (TextUtils.isEmpty(comment3.trim())) {
+                                                            dataSnapshot.getRef().child("comment3").setValue(comment);
+                                                            dataSnapshot.getRef().child("comment3Name").setValue(currentUserID);
+                                                        } else {
+                                                            Log.d(TAG, "onDataChange: Third comment already exist...");
+
+                                                            if (TextUtils.isEmpty(comment4.trim())) {
+                                                                dataSnapshot.getRef().child("comment4").setValue(comment);
+                                                                dataSnapshot.getRef().child("comment4Name").setValue(currentUserID);
+                                                            } else {
+                                                                Log.d(TAG, "onDataChange: Four comment already exist...");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
                                 Toast.makeText(ViewPostActivity.this, "Comment sent...", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(ViewPostActivity.this, "Error: Could not comment, please try again", Toast.LENGTH_SHORT).show();
