@@ -1,5 +1,6 @@
 package com.nsromapa.uchat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -9,10 +10,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,18 +24,25 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
+import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -67,6 +78,8 @@ public class ViewPostActivity extends AppCompatActivity {
     private ImageButton vPostActionButtons_delete;
 
     private TextView total_comments;
+    private EmoticonEditText vCreateComment_TextEdit;
+    private Button vSend_Comment_Btn;
 
     private String currentUserID;
     private DatabaseReference mRootRef;
@@ -111,6 +124,8 @@ public class ViewPostActivity extends AppCompatActivity {
         vPostActionButtons_delete = findViewById(R.id.vPostActionButtons_delete);
 
         total_comments = findViewById(R.id.total_comments);
+        vCreateComment_TextEdit = findViewById(R.id.vCreateComment_TextEdit);
+        vSend_Comment_Btn = findViewById(R.id.vSend_Comment_Btn);
 
 
         if (getIntent() != null) {
@@ -323,23 +338,25 @@ public class ViewPostActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
-                    commentCounter(commentId,  "add");
+                    commentCounter(commentId, "add");
                 }
 
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
-                    commentCounter(commentId,"remove") ;               }
+                    commentCounter(commentId, "remove");
+                }
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                     String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
-                    commentCounter(commentId,"remove") ;               }
+                    commentCounter(commentId, "remove");
+                }
 
                 @Override
                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
-                    commentCounter(commentId,"remove");
+                    commentCounter(commentId, "remove");
                 }
 
                 @Override
@@ -349,23 +366,112 @@ public class ViewPostActivity extends AppCompatActivity {
             });
 
 
+
+            newPostStuff();
+
         } else {
             finish();
         }
+    }
+
+
+    private void newPostStuff() {
+
+        ///Hide/Show post button if EditText is is/not empty
+        vCreateComment_TextEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (s.length() < 1) {
+                    vSend_Comment_Btn.setVisibility(View.GONE);
+                } else {
+                    vSend_Comment_Btn.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() < 1) {
+                    vSend_Comment_Btn.setVisibility(View.GONE);
+                } else {
+                    vSend_Comment_Btn.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() < 1) {
+                    vSend_Comment_Btn.setVisibility(View.GONE);
+                } else {
+                    vSend_Comment_Btn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        vSend_Comment_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String comment = Objects.requireNonNull(vCreateComment_TextEdit.getText()).toString();
+                vCreateComment_TextEdit.setText("");
+
+                if (TextUtils.isEmpty(comment)) {
+                    Toast.makeText(ViewPostActivity.this, "Can't create empty comment", Toast.LENGTH_SHORT).show();
+                    v.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(ViewPostActivity.this, "Posting Comment...", Toast.LENGTH_SHORT).show();
+
+
+                    String commentId = String.valueOf(System.currentTimeMillis());
+
+                    DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
+                            .child("posts").child(postId).child("comments").child(commentId);
+
+                    Calendar calendarFordate = Calendar.getInstance();
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+                    String _date = currentDateFormat.format(calendarFordate.getTime());
+
+                    Calendar calendarForTime = Calendar.getInstance();
+                    @SuppressLint("SimpleDateFormat")
+                    SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+                    String _time = currentTimeFormat.format(calendarForTime.getTime());
+
+                    HashMap<String, Object> commentMap = new HashMap<>();
+                    commentMap.put("commentId", commentId);
+                    commentMap.put("sender", currentUserID);
+                    commentMap.put("date", _date);
+                    commentMap.put("time", _time);
+                    commentMap.put("comment", comment);
+
+                    commentRef.updateChildren(commentMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(ViewPostActivity.this, "Comment sent...", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ViewPostActivity.this, "Error: Could not comment, please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+
     }
 
     private void likesAddCounts(String likerId) {
         if (likers.contains(likerId)) {
             Log.d(TAG, "likesAddCounts: LIKED alerady");
         } else {
-            vpostTotal_likers.setText(String.valueOf(likers.size()+1));
+            vpostTotal_likers.setText(String.valueOf(likers.size() + 1));
             likers.add(likerId);
         }
     }
 
     private void likesRemoveCounts(String likerId) {
         if (likers.contains(likerId)) {
-            vpostTotal_likers.setText(String.valueOf(likers.size()-1));
+            vpostTotal_likers.setText(String.valueOf(likers.size() - 1));
             likers.remove(likerId);
         } else {
             Log.d(TAG, "likesRemoveCounts: Unknown like to remove");
@@ -376,50 +482,48 @@ public class ViewPostActivity extends AppCompatActivity {
         if (haters.contains(haterId)) {
             Log.d(TAG, "HatesAddCounts: LIKED alerady");
         } else {
-            vpostTotal_haters.setText(String.valueOf(likers.size()+1));
+            vpostTotal_haters.setText(String.valueOf(likers.size() + 1));
             likers.add(haterId);
         }
     }
 
     private void HatesRemoveCounts(String haterId) {
         if (haters.contains(haterId)) {
-            vpostTotal_haters.setText(String.valueOf(likers.size()-1));
+            vpostTotal_haters.setText(String.valueOf(likers.size() - 1));
             likers.remove(haterId);
         } else {
             Log.d(TAG, "HatesRemoveCounts: Unknown like to remove");
         }
     }
 
-    private void commentCounter(String commentId,String addORremove){
-        if (commentsArray.contains(commentId)&& addORremove.equals("remove")){
-            String  commentString = " Comments";
-            if ((commentsArray.size()-1)<2){
+    private void commentCounter(String commentId, String addORremove) {
+        if (commentsArray.contains(commentId) && addORremove.equals("remove")) {
+            String commentString = " Comments";
+            if ((commentsArray.size() - 1) < 2) {
                 commentString = " Comment";
             }
-            String setCmt = String.valueOf(commentsArray.size()-1) + commentString;
+            String setCmt = String.valueOf(commentsArray.size() - 1) + commentString;
             total_comments.setText(setCmt);
             commentsArray.remove(commentId);
 
-        }else if (!commentsArray.contains(commentId) && addORremove.equals("add")){
-            String  commentString = " Comments";
-            if ((commentsArray.size()+1)<2){
+        } else if (!commentsArray.contains(commentId) && addORremove.equals("add")) {
+            String commentString = " Comments";
+            if ((commentsArray.size() + 1) < 2) {
                 commentString = " Comment";
             }
-            String setCmt = String.valueOf(commentsArray.size()+1) + commentString;
+            String setCmt = String.valueOf(commentsArray.size() + 1) + commentString;
             total_comments.setText(setCmt);
             commentsArray.add(commentId);
 
-        }else{
+        } else {
             Log.d(TAG, "commentCounter: no action on comments....");
         }
     }
 
 
-
     private void deletePost(String postId) {
         Toast.makeText(this, "post to be deleted...." + postId, Toast.LENGTH_SHORT).show();
     }
-
 
 
     private static Drawable GetImage(Context c, String ImageName) {
