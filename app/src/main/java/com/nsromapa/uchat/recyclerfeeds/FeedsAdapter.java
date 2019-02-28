@@ -1,10 +1,12 @@
 package com.nsromapa.uchat.recyclerfeeds;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -120,19 +122,19 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostTextpost_TextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String liking="not";
-                    String hating="not";
-                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())){
+                    String liking = "not";
+                    String hating = "not";
+                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())) {
                         liking = "liked";
                     }
-                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())){
+                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
                         hating = "hated";
                     }
                     openPost(post.getPostId(), post.getType(),
                             post.getPosterName(), post.getPosterImage()
-                            ,post.getText(), post.getStyle(), post.getBackground()
-                            ,post.getSize(),post.getUrl(),post.getFrom()
-                            ,hating,liking);
+                            , post.getText(), post.getStyle(), post.getBackground()
+                            , post.getSize(), post.getUrl(), post.getFrom()
+                            , hating, liking);
                 }
             });
 
@@ -157,17 +159,17 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String liking="not";
-                    String hating="not";
-                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())){
+                    String liking = "not";
+                    String hating = "not";
+                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())) {
                         liking = "liked";
                     }
-                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())){
+                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
                         hating = "hated";
                     }
-                    openPost(post.getPostId(),post.getType(),post.getPosterName(),
+                    openPost(post.getPostId(), post.getType(), post.getPosterName(),
                             post.getPosterImage(), post.getText(), post.getStyle(),
-                            post.getBackground(), post.getSize(),post.getUrl(), post.getFrom(),
+                            post.getBackground(), post.getSize(), post.getUrl(), post.getFrom(),
                             hating, liking);
                 }
             });
@@ -240,8 +242,6 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         });
 
 
-
-
         //Show Delete button and add OnClickListener
         if (!post.getFrom().equals(currentUserID)) {
             feedViewHolder.PostActionButtons_delete.setVisibility(View.GONE);
@@ -251,20 +251,40 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
             feedViewHolder.PostActionButtons_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("posts")
-                            .child(post.getPostId())
-                            .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("Do you want to delete this post?");
+                    builder.setCancelable(true);
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(mContext, "Error: Post was not deleted...", Toast.LENGTH_SHORT).show();
-                            } else {
-//                                postLists.remove(position-1);
-                                Toast.makeText(mContext, "Message deleted...\n It will disappear when you restart you app", Toast.LENGTH_SHORT).show();
-                            }
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("posts")
+                                    .child(post.getPostId())
+                                    .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(mContext, "Error: Post was not deleted...", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(mContext, "Message deleted...\n It will disappear when you restart you app", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
                         }
                     });
+
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+
+                    builder.create();
                 }
             });
         }
@@ -454,20 +474,20 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
     private void openPost(String postId, String postType, String posterName, String posterImage,
                           String postText, String postStyle, String postBackground, String postSize,
-                          String postUrl, String postfrom,String hateState, String likeState) {
+                          String postUrl, String postfrom, String hateState, String likeState) {
         Intent intent = new Intent(mContext, ViewPostActivity.class);
-        intent.putExtra("postId",postId);
-        intent.putExtra("postType",postType);
-        intent.putExtra("posterName",posterName);
-        intent.putExtra("posterImage",posterImage);
-        intent.putExtra("postText",postText);
-        intent.putExtra("postStyle",postStyle);
-        intent.putExtra("postBackground",postBackground);
-        intent.putExtra("postSize",postSize);
-        intent.putExtra("postUrl",postUrl);
-        intent.putExtra("postfrom",postfrom);
-        intent.putExtra("hateState",hateState);
-        intent.putExtra("likeState",likeState);
+        intent.putExtra("postId", postId);
+        intent.putExtra("postType", postType);
+        intent.putExtra("posterName", posterName);
+        intent.putExtra("posterImage", posterImage);
+        intent.putExtra("postText", postText);
+        intent.putExtra("postStyle", postStyle);
+        intent.putExtra("postBackground", postBackground);
+        intent.putExtra("postSize", postSize);
+        intent.putExtra("postUrl", postUrl);
+        intent.putExtra("postfrom", postfrom);
+        intent.putExtra("hateState", hateState);
+        intent.putExtra("likeState", likeState);
         mContext.startActivity(intent);
     }
 

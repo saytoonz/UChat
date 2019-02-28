@@ -2,11 +2,13 @@ package com.nsromapa.uchat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -139,14 +141,13 @@ public class ViewPostActivity extends AppCompatActivity {
 
         vPost_recycler = findViewById(R.id.vPost_recycler);
         vPost_recycler.setHasFixedSize(true);
-        vPost_recycler.setNestedScrollingEnabled(true);
+        vPost_recycler.setNestedScrollingEnabled(false);
         mLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
         ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
         vPost_recycler.setLayoutManager(mLayoutManager);
-        mAdapter = new PostCommentAdapter(this,postCommentsList);
+        mAdapter = new PostCommentAdapter(this, postCommentsList);
         vPost_recycler.setAdapter(mAdapter);
-
 
 
         if (getIntent() != null) {
@@ -373,7 +374,7 @@ public class ViewPostActivity extends AppCompatActivity {
                                     String senderImage = Objects.requireNonNull(dataSnapshot.child("profileImageUrl").getValue()).toString();
                                     String senderName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
 
-                                    postCommentsList.add(new PostCommentObjects(commentId,senderImage,senderName,date,time,comment));
+                                    postCommentsList.add(new PostCommentObjects(commentId, senderImage, senderName, date, time, comment));
                                     mAdapter.notifyDataSetChanged();
                                 }
 
@@ -382,7 +383,6 @@ public class ViewPostActivity extends AppCompatActivity {
 
                                 }
                             });
-
 
 
                 }
@@ -410,7 +410,6 @@ public class ViewPostActivity extends AppCompatActivity {
 
                 }
             });
-
 
 
             newPostStuff();
@@ -599,14 +598,14 @@ public class ViewPostActivity extends AppCompatActivity {
             Log.d(TAG, "HatesAddCounts: LIKED alerady");
         } else {
             vpostTotal_haters.setText(String.valueOf(likers.size() + 1));
-            likers.add(haterId);
+            haters.add(haterId);
         }
     }
 
     private void HatesRemoveCounts(String haterId) {
         if (haters.contains(haterId)) {
             vpostTotal_haters.setText(String.valueOf(likers.size() - 1));
-            likers.remove(haterId);
+            haters.remove(haterId);
         } else {
             Log.d(TAG, "HatesRemoveCounts: Unknown like to remove");
         }
@@ -637,8 +636,39 @@ public class ViewPostActivity extends AppCompatActivity {
     }
 
 
-    private void deletePost(String postId) {
-        Toast.makeText(this, "post to be deleted...." + postId, Toast.LENGTH_SHORT).show();
+    private void deletePost(final String postId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to delete this post?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mRootRef.child("posts").child(postId)
+                        .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(ViewPostActivity.this, "Error: Post was not deleted...", Toast.LENGTH_SHORT).show();
+                        } else {
+                            finish();
+                            Toast.makeText(ViewPostActivity.this, "Message deleted...\n It will disappear when you restart you app", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+
+        builder.create();
+
     }
 
 
