@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -38,6 +39,7 @@ import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
+import com.nsromapa.uchat.recyclerfeeds.PostCommentAdapter;
 import com.nsromapa.uchat.recyclerfeeds.PostCommentObjects;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
@@ -84,13 +86,10 @@ public class ViewPostActivity extends AppCompatActivity {
     private Button vSend_Comment_Btn;
 
     private RecyclerView vPost_recycler;
-
-
-    private RecyclerView mRecyclerView;
     public RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    ArrayList<PostCommentObjects> postsList = new ArrayList<>();
+    ArrayList<PostCommentObjects> postCommentsList = new ArrayList<>();
 
     private String currentUserID;
     private DatabaseReference mRootRef;
@@ -139,6 +138,15 @@ public class ViewPostActivity extends AppCompatActivity {
         vSend_Comment_Btn = findViewById(R.id.vSend_Comment_Btn);
 
         vPost_recycler = findViewById(R.id.vPost_recycler);
+        vPost_recycler.setHasFixedSize(true);
+        vPost_recycler.setNestedScrollingEnabled(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
+        vPost_recycler.setLayoutManager(mLayoutManager);
+        mAdapter = new PostCommentAdapter(this,postCommentsList);
+        vPost_recycler.setAdapter(mAdapter);
+
 
 
         if (getIntent() != null) {
@@ -350,8 +358,32 @@ public class ViewPostActivity extends AppCompatActivity {
                     .child("comments").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    final String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    final String sender = Objects.requireNonNull(dataSnapshot.child("sender").getValue()).toString();
+                    final String date = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
+                    final String time = Objects.requireNonNull(dataSnapshot.child("time").getValue()).toString();
+                    final String comment = Objects.requireNonNull(dataSnapshot.child("comment").getValue()).toString();
+
                     commentCounter(commentId, "add");
+
+                    mRootRef.child("users").child(sender)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String senderImage = Objects.requireNonNull(dataSnapshot.child("profileImageUrl").getValue()).toString();
+                                    String senderName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
+
+                                    postCommentsList.add(new PostCommentObjects(commentId,senderImage,senderName,date,time,comment));
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
                 }
 
                 @Override

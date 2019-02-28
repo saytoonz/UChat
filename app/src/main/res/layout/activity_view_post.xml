@@ -238,7 +238,7 @@
             android:gravity="center"
             android:text="@string/post"
             android:textAllCaps="false"
-            android:textColor="#3897f0"
+            android:textColor="@color/light_blue"
             android:textStyle="normal" />
     </LinearLayout>
 </FrameLayout>

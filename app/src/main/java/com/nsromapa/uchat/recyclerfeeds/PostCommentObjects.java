@@ -1,12 +1,12 @@
 package com.nsromapa.uchat.recyclerfeeds;
 
 public class PostCommentObjects {
-    String commentId;
-    String senderImage;
-    String senderName;
-    String date;
-    String time;
-    String comment;
+    private String commentId;
+    private String senderImage;
+    private String senderName;
+    private String date;
+    private String time;
+    private String comment;
 
     public PostCommentObjects(String commentId, String senderImage, String senderName,
                               String date, String time, String comment) {

@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private final static String TAG = "FeedsAdapter";
@@ -60,7 +61,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 .inflate(R.layout.recylerview_fragment_feeds_item, viewGroup, false);
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        currentUserID = mAuth.getCurrentUser().getUid();
+        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         return new FeedViewHolder(view);
     }
