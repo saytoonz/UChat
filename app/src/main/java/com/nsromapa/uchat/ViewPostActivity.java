@@ -374,6 +374,7 @@ public class ViewPostActivity extends AppCompatActivity {
                                     String senderName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
 
                                     postCommentsList.add(new PostCommentObjects(commentId,senderImage,senderName,date,time,comment));
+                                    mAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
