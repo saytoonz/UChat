@@ -1,226 +1,242 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ViewPostActivity">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
 
-    <include
-        android:id="@+id/view_post_app_bar"
-        layout="@layout/app_bar_layout" />
-
-
-
-    <LinearLayout
-        android:id="@+id/postShowLayout"
-        android:layout_below="@+id/view_post_app_bar"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/vPostImageVideo_ImageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/post_imageView" />
-
-            <ImageView
-                android:id="@+id/vpost_VideoThumbnail_play"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_play" />
-        </FrameLayout>
-
-
-        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
-            android:id="@+id/vPostTextpost_TextView"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:minHeight="200dp"
-            android:paddingStart="7dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="7dp"
-            android:paddingBottom="5dp"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:emojiconSize="30sp" />
-    </LinearLayout>
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/view_post_app_bar"
+                layout="@layout/app_bar_layout" />
+
+
+            <LinearLayout
+                android:id="@+id/postShowLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_post_app_bar"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/vPostImageVideo_ImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/post_imageView" />
+
+                    <ImageView
+                        android:id="@+id/vpost_VideoThumbnail_play"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_play" />
+                </FrameLayout>
+
+
+                <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                    android:id="@+id/vPostTextpost_TextView"
+                    style="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:minHeight="200dp"
+                    android:paddingStart="7dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="7dp"
+                    android:paddingBottom="5dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    app:emojiconSize="30sp" />
+
+
+
+                <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView
+                    android:id="@+id/vPostCaption_TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:textAlignment="center"
+                    android:textColor="#999"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif"
+                    app:emojiconSize="26sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/PostImageViewerActionButtons"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/postShowLayout"
+                android:gravity="fill_horizontal"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <com.nsromapa.say.LikeButton
+                        android:id="@+id/vPostActionButtons_likeUnlike"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_end_color="@color/colorAccent2"
+                        app:circle_start_color="@android:color/holo_blue_dark"
+                        app:dots_primary_color="@android:color/holo_blue_light"
+                        app:dots_secondary_color="#ff0000"
+                        app:icon_size="22dp"
+                        app:like_drawable="@drawable/ic_unlike2"
+                        app:unlike_drawable="@drawable/ic_like2" />
+
+
+                    <TextView
+                        android:id="@+id/vpostTotal_likers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="5dp"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent2"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <com.nsromapa.say.LikeButton
+                        android:id="@+id/vPostActionButtons_hateUnhate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_end_color="#ff0000"
+                        app:circle_start_color="@color/yellow"
+                        app:dots_primary_color="@color/yellow"
+                        app:dots_secondary_color="#ff0000"
+                        app:icon_size="22dp"
+                        app:like_drawable="@drawable/ic_unhate2"
+                        app:unlike_drawable="@drawable/ic_hate2" />
+
+
+                    <TextView
+                        android:id="@+id/vpostTotal_haters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="5dp"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent2"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+
+                <ImageButton
+                    android:id="@+id/vPostActionButtons_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/ic_delete_forever2" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/total_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="7dp"
+                android:text="@string/_0_comments"
+                android:textColor="#999"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
+
 
     <LinearLayout
-        android:id="@+id/PostImageViewerActionButtons"
-        android:layout_below="@+id/postShowLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="fill_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
         android:orientation="horizontal"
-        android:padding="5dp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <com.nsromapa.say.LikeButton
-                android:id="@+id/vPostActionButtons_likeUnlike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:circle_end_color="@color/colorAccent2"
-                app:circle_start_color="@android:color/holo_blue_dark"
-                app:dots_primary_color="@android:color/holo_blue_light"
-                app:dots_secondary_color="#ff0000"
-                app:icon_size="22dp"
-                app:like_drawable="@drawable/ic_unlike2"
-                app:unlike_drawable="@drawable/ic_like2" />
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp">
 
 
-            <TextView
-                android:id="@+id/vpostTotal_likers"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:text="0"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent2"
-                android:textSize="13sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <com.nsromapa.say.LikeButton
-                android:id="@+id/vPostActionButtons_hateUnhate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:circle_end_color="#ff0000"
-                app:circle_start_color="@color/yellow"
-                app:dots_primary_color="@color/yellow"
-                app:dots_secondary_color="#ff0000"
-                app:icon_size="22dp"
-                app:like_drawable="@drawable/ic_unhate2"
-                app:unlike_drawable="@drawable/ic_hate2" />
-
-
-            <TextView
-                android:id="@+id/vpostTotal_haters"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:text="0"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent2"
-                android:textSize="13sp" />
-
-        </LinearLayout>
-
-
-
-
-        <ImageButton
-            android:id="@+id/vPostActionButtons_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText
+            android:id="@+id/CreateComment_TextEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_delete_forever2" />
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:hint="@string/add_a_comment"
+            android:inputType="textMultiLine"
+            android:maxHeight="150dp"
+            android:minHeight="40dp"
+            android:textAlignment="textStart"
+            android:textColor="#262626"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:emojiconSize="28sp"
+            tools:ignore="RtlCompat" />
 
+        <Button
+            android:id="@+id/Send_Comment_Btn"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:text="@string/post"
+            android:textAllCaps="false"
+            android:textColor="#3897f0"
+            android:textStyle="normal" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/total_comments"
-        android:layout_below="@+id/PostImageViewerActionButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/_0_comments"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="7dp"
-        android:paddingBottom="7dp"
-        android:textColor="#999"
-        android:textSize="14sp"
-        android:textStyle="bold"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@+id/total_comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-
-
-    <LinearLayout
-        android:id="@+id/newCommentLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true">
-
-
-            <com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText
-                android:id="@+id/CreateComment_TextEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:gravity="center"
-                android:hint="@string/add_a_comment"
-                android:inputType="textMultiLine"
-                android:maxHeight="150dp"
-                android:minHeight="40dp"
-                android:textAlignment="textStart"
-                android:textColor="#262626"
-                android:textStyle="normal"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                app:emojiconSize="28sp"
-                tools:ignore="RtlCompat" />
-
-            <Button
-                android:id="@+id/Send_Comment_Btn"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:gravity="center"
-                android:text="@string/post"
-                android:textAllCaps="false"
-                android:textColor="#3897f0"
-                android:textStyle="normal" />
-    </LinearLayout>
-
-</RelativeLayout>
-
-</ScrollView>
+</FrameLayout>

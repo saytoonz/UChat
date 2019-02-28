@@ -3,7 +3,6 @@ package com.nsromapa.uchat;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -11,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -31,9 +31,13 @@ import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ViewPostActivity extends AppCompatActivity {
+    private final static String TAG = "ViewPostActivity";
 
     private Toolbar toolbar;
     private String postId;
@@ -54,6 +58,7 @@ public class ViewPostActivity extends AppCompatActivity {
     private ImageView vPostImageVideo_ImageView;
     private ImageView vpost_VideoThumbnail_play;
     private EmoticonTextView vPostTextpost_TextView;
+    private EmoticonTextView vPostCaption_TextView;
 
     private LikeButton vPostActionButtons_likeUnlike;
     private LikeButton vPostActionButtons_hateUnhate;
@@ -63,16 +68,19 @@ public class ViewPostActivity extends AppCompatActivity {
 
     private TextView total_comments;
 
-    private  String currentUserID;
+    private String currentUserID;
     private DatabaseReference mRootRef;
+    ArrayList<String> likers = new ArrayList<>();
+    ArrayList<String> haters = new ArrayList<>();
+    ArrayList<String> commentsArray = new ArrayList<>();
+
     @Override
-   protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
 
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mRootRef = FirebaseDatabase.getInstance().getReference();
-
 
 
         toolbar = findViewById(R.id.view_post_app_bar);
@@ -84,7 +92,7 @@ public class ViewPostActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View actionBarView = inflater.inflate(R.layout.custom_view_post_bar,null);
+        View actionBarView = inflater.inflate(R.layout.custom_view_post_bar, null);
         actionBar.setCustomView(actionBarView);
 
         posterNameView = findViewById(R.id.custom_bar_poster_name);
@@ -94,6 +102,7 @@ public class ViewPostActivity extends AppCompatActivity {
         vPostImageVideo_ImageView = findViewById(R.id.vPostImageVideo_ImageView);
         vpost_VideoThumbnail_play = findViewById(R.id.vpost_VideoThumbnail_play);
         vPostTextpost_TextView = findViewById(R.id.vPostTextpost_TextView);
+        vPostCaption_TextView = findViewById(R.id.vPostCaption_TextView);
 
         vPostActionButtons_likeUnlike = findViewById(R.id.vPostActionButtons_likeUnlike);
         vPostActionButtons_hateUnhate = findViewById(R.id.vPostActionButtons_hateUnhate);
@@ -104,9 +113,7 @@ public class ViewPostActivity extends AppCompatActivity {
         total_comments = findViewById(R.id.total_comments);
 
 
-
-
-        if(getIntent()!=null){
+        if (getIntent() != null) {
             postId = getIntent().getStringExtra("postId");
             postType = getIntent().getStringExtra("postType");
             posterName = getIntent().getStringExtra("posterName");
@@ -121,7 +128,7 @@ public class ViewPostActivity extends AppCompatActivity {
             likeState = getIntent().getStringExtra("likeState");
 
             posterNameView.setText(posterName);
-            postTimeView.setText(FormatterUtil.getRelativeTimeSpanStringShort(this,Long.parseLong(postId)));
+            postTimeView.setText(FormatterUtil.getRelativeTimeSpanStringShort(this, Long.parseLong(postId)));
             Glide.with(this)
                     .asBitmap()
                     .apply(new RequestOptions().placeholder(R.drawable.profile_image))
@@ -129,12 +136,12 @@ public class ViewPostActivity extends AppCompatActivity {
                     .into(posterImageView);
 
 
-
             vPostImageVideo_ImageView.setVisibility(View.GONE);
             vpost_VideoThumbnail_play.setVisibility(View.GONE);
             vPostTextpost_TextView.setVisibility(View.GONE);
+            vPostCaption_TextView.setVisibility(View.GONE);
 
-            if (postType.equals("test_post")){
+            if (postType.equals("test_post")) {
 
                 vPostTextpost_TextView.setVisibility(View.VISIBLE);
 
@@ -160,15 +167,13 @@ public class ViewPostActivity extends AppCompatActivity {
                 vPostTextpost_TextView.setEmoticonSize(((int) textSize) + 12);
 
 
-            }else if (postType.equals("video") || postType.equals("image")) {
+            } else if (postType.equals("video") || postType.equals("image")) {
                 vPostImageVideo_ImageView.setVisibility(View.VISIBLE);
 
                 ///Show caption if file has....
                 if (!TextUtils.isEmpty(postText)) {
-//                    vPostCaption_TextView.setVisibility(View.VISIBLE);
-//                    vUserName_TextView.setVisibility(View.VISIBLE);
-//                    vUserName_TextView.setText(postPosterName));
-//                    vPostCaption_TextView.setText(postText));
+                    vPostCaption_TextView.setVisibility(View.VISIBLE);
+                    vPostCaption_TextView.setText(postText);
                 }
 
                 //Show play icon on videos
@@ -195,16 +200,14 @@ public class ViewPostActivity extends AppCompatActivity {
             }
 
 
-
-
-            if (likeState.equals("liked")){
+            if (likeState.equals("liked")) {
                 vPostActionButtons_likeUnlike.setLiked(true);
-            }else{
+            } else {
                 vPostActionButtons_likeUnlike.setLiked(false);
             }
-            if (hateState.equals("hated")){
+            if (hateState.equals("hated")) {
                 vPostActionButtons_hateUnhate.setLiked(true);
-            }else{
+            } else {
                 vPostActionButtons_hateUnhate.setLiked(false);
             }
             vPostActionButtons_likeUnlike.setOnLikeListener(new OnLikeListener() {
@@ -238,7 +241,7 @@ public class ViewPostActivity extends AppCompatActivity {
             });
 
 
-            if (postfrom.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            if (postfrom.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 vPostActionButtons_delete.setVisibility(View.VISIBLE);
                 vPostActionButtons_delete.setEnabled(true);
 
@@ -248,35 +251,36 @@ public class ViewPostActivity extends AppCompatActivity {
                         deletePost(postId);
                     }
                 });
-            }else{
+            } else {
                 vPostActionButtons_delete.setVisibility(View.GONE);
                 vPostActionButtons_delete.setEnabled(false);
             }
-
-
-
 
 
             mRootRef.child("posts").child(postId)
                     .child("haters").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    vpostTotal_haters.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    HatesAddCounts(likerId);
                 }
 
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    vpostTotal_haters.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    HatesRemoveCounts(likerId);
                 }
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    vpostTotal_haters.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    HatesRemoveCounts(likerId);
                 }
 
                 @Override
                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    vpostTotal_haters.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    HatesRemoveCounts(likerId);
                 }
 
                 @Override
@@ -288,7 +292,8 @@ public class ViewPostActivity extends AppCompatActivity {
                     .child("likers").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    vpostTotal_likers.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    likesAddCounts(likerId);
                 }
 
                 @Override
@@ -298,12 +303,14 @@ public class ViewPostActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    vpostTotal_likers.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    likesRemoveCounts(likerId);
                 }
 
                 @Override
                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    vpostTotal_likers.setText(String.valueOf(dataSnapshot.getChildrenCount()));
+                    String likerId = Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    likesRemoveCounts(likerId);
                 }
 
                 @Override
@@ -315,22 +322,24 @@ public class ViewPostActivity extends AppCompatActivity {
                     .child("comments").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    total_comments.setText(String.valueOf(dataSnapshot.getChildrenCount())+" Comments");
+                    String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    commentCounter(commentId,  "add");
                 }
 
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    total_comments.setText(String.valueOf(dataSnapshot.getChildrenCount())+" Comments");
-                }
+                    String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    commentCounter(commentId,"remove") ;               }
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    total_comments.setText(String.valueOf(dataSnapshot.getChildrenCount())+" Comments");
-                }
+                    String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    commentCounter(commentId,"remove") ;               }
 
                 @Override
                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    total_comments.setText(String.valueOf(dataSnapshot.getChildrenCount())+" Comments");
+                    String commentId = Objects.requireNonNull(dataSnapshot.child("commentId").getValue()).toString();
+                    commentCounter(commentId,"remove");
                 }
 
                 @Override
@@ -340,15 +349,77 @@ public class ViewPostActivity extends AppCompatActivity {
             });
 
 
-
-        }else{
+        } else {
             finish();
         }
     }
 
-    private void deletePost(String postId) {
-        Toast.makeText(this, "post to be deleted...."+postId, Toast.LENGTH_SHORT).show();
+    private void likesAddCounts(String likerId) {
+        if (likers.contains(likerId)) {
+            Log.d(TAG, "likesAddCounts: LIKED alerady");
+        } else {
+            vpostTotal_likers.setText(String.valueOf(likers.size()+1));
+            likers.add(likerId);
+        }
     }
+
+    private void likesRemoveCounts(String likerId) {
+        if (likers.contains(likerId)) {
+            vpostTotal_likers.setText(String.valueOf(likers.size()-1));
+            likers.remove(likerId);
+        } else {
+            Log.d(TAG, "likesRemoveCounts: Unknown like to remove");
+        }
+    }
+
+    private void HatesAddCounts(String haterId) {
+        if (haters.contains(haterId)) {
+            Log.d(TAG, "HatesAddCounts: LIKED alerady");
+        } else {
+            vpostTotal_haters.setText(String.valueOf(likers.size()+1));
+            likers.add(haterId);
+        }
+    }
+
+    private void HatesRemoveCounts(String haterId) {
+        if (haters.contains(haterId)) {
+            vpostTotal_haters.setText(String.valueOf(likers.size()-1));
+            likers.remove(haterId);
+        } else {
+            Log.d(TAG, "HatesRemoveCounts: Unknown like to remove");
+        }
+    }
+
+    private void commentCounter(String commentId,String addORremove){
+        if (commentsArray.contains(commentId)&& addORremove.equals("remove")){
+            String  commentString = " Comments";
+            if ((commentsArray.size()-1)<2){
+                commentString = " Comment";
+            }
+            String setCmt = String.valueOf(commentsArray.size()-1) + commentString;
+            total_comments.setText(setCmt);
+            commentsArray.remove(commentId);
+
+        }else if (!commentsArray.contains(commentId) && addORremove.equals("add")){
+            String  commentString = " Comments";
+            if ((commentsArray.size()+1)<2){
+                commentString = " Comment";
+            }
+            String setCmt = String.valueOf(commentsArray.size()+1) + commentString;
+            total_comments.setText(setCmt);
+            commentsArray.add(commentId);
+
+        }else{
+            Log.d(TAG, "commentCounter: no action on comments....");
+        }
+    }
+
+
+
+    private void deletePost(String postId) {
+        Toast.makeText(this, "post to be deleted...." + postId, Toast.LENGTH_SHORT).show();
+    }
+
 
 
     private static Drawable GetImage(Context c, String ImageName) {

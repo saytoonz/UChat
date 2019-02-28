@@ -170,7 +170,7 @@ public class FeedsFragment extends BaseFragment {
                             .addChildEventListener(new ChildEventListener() {
                                 @Override
                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String liker = dataSnapshot.getValue().toString();
+                                    String liker = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     likers.add(liker);
                                     mAdapter.notifyDataSetChanged();
                                 }
@@ -182,14 +182,14 @@ public class FeedsFragment extends BaseFragment {
 
                                 @Override
                                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                    String liker = dataSnapshot.getValue().toString();
+                                    String liker = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     likers.remove(liker);
                                     mAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
                                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String liker = dataSnapshot.getValue().toString();
+                                    String liker = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     likers.remove(liker);
                                     mAdapter.notifyDataSetChanged();
                                 }
@@ -205,7 +205,7 @@ public class FeedsFragment extends BaseFragment {
                             .addChildEventListener(new ChildEventListener() {
                                 @Override
                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String hater = dataSnapshot.getValue().toString();
+                                    String hater = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     haters.add(hater);
                                     mAdapter.notifyDataSetChanged();
                                 }
@@ -217,14 +217,14 @@ public class FeedsFragment extends BaseFragment {
 
                                 @Override
                                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                    String hater = dataSnapshot.getValue().toString();
+                                    String hater = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     haters.remove(hater);
                                     mAdapter.notifyDataSetChanged();
                                 }
 
                                 @Override
                                 public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    String hater = dataSnapshot.getValue().toString();
+                                    String hater = Objects.requireNonNull(dataSnapshot.getValue()).toString();
                                     haters.remove(hater);
                                     mAdapter.notifyDataSetChanged();
                                 }
@@ -242,8 +242,8 @@ public class FeedsFragment extends BaseFragment {
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    String posterName = dataSnapshot.child("name").getValue().toString();
-                                    String posterImage = dataSnapshot.child("profileImageUrl").getValue().toString();
+                                    String posterName = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString();
+                                    String posterImage = Objects.requireNonNull(dataSnapshot.child("profileImageUrl").getValue()).toString();
 
                                     String likes = String.valueOf(likers.size());
                                     String hates = String.valueOf(haters.size());
