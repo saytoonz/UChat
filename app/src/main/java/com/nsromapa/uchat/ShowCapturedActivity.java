@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -25,6 +28,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -70,9 +75,9 @@ import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 
-public class ShowCapturedActivity extends Activity  {
+public class ShowCapturedActivity extends Activity {
     com.jsibbold.zoomage.ZoomageView image_frame;
-    String image_or_video_path ;
+    String image_or_video_path;
 
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
@@ -92,14 +97,14 @@ public class ShowCapturedActivity extends Activity  {
     ProgressBar loading_progress;
     String message_type;
 
-
-    Bitmap bitmap=null;
+    private LinearLayout add_caption_LinearLayout;
 
     ImageView saveImage, setWallPaper, editImage;
     ImageView asc_insert_Emoji;
     EmojiconEditText asc_add_caption;
     EmojIconActions emojIconActions;
     View rootView;
+    private String coming_from, fileType;
 
 
     @Override
@@ -107,7 +112,13 @@ public class ShowCapturedActivity extends Activity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_capture);
 
-        image_or_video_path=getIntent().getStringExtra(Config.KeyName.FILEPATH);
+        if (getIntent() != null) {
+            image_or_video_path = getIntent().getStringExtra(Config.KeyName.FILEPATH);
+            coming_from = getIntent().getStringExtra("coming_from");
+            fileType = getIntent().getStringExtra("fileType");
+        } else {
+            finish();
+        }
 
         setUI();
         if (savedInstanceState != null) {
@@ -117,12 +128,10 @@ public class ShowCapturedActivity extends Activity  {
         }
 
 
-
-
         asc_insert_Emoji = findViewById(R.id.asc_insert_Emoji);
         asc_add_caption = findViewById(R.id.asc_add_caption);
         rootView = findViewById(R.id.asc_root_view);
-        emojIconActions = new EmojIconActions(this,rootView,asc_add_caption,asc_insert_Emoji);
+        emojIconActions = new EmojIconActions(this, rootView, asc_add_caption, asc_insert_Emoji);
         emojIconActions.ShowEmojIcon();
         emojIconActions.setKeyboardListener(new EmojIconActions.KeyboardListener() {
             @Override
@@ -137,22 +146,31 @@ public class ShowCapturedActivity extends Activity  {
         });
 
 
-
-
+        add_caption_LinearLayout = findViewById(R.id.add_caption_LinearLayout);
         FloatingActionButton mSend = findViewById(R.id.send);
-        mSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ChooseReceiverActivity.class);
-                intent.putExtra("caption",asc_add_caption.getText().toString());
-                intent.putExtra("fileType",message_type);
-                intent.putExtra("fileLoc",image_or_video_path);
-                startActivity(intent);
-                finish();
+        if (coming_from.equals("CameraFragment")) {
+            mSend.show();
+            mSend.setEnabled(true);
+            mSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), ChooseReceiverActivity.class);
+                    intent.putExtra("caption", asc_add_caption.getText().toString());
+                    intent.putExtra("fileType", message_type);
+                    intent.putExtra("fileLoc", image_or_video_path);
+                    startActivity(intent);
+                    finish();
 
-            }
-        });
+                }
+            });
 
+            add_caption_LinearLayout.setVisibility(View.VISIBLE);
+        } else {
+            mSend.setEnabled(false);
+            mSend.hide();
+
+            add_caption_LinearLayout.setVisibility(View.GONE);
+        }
 
 
         setWallPaper.setOnClickListener(new View.OnClickListener() {
@@ -164,8 +182,8 @@ public class ShowCapturedActivity extends Activity  {
         editImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ShowCapturedActivity.this,PhotoEditorMainActivity.class);
-                intent.putExtra("imageLoc",image_or_video_path);
+                Intent intent = new Intent(ShowCapturedActivity.this, PhotoEditorMainActivity.class);
+                intent.putExtra("imageLoc", image_or_video_path);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
@@ -175,18 +193,18 @@ public class ShowCapturedActivity extends Activity  {
 
     private void setUI() {
 
-        loading_progress=findViewById(R.id.loading_progress);
+        loading_progress = findViewById(R.id.loading_progress);
         loading_progress.setVisibility(View.VISIBLE);
-        image_frame=findViewById(R.id.image_frame);
-        main_media_frame=findViewById(R.id.main_media_frame);
+        image_frame = findViewById(R.id.image_frame);
+        main_media_frame = findViewById(R.id.main_media_frame);
 
         setWallPaper = findViewById(R.id.set_image_as_wallpaper);
         saveImage = findViewById(R.id.save_image);
         editImage = findViewById(R.id.Edit_Image);
 
 
-        if (image_or_video_path.contains(".mp4")){
-            message_type=Config.MessageType.VIDEO;
+        if (fileType.equals("video")) {
+            message_type = Config.MessageType.VIDEO;
             image_frame.setVisibility(View.GONE);
             main_media_frame.setVisibility(View.VISIBLE);
 
@@ -198,41 +216,71 @@ public class ShowCapturedActivity extends Activity  {
                     saveVideo();
                 }
             });
-        }else {
-            bitmap = BitmapFactory.decodeFile((image_or_video_path));
-            message_type=Config.MessageType.IMAGE;
+
+        } else if (fileType.equals("image")) {
+            message_type = Config.MessageType.IMAGE;
             image_frame.setVisibility(View.VISIBLE);
             main_media_frame.setVisibility(View.GONE);
+
+            if (coming_from.equals("ViewPostActivity")){
+                editImage.setVisibility(View.GONE);
+            }
             setImage();
 
-            if (bitmap!=null){
                 saveImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         saveImage();
                     }
                 });
-            }
+
+
+        } else {
+            Toast.makeText(this, "Unknown file type", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
 //        File file = new File(image_or_video_path);
 //        int file_size = Integer.parseInt(String.valueOf((file.length()/1024)/1024));
-     //   image_frame.setOnTouchListener(this);
-   //     Toast.makeText(ShowCapturedActivity.this,"File is "+file_size +" mb",Toast.LENGTH_SHORT).show();
+        //   image_frame.setOnTouchListener(this);
+        //     Toast.makeText(ShowCapturedActivity.this,"File is "+file_size +" mb",Toast.LENGTH_SHORT).show();
     }
 
 
-    private void setImage(){
-        loading_progress.setVisibility(View.GONE);
-        Glide.with(image_frame.getContext())
-                .asBitmap()
-                .load(image_or_video_path)
-                .apply( new RequestOptions().signature(new ObjectKey(Calendar.getInstance().getTime()))
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                        )
-                .into(image_frame);
+    private void setImage() {
+        if (coming_from.equals("CameraFragment")) {
+            Glide.with(image_frame.getContext())
+                    .asBitmap()
+                    .load(image_or_video_path)
+                    .apply(new RequestOptions().signature(new ObjectKey(Calendar.getInstance().getTime()))
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            image_frame.setImageBitmap(resource);
+                            loading_progress.setVisibility(View.GONE);
+                        }
+                    });
+
+        } else {
+            Glide.with(image_frame.getContext())
+                    .asBitmap()
+                    .load(image_or_video_path)
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            image_frame.setImageBitmap(resource);
+                            loading_progress.setVisibility(View.GONE);
+                        }
+                    });
+        }
+
+
+//                .into();
 //        image_frame.setImageBitmap(bitmap);
+//        )
     }
+
     public void onSaveInstanceState(Bundle outState) {
 
         outState.putInt(STATE_RESUME_WINDOW, mResumeWindow);
@@ -253,6 +301,7 @@ public class ShowCapturedActivity extends Activity  {
             }
         };
     }
+
     private void openFullscreenDialog() {
 
         ((ViewGroup) mExoPlayerView.getParent()).removeView(mExoPlayerView);
@@ -261,6 +310,7 @@ public class ShowCapturedActivity extends Activity  {
         mExoPlayerFullscreen = true;
         mFullScreenDialog.show();
     }
+
     private void closeFullscreenDialog() {
 
         ((ViewGroup) mExoPlayerView.getParent()).removeView(mExoPlayerView);
@@ -269,6 +319,7 @@ public class ShowCapturedActivity extends Activity  {
         mFullScreenDialog.dismiss();
         mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(ShowCapturedActivity.this, R.drawable.ic_fullscreen));
     }
+
     private void initFullscreenButton() {
 
         PlaybackControlView controlView = mExoPlayerView.findViewById(R.id.exo_controller);
@@ -284,8 +335,9 @@ public class ShowCapturedActivity extends Activity  {
             }
         });
     }
+
     private void initExoPlayer() {
-        if (loading_progress!=null) {
+        if (loading_progress != null) {
             loading_progress.setVisibility(View.GONE);
         }
         BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -306,8 +358,6 @@ public class ShowCapturedActivity extends Activity  {
     }
 
 
-
-
     private void saveVideo() {
 
         Dexter.withActivity(this)
@@ -316,7 +366,7 @@ public class ShowCapturedActivity extends Activity  {
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()){
+                        if (report.areAllPermissionsGranted()) {
                             FileOutputStream fileOutputStream;
                             File file = getExternalDirectory_andFolder("Uchat/Video/Saved");
 
@@ -357,8 +407,8 @@ public class ShowCapturedActivity extends Activity  {
                 }).check();
 
 
-
     }
+
     private void saveImage() {
 
         Dexter.withActivity(this)
@@ -367,8 +417,8 @@ public class ShowCapturedActivity extends Activity  {
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()){
-                            FileOutputStream fileOutputStream;
+                        if (report.areAllPermissionsGranted()) {
+                            final FileOutputStream fileOutputStream;
                             File file = getExternalDirectory_andFolder("Uchat/Image/Saved");
 
                             if (!file.exists() && !file.mkdirs()) {
@@ -385,7 +435,17 @@ public class ShowCapturedActivity extends Activity  {
                             try {
 
                                 fileOutputStream = new FileOutputStream(new_file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
+                                Glide.with(image_frame.getContext())
+                                        .asBitmap()
+                                        .load(image_or_video_path)
+                                        .into(new SimpleTarget<Bitmap>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                                                resource.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                                            }
+                                        });
 
                                 Toast.makeText(ShowCapturedActivity.this, "Image Saved Successfully", Toast.LENGTH_LONG).show();
 
@@ -407,38 +467,37 @@ public class ShowCapturedActivity extends Activity  {
                 }).check();
 
 
-
     }
+
     private void refreshingGallery(File new_file) {
-        Intent intent= new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.fromFile(new_file));
         sendBroadcast(intent);
     }
-    private File getExternalDirectory_andFolder(String folder){
+
+    private File getExternalDirectory_andFolder(String folder) {
         File file = Environment.getExternalStorageDirectory();
-        return new File(file,folder);
+        return new File(file, folder);
     }
 
     private void setwallpaper() {
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        try {
-            wallpaperManager.setBitmap(bitmap);
-            Toast.makeText(this,"Wallpaper applied to home screen.",Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this,"Sorry there was an error.",Toast.LENGTH_SHORT).show();
-        }
-    }
+        final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
 
-    private void updateStatus(String state) {
-
-        HashMap<String, Object> onlineState = new HashMap<>();
-        onlineState.put("state", state);
-
-        FirebaseDatabase.getInstance().getReference()
-                .child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("userState")
-                .updateChildren(onlineState);
+        Glide.with(image_frame.getContext())
+                .asBitmap()
+                .load(image_or_video_path)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        try {
+                            wallpaperManager.setBitmap(resource);
+                            Toast.makeText(ShowCapturedActivity.this, "Image applied as wallpaper.", Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ShowCapturedActivity.this, "Sorry there was an error.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
 
     }
@@ -446,13 +505,12 @@ public class ShowCapturedActivity extends Activity  {
 
     @Override
     protected void onResume() {
-
         super.onResume();
-        if (image_or_video_path.contains(".mp4")){
+        if (fileType.equals("video")) {
 
             if (mExoPlayerView == null) {
 
-                mExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exoplayer);
+                mExoPlayerView = findViewById(R.id.exoplayer);
                 // initFullscreenDialog();
                 //initFullscreenButton();
 
@@ -468,9 +526,7 @@ public class ShowCapturedActivity extends Activity  {
                 mVideoSource = new ExtractorMediaSource(Uri.parse(image_or_video_path),
                         dataSourceFactory, extractorsFactory, null, null);
                 initExoPlayer();
-            }
-
-            else {
+            } else {
                 mExoPlayerView.getPlayer().setPlayWhenReady(true);
             }
             //  initExoPlayer();
@@ -493,14 +549,5 @@ public class ShowCapturedActivity extends Activity  {
             mExoPlayerView.getPlayer().setPlayWhenReady(false);
         }
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            updateStatus("online");
-        }
     }
 }

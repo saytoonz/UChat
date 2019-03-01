@@ -3,6 +3,7 @@ package com.nsromapa.uchat;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -41,6 +42,7 @@ import com.nsromapa.say.LikeButton;
 import com.nsromapa.say.OnLikeListener;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonEditText;
 import com.nsromapa.say.emogifstickerkeyboard.widget.EmoticonTextView;
+import com.nsromapa.uchat.cameraUtils.Config;
 import com.nsromapa.uchat.recyclerfeeds.PostCommentAdapter;
 import com.nsromapa.uchat.recyclerfeeds.PostCommentObjects;
 import com.nsromapa.uchat.utils.FormatterUtil;
@@ -224,7 +226,11 @@ public class ViewPostActivity extends AppCompatActivity {
                 vPostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(ViewPostActivity.this, "toggle play", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ViewPostActivity.this,ShowCapturedActivity.class);
+                        intent.putExtra(Config.KeyName.FILEPATH, postUrl);
+                        intent.putExtra("coming_from","ViewPostActivity");
+                        intent.putExtra("fileType", postType);
+                        startActivity(intent);
                     }
                 });
 
@@ -421,6 +427,10 @@ public class ViewPostActivity extends AppCompatActivity {
 
 
     private void newPostStuff() {
+
+        vSend_Comment_Btn.setVisibility(View.GONE);
+
+
 
         ///Hide/Show post button if EditText is is/not empty
         vCreateComment_TextEdit.addTextChangedListener(new TextWatcher() {

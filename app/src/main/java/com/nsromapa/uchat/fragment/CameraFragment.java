@@ -1286,6 +1286,8 @@ public class CameraFragment extends Fragment
                     Intent i = new Intent(getContext(), ShowCapturedActivity.class);
 
                     i.putExtra(Config.KeyName.FILEPATH, mFile.toString());
+                    i.putExtra("coming_from", "CameraFragment");
+                    i.putExtra("fileType", "image");
                     startActivity(i);
 
 
@@ -1766,6 +1768,8 @@ public class CameraFragment extends Fragment
         Intent i = new Intent(getContext(), ShowCapturedActivity.class);
 
         i.putExtra(Config.KeyName.FILEPATH, temp_path);
+        i.putExtra("coming_from", "CameraFragment");
+        i.putExtra("fileType", "video");
         startActivity(i);
 
         startPreview();
