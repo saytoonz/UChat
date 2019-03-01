@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import timber.log.Timber;
 
@@ -44,7 +45,7 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
         this.recyclerView = recyclerView;
         this.context = context;
         this.FriendId =FriendId;
-        Timber.d("ChatSendBackground: In CONSTRUCTOR");
+        Log.d(TAG,"ChatSendBackground: In CONSTRUCTOR");
     }
 
 
@@ -82,10 +83,10 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
                     _date, _time, message, type, state, local_loc, sync_ed);
 
             publishProgress(new ChatsObjects(messageId, fromId, message, type, caption, _date, _time,state,local_loc,sync_ed));
-            Timber.d("ChatActivityBackground: In doInBackground " + messageId + " now Published");
+            Log.d(TAG,"ChatActivityBackground: In doInBackground " + messageId + " now Published");
 
         }else{
-            Timber.d("ChatActivityBackground: In doInBackground " + messageId + " is not counted here");
+            Log.d(TAG,"ChatActivityBackground: In doInBackground " + messageId + " is not counted here");
         }
 
         try {
@@ -104,12 +105,12 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
         MessagesArrayList.setChatsObjects(chatsObjects);
 
         //Scroll to the bottom of the chat.....
-        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
+        recyclerView.smoothScrollToPosition(Objects.requireNonNull(recyclerView.getAdapter()).getItemCount());
 
 
         //Firebase Database References for messages
         //For both user and reciever
-        String  messageSenderRef = "messages/"+FirebaseAuth.getInstance().getCurrentUser().getUid()  +"/"+ FriendId;
+        String  messageSenderRef = "messages/"+ Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()  +"/"+ FriendId;
         String messageReceivererRef = "messages/"+ FriendId +"/"+ FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         ////Get unique key for message

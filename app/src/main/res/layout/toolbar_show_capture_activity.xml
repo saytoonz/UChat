@@ -8,56 +8,51 @@ android:layout_height="@dimen/toobal_height"
 android:background="@drawable/tab_background_gradient"
     tools:showIn="@layout/activity_show_capture">
 
-<RelativeLayout
+<LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/cancel_and_go_back_to_showcaptured_activity"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="14dp"
-        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_arrow_back_24dp"/>
 
     <View
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_width="0px"
+        android:layout_weight="4"
         android:layout_height="0px"/>
 
-
-    <ImageView
+    <ImageButton
         android:id="@+id/set_image_as_wallpaper"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="110dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_wallpaper_24dp"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/save_image"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="60dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_save_24dp"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/Edit_Image"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_photo_filter_24dp"/>
 
-</RelativeLayout>
+</LinearLayout>
 
 </FrameLayout>

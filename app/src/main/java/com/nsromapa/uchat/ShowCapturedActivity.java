@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -99,7 +100,7 @@ public class ShowCapturedActivity extends Activity {
 
     private LinearLayout add_caption_LinearLayout;
 
-    ImageView saveImage, setWallPaper, editImage;
+    ImageButton saveImage, setWallPaper, editImage;
     ImageView asc_insert_Emoji;
     EmojiconEditText asc_add_caption;
     EmojIconActions emojIconActions;
@@ -222,7 +223,7 @@ public class ShowCapturedActivity extends Activity {
             image_frame.setVisibility(View.VISIBLE);
             main_media_frame.setVisibility(View.GONE);
 
-            if (coming_from.equals("ViewPostActivity")){
+            if (coming_from.equals("ViewPostActivity") || coming_from.equals("ChatsAdapter")){
                 editImage.setVisibility(View.GONE);
             }
             setImage();

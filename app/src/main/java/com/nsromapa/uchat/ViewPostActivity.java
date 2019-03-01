@@ -605,16 +605,16 @@ public class ViewPostActivity extends AppCompatActivity {
 
     private void HatesAddCounts(String haterId) {
         if (haters.contains(haterId)) {
-            Log.d(TAG, "HatesAddCounts: LIKED alerady");
+            Log.d(TAG, "HatesAddCounts: HATED alerady");
         } else {
-            vpostTotal_haters.setText(String.valueOf(likers.size() + 1));
+            vpostTotal_haters.setText(String.valueOf(haters.size() + 1));
             haters.add(haterId);
         }
     }
 
     private void HatesRemoveCounts(String haterId) {
         if (haters.contains(haterId)) {
-            vpostTotal_haters.setText(String.valueOf(likers.size() - 1));
+            vpostTotal_haters.setText(String.valueOf(haters.size() - 1));
             haters.remove(haterId);
         } else {
             Log.d(TAG, "HatesRemoveCounts: Unknown like to remove");

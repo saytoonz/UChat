@@ -67,18 +67,18 @@ public class ChatSendMessageAttachmentBackground extends AsyncTask<String, Chats
                 String local_loc = params[9];
                 String sync_ed = params[10];
 
-                if ((fromId.equals(toId) && toId.equals(mAuth.getCurrentUser().getUid()) ||
-                        toId.equals(toId) && fromId.equals(mAuth.getCurrentUser().getUid()))) {
+                if ((fromId.equals(toId) && toId.equals(Objects.requireNonNull(mAuth.getCurrentUser()).getUid()) ||
+                        fromId.equals(Objects.requireNonNull(mAuth.getCurrentUser()).getUid()))) {
 
 
                     dbOperations.AddMessage(database, messageId, fromId, toId, caption,
                             _date, _time, message, type, state, local_loc, sync_ed);
 
                     publishProgress(new ChatsObjects(messageId, fromId, message, type, caption, _date, _time, state, local_loc, sync_ed));
-                    Timber.d("ChatActivityBackground: In doInBackground " + messageId + " now Published");
+                    Log.d(TAG,"ChatActivityBackground: In doInBackground " + messageId + " now Published");
 
                 } else {
-                    Timber.d("ChatActivityBackground: In doInBackground " + messageId + " is not counted here");
+                    Log.d(TAG,"ChatActivityBackground: In doInBackground " + messageId + " is not counted here");
                 }
 
                 try {
