@@ -45,7 +45,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
     private FirebaseAuth mAuth;
     private DatabaseReference mRootRef;
 
-    List<FeedsObjects> postLists;
+    private List<FeedsObjects> postLists;
     private Context mContext;
     private String currentUserID;
 
@@ -96,93 +96,98 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
         CharSequence date = FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(post.getPostId()));
         feedViewHolder.PostCreationTime.setText(date);
 
-        if (post.getType().equals("test_post")) {
-            feedViewHolder.PostTextpost_TextView.setVisibility(View.VISIBLE);
+        switch (post.getType()) {
+            case "test_post":
+                feedViewHolder.PostTextpost_TextView.setVisibility(View.VISIBLE);
 
-            String fontFamily = "AlexBrush_Regular.ttf";
-            if (!TextUtils.isEmpty(post.getStyle())) {
-                fontFamily = post.getStyle();
-            }
-            String background = "post_background_transparent";
-            if (!TextUtils.isEmpty(post.getBackground())) {
-                background = post.getBackground();
-            }
-            float textSize = 16f;
-            if (!TextUtils.isEmpty(post.getSize())) {
-                textSize = Float.parseFloat(post.getSize());
-            }
-
-            Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),
-                    "fonts/" + fontFamily);
-            feedViewHolder.PostTextpost_TextView.setText(post.getText());
-            feedViewHolder.PostTextpost_TextView.setTypeface(typeface);
-            feedViewHolder.PostTextpost_TextView.setBackground(GetImage(mContext, background));
-            feedViewHolder.PostTextpost_TextView.setTextSize(textSize);
-            feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int) textSize) + 12);
-            feedViewHolder.PostTextpost_TextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String liking = "not";
-                    String hating = "not";
-                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())) {
-                        liking = "liked";
-                    }
-                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
-                        hating = "hated";
-                    }
-                    openPost(post.getPostId(), post.getType(),
-                            post.getPosterName(), post.getPosterImage()
-                            , post.getText(), post.getStyle(), post.getBackground()
-                            , post.getSize(), post.getUrl(), post.getFrom()
-                            , hating, liking);
+                String fontFamily = "AlexBrush_Regular.ttf";
+                if (!TextUtils.isEmpty(post.getStyle())) {
+                    fontFamily = post.getStyle();
                 }
-            });
-
-        } else if (post.getType().equals("video") || post.getType().equals("image")) {
-            feedViewHolder.PostImageVideo_ImageView.setVisibility(View.VISIBLE);
-
-            ///Show caption if file has....
-            if (!TextUtils.isEmpty(post.getText())) {
-                feedViewHolder.PostCaption_TextView.setVisibility(View.VISIBLE);
-                feedViewHolder.UserName_TextView.setVisibility(View.VISIBLE);
-                feedViewHolder.UserName_TextView.setText(post.getPosterName());
-                feedViewHolder.PostCaption_TextView.setText(post.getText());
-            }
-            //Show play icon on videos
-            if (post.getType().equals("video")) {
-                feedViewHolder.post_VideoThumbnail_play.setVisibility(View.VISIBLE);
-            } else {
-                feedViewHolder.post_VideoThumbnail_play.setVisibility(View.GONE);
-            }
-
-
-            feedViewHolder.PostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String liking = "not";
-                    String hating = "not";
-                    if (post.getLikers().contains(mAuth.getCurrentUser().getUid())) {
-                        liking = "liked";
-                    }
-                    if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
-                        hating = "hated";
-                    }
-                    openPost(post.getPostId(), post.getType(), post.getPosterName(),
-                            post.getPosterImage(), post.getText(), post.getStyle(),
-                            post.getBackground(), post.getSize(), post.getUrl(), post.getFrom(),
-                            hating, liking);
+                String background = "post_background_transparent";
+                if (!TextUtils.isEmpty(post.getBackground())) {
+                    background = post.getBackground();
                 }
-            });
-            Glide.with(mContext)
-                    .asBitmap()
-                    .load(post.getUrl())
-                    .apply(new RequestOptions().placeholder(R.drawable.post_background_transparent))
-                    .into(feedViewHolder.PostImageVideo_ImageView);
+                float textSize = 16f;
+                if (!TextUtils.isEmpty(post.getSize())) {
+                    textSize = Float.parseFloat(post.getSize());
+                }
+
+                Typeface typeface = Typeface.createFromAsset(mContext.getAssets(),
+                        "fonts/" + fontFamily);
+                feedViewHolder.PostTextpost_TextView.setText(post.getText());
+                feedViewHolder.PostTextpost_TextView.setTypeface(typeface);
+                feedViewHolder.PostTextpost_TextView.setBackground(GetImage(mContext, background));
+                feedViewHolder.PostTextpost_TextView.setTextSize(textSize);
+                feedViewHolder.PostTextpost_TextView.setEmoticonSize(((int) textSize) + 12);
+                feedViewHolder.PostTextpost_TextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String liking = "not";
+                        String hating = "not";
+                        if (post.getLikers().contains(Objects.requireNonNull(mAuth.getCurrentUser()).getUid())) {
+                            liking = "liked";
+                        }
+                        if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
+                            hating = "hated";
+                        }
+                        openPost(post.getPostId(), post.getType(),
+                                post.getPosterName(), post.getPosterImage()
+                                , post.getText(), post.getStyle(), post.getBackground()
+                                , post.getSize(), post.getUrl(), post.getFrom()
+                                , hating, liking);
+                    }
+                });
+
+                break;
+            case "video":
+            case "image":
+                feedViewHolder.PostImageVideo_ImageView.setVisibility(View.VISIBLE);
+
+                ///Show caption if file has....
+                if (!TextUtils.isEmpty(post.getText())) {
+                    feedViewHolder.PostCaption_TextView.setVisibility(View.VISIBLE);
+                    feedViewHolder.UserName_TextView.setVisibility(View.VISIBLE);
+                    feedViewHolder.UserName_TextView.setText(post.getPosterName());
+                    feedViewHolder.PostCaption_TextView.setText(post.getText());
+                }
+                //Show play icon on videos
+                if (post.getType().equals("video")) {
+                    feedViewHolder.post_VideoThumbnail_play.setVisibility(View.VISIBLE);
+                } else {
+                    feedViewHolder.post_VideoThumbnail_play.setVisibility(View.GONE);
+                }
 
 
-        } else {
-            Log.d(TAG, "onBindViewHolder: Unkown Post type");
+                feedViewHolder.PostImageVideo_ImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String liking = "not";
+                        String hating = "not";
+                        if (post.getLikers().contains(Objects.requireNonNull(mAuth.getCurrentUser()).getUid())) {
+                            liking = "liked";
+                        }
+                        if (post.getHaters().contains(mAuth.getCurrentUser().getUid())) {
+                            hating = "hated";
+                        }
+                        openPost(post.getPostId(), post.getType(), post.getPosterName(),
+                                post.getPosterImage(), post.getText(), post.getStyle(),
+                                post.getBackground(), post.getSize(), post.getUrl(), post.getFrom(),
+                                hating, liking);
+                    }
+                });
+                Glide.with(mContext)
+                        .asBitmap()
+                        .load(post.getUrl())
+                        .apply(new RequestOptions().placeholder(R.drawable.post_background_transparent))
+                        .into(feedViewHolder.PostImageVideo_ImageView);
 
+
+                break;
+            default:
+                Log.d(TAG, "onBindViewHolder: Unkown Post type");
+
+                break;
         }
 
 
@@ -284,7 +289,8 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                     });
 
 
-                    builder.create();
+                   AlertDialog alertDialog =  builder.create();
+                   alertDialog.show();
                 }
             });
         }
@@ -303,7 +309,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                 }
 
                 ///Hide post button if EditText is empty
-                if (TextUtils.isEmpty(feedViewHolder.CreateComment_TextEdit.getText().toString())) {
+                if (TextUtils.isEmpty(Objects.requireNonNull(feedViewHolder.CreateComment_TextEdit.getText()).toString())) {
                     feedViewHolder.Send_Comment_Btn.setVisibility(View.GONE);
                 }
             }
@@ -368,7 +374,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
 
                     HashMap<String, Object> commentMap = new HashMap<>();
                     commentMap.put("commentId", commentId);
-                    commentMap.put("sender", mAuth.getCurrentUser().getUid());
+                    commentMap.put("sender", Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
                     commentMap.put("date", _date);
                     commentMap.put("time", _time);
                     commentMap.put("comment", comment);
@@ -385,7 +391,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                                                 ////Increase comment counter for the post and insert into db...
                                                 int commentCounter;
                                                 if (dataSnapshot.child("commentCounter").getValue() != null)
-                                                    commentCounter = Integer.parseInt(dataSnapshot.child("commentCounter").getValue().toString());
+                                                    commentCounter = Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("commentCounter").getValue()).toString());
                                                 else
                                                     commentCounter = 0;
 
@@ -397,22 +403,22 @@ public class FeedsAdapter extends RecyclerView.Adapter<FeedViewHolder> {
                                                 ///Check  if 1st comment is already given.....
                                                 String comment1 = "";
                                                 if (dataSnapshot.child("comment1").getValue() != null) {
-                                                    comment1 = dataSnapshot.child("comment1").getValue().toString();
+                                                    comment1 = Objects.requireNonNull(dataSnapshot.child("comment1").getValue()).toString();
                                                 }
                                                 ///Check  if 2nd comment is already given.....
                                                 String comment2 = "";
                                                 if (dataSnapshot.child("comment2").getValue() != null) {
-                                                    comment2 = dataSnapshot.child("comment2").getValue().toString();
+                                                    comment2 = Objects.requireNonNull(dataSnapshot.child("comment2").getValue()).toString();
                                                 }
                                                 ///Check  if 3rd comment is already given.....
                                                 String comment3 = "";
                                                 if (dataSnapshot.child("comment3").getValue() != null) {
-                                                    comment3 = dataSnapshot.child("comment3").getValue().toString();
+                                                    comment3 = Objects.requireNonNull(dataSnapshot.child("comment3").getValue()).toString();
                                                 }
                                                 ///Check  if 4th comment is already given.....
                                                 String comment4 = "";
                                                 if (dataSnapshot.child("comment4").getValue() != null) {
-                                                    comment4 = dataSnapshot.child("comment4").getValue().toString();
+                                                    comment4 = Objects.requireNonNull(dataSnapshot.child("comment4").getValue()).toString();
                                                 }
 
                                                 if (TextUtils.isEmpty(comment1.trim())) {

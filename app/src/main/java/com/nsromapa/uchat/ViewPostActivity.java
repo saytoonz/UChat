@@ -58,40 +58,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ViewPostActivity extends AppCompatActivity {
     private final static String TAG = "ViewPostActivity";
 
-    private Toolbar toolbar;
     private String postId;
     private String postType;
-    private String posterName;
-    private String posterImage;
-    private String postText, postBackground;
-    private String postStyle, postSize;
     private String postUrl;
-    private String postfrom;
-    private String hateState;
-    private String likeState;
 
-    private EmoticonTextView posterNameView;
-    private TextView postTimeView;
-    private CircleImageView posterImageView;
-
-    private ImageView vPostImageVideo_ImageView;
-    private ImageView vpost_VideoThumbnail_play;
-    private EmoticonTextView vPostTextpost_TextView;
-    private EmoticonTextView vPostCaption_TextView;
-
-    private LikeButton vPostActionButtons_likeUnlike;
-    private LikeButton vPostActionButtons_hateUnhate;
     private TextView vpostTotal_likers;
     private TextView vpostTotal_haters;
-    private ImageButton vPostActionButtons_delete;
 
     private TextView total_comments;
     private EmoticonEditText vCreateComment_TextEdit;
     private Button vSend_Comment_Btn;
 
-    private RecyclerView vPost_recycler;
     public RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     ArrayList<PostCommentObjects> postCommentsList = new ArrayList<>();
 
@@ -106,11 +84,11 @@ public class ViewPostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
 
-        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         mRootRef = FirebaseDatabase.getInstance().getReference();
 
 
-        toolbar = findViewById(R.id.view_post_app_bar);
+        Toolbar toolbar = findViewById(R.id.view_post_app_bar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -122,31 +100,31 @@ public class ViewPostActivity extends AppCompatActivity {
         View actionBarView = inflater.inflate(R.layout.custom_view_post_bar, null);
         actionBar.setCustomView(actionBarView);
 
-        posterNameView = findViewById(R.id.custom_bar_poster_name);
-        postTimeView = findViewById(R.id.custom_bar_post_time);
-        posterImageView = findViewById(R.id.custom_bar_poster_image_view);
+        EmoticonTextView posterNameView = findViewById(R.id.custom_bar_poster_name);
+        TextView postTimeView = findViewById(R.id.custom_bar_post_time);
+        CircleImageView posterImageView = findViewById(R.id.custom_bar_poster_image_view);
 
-        vPostImageVideo_ImageView = findViewById(R.id.vPostImageVideo_ImageView);
-        vpost_VideoThumbnail_play = findViewById(R.id.vpost_VideoThumbnail_play);
-        vPostTextpost_TextView = findViewById(R.id.vPostTextpost_TextView);
-        vPostCaption_TextView = findViewById(R.id.vPostCaption_TextView);
+        ImageView vPostImageVideo_ImageView = findViewById(R.id.vPostImageVideo_ImageView);
+        ImageView vpost_VideoThumbnail_play = findViewById(R.id.vpost_VideoThumbnail_play);
+        EmoticonTextView vPostTextpost_TextView = findViewById(R.id.vPostTextpost_TextView);
+        EmoticonTextView vPostCaption_TextView = findViewById(R.id.vPostCaption_TextView);
 
-        vPostActionButtons_likeUnlike = findViewById(R.id.vPostActionButtons_likeUnlike);
-        vPostActionButtons_hateUnhate = findViewById(R.id.vPostActionButtons_hateUnhate);
+        LikeButton vPostActionButtons_likeUnlike = findViewById(R.id.vPostActionButtons_likeUnlike);
+        LikeButton vPostActionButtons_hateUnhate = findViewById(R.id.vPostActionButtons_hateUnhate);
         vpostTotal_likers = findViewById(R.id.vpostTotal_likers);
         vpostTotal_haters = findViewById(R.id.vpostTotal_haters);
-        vPostActionButtons_delete = findViewById(R.id.vPostActionButtons_delete);
+        ImageButton vPostActionButtons_delete = findViewById(R.id.vPostActionButtons_delete);
 
         total_comments = findViewById(R.id.total_comments);
         vCreateComment_TextEdit = findViewById(R.id.vCreateComment_TextEdit);
         vSend_Comment_Btn = findViewById(R.id.vSend_Comment_Btn);
 
-        vPost_recycler = findViewById(R.id.vPost_recycler);
+        RecyclerView vPost_recycler = findViewById(R.id.vPost_recycler);
         vPost_recycler.setHasFixedSize(true);
         vPost_recycler.setNestedScrollingEnabled(false);
-        mLayoutManager = new LinearLayoutManager(this);
-        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
-        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
         vPost_recycler.setLayoutManager(mLayoutManager);
         mAdapter = new PostCommentAdapter(this, postCommentsList);
         vPost_recycler.setAdapter(mAdapter);
@@ -155,16 +133,16 @@ public class ViewPostActivity extends AppCompatActivity {
         if (getIntent() != null) {
             postId = getIntent().getStringExtra("postId");
             postType = getIntent().getStringExtra("postType");
-            posterName = getIntent().getStringExtra("posterName");
-            posterImage = getIntent().getStringExtra("posterImage");
-            postText = getIntent().getStringExtra("postText");
-            postStyle = getIntent().getStringExtra("postStyle");
-            postBackground = getIntent().getStringExtra("postBackground");
-            postSize = getIntent().getStringExtra("postSize");
+            String posterName = getIntent().getStringExtra("posterName");
+            String posterImage = getIntent().getStringExtra("posterImage");
+            String postText = getIntent().getStringExtra("postText");
+            String postStyle = getIntent().getStringExtra("postStyle");
+            String postBackground = getIntent().getStringExtra("postBackground");
+            String postSize = getIntent().getStringExtra("postSize");
             postUrl = getIntent().getStringExtra("postUrl");
-            postfrom = getIntent().getStringExtra("postfrom");
-            hateState = getIntent().getStringExtra("hateState");
-            likeState = getIntent().getStringExtra("likeState");
+            String postfrom = getIntent().getStringExtra("postfrom");
+            String hateState = getIntent().getStringExtra("hateState");
+            String likeState = getIntent().getStringExtra("likeState");
 
             posterNameView.setText(posterName);
             postTimeView.setText(FormatterUtil.getRelativeTimeSpanStringShort(this, Long.parseLong(postId)));
@@ -676,8 +654,8 @@ public class ViewPostActivity extends AppCompatActivity {
             }
         });
 
-
-        builder.create();
+        AlertDialog alertDialog =  builder.create();
+        alertDialog.show();
 
     }
 

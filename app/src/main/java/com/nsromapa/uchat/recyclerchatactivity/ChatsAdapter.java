@@ -408,6 +408,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                      if (messages.getType().equals("image")){
                                          saveImage(resource,newFileName,destinationFilename+"Recieved/");
+
                                          ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
                                          insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                  messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
