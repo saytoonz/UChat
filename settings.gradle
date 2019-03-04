@@ -1,1 +1,7 @@
-include ':app', ':supernova-emoji-library', ':audio-recorder-library', ':gifpack-giphy', ':emoticongifkeyboard', ':emoticonpack-samsung', ':likebutton'
+include ':app',
+        ':supernova-emoji-library',
+        ':audio-recorder-library',
+        ':gifpack-giphy',
+        ':emoticongifkeyboard',
+        ':emoticonpack-samsung',
+        ':likebutton'

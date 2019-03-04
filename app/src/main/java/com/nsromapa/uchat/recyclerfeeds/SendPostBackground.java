@@ -62,7 +62,7 @@ public class SendPostBackground extends AsyncTask<String, String, Void> {
                 final String backgroundSelected = params[5];
                 final String _time = params[6];
                 final String _date = params[7];
-                final String fromUid = mAuth.getCurrentUser().getUid();
+                final String fromUid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                 final String postId = String.valueOf(System.currentTimeMillis());
 
 

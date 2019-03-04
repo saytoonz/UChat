@@ -12,10 +12,7 @@ import android.util.AttributeSet;
 import android.util.Property;
 import android.view.View;
 
-/**
- * Created by Miroslaw Stanek on 21.12.2015.
- * Modified by Joel Dean
- */
+
 
 public class CircleView extends View {
     private int START_COLOR = 0xFFFF5722;

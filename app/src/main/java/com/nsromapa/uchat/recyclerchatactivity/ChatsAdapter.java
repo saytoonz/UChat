@@ -185,6 +185,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
             if ( messages.getFrom().equals(currentUserID)){
+               ////If file x video, show play button
                 if (messages.getType().equals("video")){
                     chatsViewHolder.sender_message_VideoThumbnail_play.setVisibility(View.VISIBLE);
                 }else{
@@ -218,6 +219,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     @Override
                                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                         chatsViewHolder.senderMessageImage.setImageBitmap(resource);
+
+                                        //View image if it is clicked
                                         chatsViewHolder.senderMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -279,6 +282,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         chatsViewHolder.senderMessageImage.setImageBitmap(resource);
 
+
+                                        //View image if it is clicked
                                         chatsViewHolder.senderMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -296,7 +301,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 }else{
                     ////File Sent but not exist locally
-                    if (!TextUtils.isEmpty(messages.getMessage())) {
+                    if (!TextUtils.isEmpty(messages.getMessage()) || !messages.getMessage().equals("uploading")) {
                         Glide.with(mContext)
                                 .asBitmap()
                                 .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
@@ -307,6 +312,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         chatsViewHolder.senderMessageImage.setImageBitmap(resource);
 
+                                         //View image if it is clicked
                                         chatsViewHolder.senderMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -317,6 +323,17 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                                 mContext.startActivity(intent);
                                             }
                                         });
+
+
+                                        String newFileName = String.valueOf(System.currentTimeMillis());
+                                        if (messages.getType().equals("image")){
+                                            saveImage(resource,newFileName,destinationFilename+"Sent/");
+
+                                            ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
+                                            insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
+                                                    messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
+                                                    messages.getState(), destinationFilename+"Sent/"+newFileName+".png", "yes");
+                                        }
 
                                     }
                                 });
@@ -405,16 +422,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         });
 
 
-                                        String newFileName = String.valueOf(System.currentTimeMillis());
-                                     if (messages.getType().equals("image")){
-                                         saveImage(resource,newFileName,destinationFilename+"Recieved/");
-
-                                         ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
-                                         insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
-                                                 messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                 "read", destinationFilename+"Recieved/"+newFileName+".png", "yes");
-                                     }
-
                                     }
                                 });
                     }else {
@@ -431,6 +438,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         chatsViewHolder.receiverMessageImage.setImageBitmap(resource);
 
+                                        //View image if it is clicked
                                         chatsViewHolder.receiverMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -442,13 +450,24 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             }
                                         });
 
+                                        String newFileName = String.valueOf(System.currentTimeMillis());
+                                        if (messages.getType().equals("image")){
+
+                                            saveImage(resource,newFileName,destinationFilename+"Received/");
+
+                                            ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
+                                            insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
+                                                    messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
+                                                    "read", destinationFilename+"Received/"+newFileName+".png", "yes");
+                                        }
+
                                     }
                                 });
                     }
 
                 }else{
                     ////File Sent but not exist locally
-                    if (!TextUtils.isEmpty(messages.getMessage())) {
+                    if (!TextUtils.isEmpty(messages.getMessage()) ||  !messages.getMessage().equals("uploading")) {
                         Glide.with(mContext)
                                 .asBitmap()
                                 .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
@@ -459,6 +478,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         chatsViewHolder.receiverMessageImage.setImageBitmap(resource);
 
+                                        //View image if it is clicked
                                         chatsViewHolder.receiverMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -473,12 +493,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")){
-                                            saveImage(resource,newFileName,destinationFilename+"Recieved/");
+
+                                            saveImage(resource,newFileName,destinationFilename+"Received/");
 
                                             ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                     messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                    "read", destinationFilename+"Recieved/"+newFileName+".png", "yes");
+                                                    "read", destinationFilename+"Received/"+newFileName+".png", "yes");
                                         }
                                     }
                                 });
