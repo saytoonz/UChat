@@ -10,12 +10,12 @@ import android.util.Log;
 import com.nsromapa.uchat.databases.DBObjects;
 import com.nsromapa.uchat.databases.DBOperations;
 
-public class ChatsRetrieveBackground extends AsyncTask<String,Void,String>{
-    private static final String TAG = "ChatsRetrieveBackground";
+public class ChatsUpdateBackground extends AsyncTask<String,Void,String>{
+    private static final String TAG = "ChatsUpdateBackground";
     private Context context;
 
 
-    public ChatsRetrieveBackground(Context context) {
+    public ChatsUpdateBackground(Context context) {
         this.context = context;
     }
 

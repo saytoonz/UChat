@@ -38,13 +38,18 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
     private ArrayList<ChatsObjects> chatsObjects = MessagesArrayList.chatsObjects;
     private FirebaseAuth mAuth;
     private String FriendId;
+    private String friendName;
     private static final String TAG = "ChatSendBackground";
 
 
-    public ChatSendBackground(RecyclerView recyclerView, Context context, String FriendId) {
+    public ChatSendBackground(RecyclerView recyclerView,
+                              Context context,
+                              String FriendId,
+                              String friendName) {
         this.recyclerView = recyclerView;
         this.context = context;
         this.FriendId =FriendId;
+        this.friendName =friendName;
         Log.d(TAG,"ChatSendBackground: In CONSTRUCTOR");
     }
 
@@ -52,7 +57,7 @@ public class ChatSendBackground extends AsyncTask<String, ChatsObjects, String> 
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context,chatsObjects,recyclerView,FriendId);
+        adapter = new ChatsAdapter(context,chatsObjects,recyclerView,FriendId,friendName);
         recyclerView.setAdapter(adapter);
     }
 

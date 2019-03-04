@@ -2,18 +2,20 @@ package com.nsromapa.uchat.recyclerchatactivity;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -21,19 +23,19 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.nsromapa.uchat.ChatActivity;
+import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.LocationUtil.MapboxSingleLocationActivity;
 import com.nsromapa.uchat.LocationUtil.SingLocationActivity;
 import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
 import com.nsromapa.uchat.ShowCapturedActivity;
-import com.nsromapa.uchat.ViewPostActivity;
 import com.nsromapa.uchat.cameraUtils.Config;
 import com.nsromapa.uchat.findme.FindMeMapsActivity;
 import com.nsromapa.uchat.utils.FormatterUtil;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,14 +47,22 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
-    private  RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private String friendId;
+    private String friendName;
+    private AlertDialog alertDialog;
+    private MediaPlayer mMediaPlayer;
 
-    public  ChatsAdapter(Context context,List<ChatsObjects> userChatList, RecyclerView recyclerView, String friendId) {
+    public ChatsAdapter(Context context,
+                        List<ChatsObjects> userChatList,
+                        RecyclerView recyclerView,
+                        String friendId,
+                        String friendName) {
         this.userChatList = userChatList;
         this.mContext = context;
         this.recyclerView = recyclerView;
         this.friendId = friendId;
+        this.friendName = friendName;
     }
 
 
@@ -60,7 +70,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     @Override
     public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.recyclerview_chat_activity_item,  viewGroup, false);
+                .inflate(R.layout.recyclerview_chat_activity_item, viewGroup, false);
         mAuth = FirebaseAuth.getInstance();
         return new ChatsViewHolder(view);
     }
@@ -110,10 +120,9 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
 
 
+        if (messages.getType().equals("text")) {
 
-        if (messages.getType().equals("text")){
-
-            if ( messages.getFrom().equals(currentUserID)){
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.senderMessage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
@@ -121,13 +130,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.senderMessage.setBackgroundResource(R.drawable.sender_messages_layout);
                 chatsViewHolder.senderMessage.setText(messages.getMessage());
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
                 switch (messages.getState()) {
                     case "not sent":
@@ -144,7 +152,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                         break;
                 }
 
-            }else{
+            } else {
 
                 chatsViewHolder.receiverMessage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
@@ -152,46 +160,36 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiverMessage.setBackgroundResource(R.drawable.receiver_messages_layout);
                 chatsViewHolder.receiverMessage.setText(messages.getMessage());
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
             }
 
-        }
-
-
-
-
-
-
-        else if (messages.getType().equals("image") || messages.getType().equals("video")) {
+        } else if (messages.getType().equals("image") || messages.getType().equals("video")) {
 
             final String destinationFilename;
             final String fileExtection;
 
-            if (messages.getType().equals("video")){
+            if (messages.getType().equals("video")) {
                 destinationFilename = android.os.Environment.getExternalStorageDirectory()
-                        .getPath()+"UChat/Video/";
-                fileExtection=".mp4";
-            }else{
+                        .getPath() + "UChat/Video/";
+                fileExtection = ".mp4";
+            } else {
                 destinationFilename = android.os.Environment.getExternalStorageDirectory()
-                        .getPath()+"UChat/Image/";
+                        .getPath() + "UChat/Image/";
                 fileExtection = ".png";
             }
 
 
-            if ( messages.getFrom().equals(currentUserID)){
-               ////If file x video, show play button
-                if (messages.getType().equals("video")){
+            if (messages.getFrom().equals(currentUserID)) {
+                ////If file x video, show play button
+                if (messages.getType().equals("video")) {
                     chatsViewHolder.sender_message_VideoThumbnail_play.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     chatsViewHolder.sender_message_VideoThumbnail_play.setVisibility(View.GONE);
                 }
-
 
 
                 chatsViewHolder.sender_message_ImageFull.setVisibility(View.VISIBLE);
@@ -200,10 +198,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.senderMessageImage.setBackgroundResource(R.drawable.sender_messages_layout);
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderMessageImage);
-                if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
+                if (!TextUtils.isEmpty(messages.getLocal_location().trim())) {
 
                     File loc = new File(messages.getLocal_location());
-                    if ((!loc.exists()) || (!loc.isFile()) ) {
+                    if ((!loc.exists()) || (!loc.isFile())) {
                         loc.delete();
 
                         chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
@@ -226,7 +224,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
@@ -234,14 +232,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                     }
                                 });
-                    }else {
+                    } else {
                         //Check if message was sent of not.....
-                        if (messages.state.equals("not sent") && !messages.getMessage().equals("uploading")){
+                        if (messages.state.equals("not sent") && !messages.getMessage().equals("uploading")) {
 
-                            if (messages.getMessage().equals("uploading")){
+                            if (messages.getMessage().equals("uploading")) {
                                 chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.VISIBLE);
                                 chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
-                            }else{
+                            } else {
                                 chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.VISIBLE);
                                 chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
                             }
@@ -252,7 +250,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
                                     chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.VISIBLE);
 
-                                    new ChatUploadAttachment(ChatsAdapter.this,recyclerView, mContext, friendId,
+                                    new ChatUploadAttachment(ChatsAdapter.this, recyclerView, mContext, friendId,
                                             chatsViewHolder.sender_imageVideo_progressBar,
                                             chatsViewHolder.sender_message_imageVideoUpload)
                                             .execute("upload_attachment",
@@ -264,8 +262,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 }
                             });
 
-                        }
-                        else{
+                        } else {
                             chatsViewHolder.sender_message_imageVideoUpload.setVisibility(View.GONE);
                             chatsViewHolder.sender_imageVideo_progressBar.setVisibility(View.GONE);
                         }
@@ -289,7 +286,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getLocal_location());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
@@ -299,7 +296,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 });
                     }
 
-                }else{
+                } else {
                     ////File Sent but not exist locally
                     if (!TextUtils.isEmpty(messages.getMessage()) || !messages.getMessage().equals("uploading")) {
                         Glide.with(mContext)
@@ -312,13 +309,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         chatsViewHolder.senderMessageImage.setImageBitmap(resource);
 
-                                         //View image if it is clicked
+                                        //View image if it is clicked
                                         chatsViewHolder.senderMessageImage.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
@@ -326,42 +323,40 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
-                                        if (messages.getType().equals("image")){
-                                            saveImage(resource,newFileName,destinationFilename+"Sent/");
+                                        if (messages.getType().equals("image")) {
+                                            saveImage(resource, newFileName, destinationFilename + "Sent/");
 
-                                            ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
+                                            ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                     messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                    messages.getState(), destinationFilename+"Sent/"+newFileName+".png", "yes");
+                                                    messages.getState(), destinationFilename + "Sent/" + newFileName + ".png", "yes");
                                         }
 
                                     }
                                 });
-                    }else{
+                    } else {
                         ////File not Sent and  not exist locally
                         int drawable = R.drawable.imagedoesnotexist;
-                        if (messages.getType().equals("video")){
+                        if (messages.getType().equals("video")) {
                             drawable = R.drawable.videodoesnotexist;
                         }
 
-                            Glide.with(mContext)
-                                    .asBitmap()
-                                    .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
-                                    .load(drawable)
-                                    .into(chatsViewHolder.senderMessageImage);
+                        Glide.with(mContext)
+                                .asBitmap()
+                                .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
+                                .load(drawable)
+                                .into(chatsViewHolder.senderMessageImage);
 
                     }
 
 
                 }
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
 
 
@@ -381,7 +376,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-
             } else {
                 if (messages.getType().equals("video")) {
                     chatsViewHolder.receiver_message_VideoThumbnail_play.setVisibility(View.VISIBLE);
@@ -394,10 +388,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_message_ImageFull.setBackgroundResource(R.drawable.receiver_messages_layout);
 
 
-                if (!TextUtils.isEmpty(messages.getLocal_location().trim())){
+                if (!TextUtils.isEmpty(messages.getLocal_location().trim())) {
 
                     File loc = new File(messages.getLocal_location());
-                    if ((!loc.exists()) || (!loc.isFile()) ) {
+                    if ((!loc.exists()) || (!loc.isFile())) {
                         loc.delete();
 
                         /// load file from online if it does not exist locally
@@ -415,7 +409,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
@@ -424,7 +418,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                     }
                                 });
-                    }else {
+                    } else {
 
 
                         //Load file from local source
@@ -444,30 +438,30 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getLocal_location());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
                                         });
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
-                                        if (messages.getType().equals("image")){
+                                        if (messages.getType().equals("image")) {
 
-                                            saveImage(resource,newFileName,destinationFilename+"Received/");
+                                            saveImage(resource, newFileName, destinationFilename + "Received/");
 
-                                            ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
+                                            ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                     messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                    "read", destinationFilename+"Received/"+newFileName+".png", "yes");
+                                                    "read", destinationFilename + "Received/" + newFileName + ".png", "yes");
                                         }
 
                                     }
                                 });
                     }
 
-                }else{
+                } else {
                     ////File Sent but not exist locally
-                    if (!TextUtils.isEmpty(messages.getMessage()) ||  !messages.getMessage().equals("uploading")) {
+                    if (!TextUtils.isEmpty(messages.getMessage()) || !messages.getMessage().equals("uploading")) {
                         Glide.with(mContext)
                                 .asBitmap()
                                 .apply(new RequestOptions().error(R.drawable.sticker_gif_placeholder))
@@ -484,7 +478,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                             public void onClick(View v) {
                                                 Intent intent = new Intent(mContext, ShowCapturedActivity.class);
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
-                                                intent.putExtra("coming_from","ChatsAdapter");
+                                                intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
                                                 mContext.startActivity(intent);
                                             }
@@ -492,21 +486,21 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
-                                        if (messages.getType().equals("image")){
+                                        if (messages.getType().equals("image")) {
 
-                                            saveImage(resource,newFileName,destinationFilename+"Received/");
+                                            saveImage(resource, newFileName, destinationFilename + "Received/");
 
-                                            ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(mContext);
+                                            ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                     messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                    "read", destinationFilename+"Received/"+newFileName+".png", "yes");
+                                                    "read", destinationFilename + "Received/" + newFileName + ".png", "yes");
                                         }
                                     }
                                 });
-                    }else{
+                    } else {
                         ////File not Sent and  not exist locally
                         int drawable = R.drawable.imagedoesnotexist;
-                        if (messages.getType().equals("video")){
+                        if (messages.getType().equals("video")) {
                             drawable = R.drawable.videodoesnotexist;
                         }
 
@@ -522,23 +516,15 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
             }
-        }
+        } else if (messages.getType().equals("gif")) {
 
-
-
-
-
-        else if (messages.getType().equals("gif")){
-
-            if ( messages.getFrom().equals(currentUserID)){
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.senderStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
@@ -547,13 +533,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
                 Glide.with(mContext).asGif().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
                 switch (messages.getState()) {
                     case "not sent":
@@ -570,7 +555,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                         break;
                 }
 
-            }else{
+            } else {
 
                 chatsViewHolder.recieverStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
@@ -581,64 +566,55 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                         .load(messages.getMessage())
                         .into(chatsViewHolder.recieverStickerSoundGifImage);
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
             }
 
-        }
+        } else if (messages.getType().equals("sticker")) {
 
-
-
-
-
-        else if (messages.getType().equals("sticker")){
-
-            if ( messages.getFrom().equals(currentUserID)){
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.senderStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
 
-                    File stickerFile =new File(String.valueOf(mContext
-                            .getExternalFilesDir("/Images/Stickers/"+messages.getMessage()+".png")));
 
-                    if (!(stickerFile.exists()) || (!stickerFile.isFile()) ) {
-                        stickerFile.delete();
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(messages.getCaption())
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                        chatsViewHolder.senderStickerSoundGifImage.setImageBitmap(resource);
-                                        saveImage(resource, messages.getMessage(),
-                                                String.valueOf(mContext.getExternalFilesDir("/Images/Stickers/")));
-                                    }
-                                });
+                File stickerFile = new File(String.valueOf(mContext
+                        .getExternalFilesDir("/Images/Stickers/" + messages.getMessage() + ".png")));
 
-                    }else {
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(stickerFile)
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
-                                .into(chatsViewHolder.senderStickerSoundGifImage);
-                    }
+                if (!(stickerFile.exists()) || (!stickerFile.isFile())) {
+                    stickerFile.delete();
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .load(messages.getCaption())
+                            .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    chatsViewHolder.senderStickerSoundGifImage.setImageBitmap(resource);
+                                    saveImage(resource, messages.getMessage(),
+                                            String.valueOf(mContext.getExternalFilesDir("/Images/Stickers/")));
+                                }
+                            });
+
+                } else {
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .load(stickerFile)
+                            .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                            .into(chatsViewHolder.senderStickerSoundGifImage);
+                }
 
 
                 switch (messages.getState()) {
@@ -657,77 +633,70 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-
-            }else{
+            } else {
 
                 chatsViewHolder.recieverStickerSoundGifImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
 
-                    File stickerFile =new File(String.valueOf(mContext
-                            .getExternalFilesDir("/Images/Stickers/"+messages.getMessage()+".png")));
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
-                    if (!(stickerFile.exists()) || (!stickerFile.isFile()) ) {
-                        stickerFile.delete();
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(messages.getCaption())
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                        chatsViewHolder.recieverStickerSoundGifImage.setImageBitmap(resource);
-                                        saveImage(resource, messages.getMessage(),
-                                                String.valueOf(mContext.getExternalFilesDir("/Images/Stickers/")));
-                                    }
-                                });
+                File stickerFile = new File(String.valueOf(mContext
+                        .getExternalFilesDir("/Images/Stickers/" + messages.getMessage() + ".png")));
 
-                    }else {
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(stickerFile)
-                                .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
-                                .into(chatsViewHolder.recieverStickerSoundGifImage);
-                    }
+                if (!(stickerFile.exists()) || (!stickerFile.isFile())) {
+                    stickerFile.delete();
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .load(messages.getCaption())
+                            .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    chatsViewHolder.recieverStickerSoundGifImage.setImageBitmap(resource);
+                                    saveImage(resource, messages.getMessage(),
+                                            String.valueOf(mContext.getExternalFilesDir("/Images/Stickers/")));
+                                }
+                            });
+
+                } else {
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .load(stickerFile)
+                            .apply(new RequestOptions().placeholder(R.drawable.sticker_gif_placeholder))
+                            .into(chatsViewHolder.recieverStickerSoundGifImage);
+                }
             }
-        }
+        } else if (messages.getType().equals("sound")) {
 
-
-
-
-
-
-        else if (messages.getType().equals("sound")){
-
-            if ( messages.getFrom().equals(currentUserID)){
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.senderSoundImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
 
-                File stickerFile =new File(String.valueOf(mContext
-                        .getExternalFilesDir("/Sounds/SoundImages/"+messages.getMessage()+".png")));
 
-                if (!(stickerFile.exists()) || (!stickerFile.isFile()) ) {
+                File stickerFile = new File(String.valueOf(mContext
+                        .getExternalFilesDir("/Sounds/SoundImages/" + messages.getMessage() + ".png")));
+
+                if (!(stickerFile.exists()) || (!stickerFile.isFile())) {
                     stickerFile.delete();
+
+                    ///Fetch and display image from the online storage
+                    /// if it not exist in local db
+
                     Glide.with(mContext)
                             .asBitmap()
                             .load(messages.getCaption())
@@ -736,19 +705,50 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 @Override
                                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                     chatsViewHolder.senderSoundImage.setImageBitmap(resource);
+
+                                    //Save image locally for feture use
                                     saveImage(resource, messages.getMessage(),
                                             String.valueOf(mContext.getExternalFilesDir("/Sounds/SoundImages/")));
 
+                                    /// When the sound image is clicked
+                                    /// try playing if it exists
+                                    //else ask to download
+                                    chatsViewHolder.senderSoundImage.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            soundImageClicked(messages.getMessage(),v);
+                                        }
+                                    });
                                 }
                             });
 
 
-                }else {
+                } else {
+                    ///Fetch and display image from the local storage
+                    /// if it exist already
+
                     Glide.with(mContext)
                             .asBitmap()
                             .load(stickerFile)
                             .apply(new RequestOptions().placeholder(R.drawable.eighth_note))
-                            .into(chatsViewHolder.senderSoundImage);
+//                            .into(chatsViewHolder.senderSoundImage)
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                                    chatsViewHolder.senderSoundImage.setImageBitmap(resource);
+
+                                    /// When the sound image is clicked
+                                    /// try playing if it exists
+                                    //else ask to download
+                                    chatsViewHolder.senderSoundImage.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            soundImageClicked(messages.getMessage(),v);
+                                        }
+                                    });
+                                }
+                            });
                 }
 
 
@@ -768,25 +768,27 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-            }else{
+            } else {
 
                 chatsViewHolder.recieverSoundImage.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
 
-                File soundImageFile =new File(String.valueOf(mContext
-                        .getExternalFilesDir("/Sounds/SoundImages/"+messages.getMessage()+".png")));
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
-                if (!(soundImageFile.exists()) || (!soundImageFile.isFile()) ) {
+                File soundImageFile = new File(String.valueOf(mContext
+                        .getExternalFilesDir("/Sounds/SoundImages/" + messages.getMessage() + ".png")));
+
+                if (!(soundImageFile.exists()) || (!soundImageFile.isFile())) {
                     soundImageFile.delete();
+
+
+                    //Download and save image locally for
+                    // future use.........
                     Glide.with(mContext)
                             .asBitmap()
                             .load(messages.getCaption())
@@ -795,44 +797,73 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                 @Override
                                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                     chatsViewHolder.recieverSoundImage.setImageBitmap(resource);
+
+                                    //Save image locally for future use
                                     saveImage(resource, messages.getMessage(),
                                             String.valueOf(mContext.getExternalFilesDir("/Sounds/SoundImages/")));
+
+
+                                    /// When the sound image is clicked
+                                    /// try playing if it exists
+                                    //else ask to download
+                                    chatsViewHolder.recieverSoundImage.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            soundImageClicked(messages.getMessage(),v);
+                                        }
+                                    });
                                 }
                             });
 
-                }else {
+                } else {
+
+                    //Display image from local ......
+                    // storage if it exists.....
                     Glide.with(mContext)
                             .asBitmap()
                             .load(soundImageFile)
                             .apply(new RequestOptions().placeholder(R.drawable.eighth_note))
-                            .into(chatsViewHolder.recieverSoundImage);
+//                            .into(chatsViewHolder.recieverSoundImage);
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                                    chatsViewHolder.recieverSoundImage.setImageBitmap(resource);
+
+                                    /// When the sound image is clicked
+                                    /// try playing if it exists
+                                    //else ask to download
+                                    chatsViewHolder.recieverSoundImage.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            soundImageClicked(messages.getMessage(),v);
+                                        }
+                                    });
+                                }
+                            });
                 }
             }
-        }
 
 
+        } else if (messages.getType().equals("contact")) {
 
+            if (messages.getFrom().equals(currentUserID)) {
 
-
-        else if (messages.getType().equals("contact")){
-
-            if ( messages.getFrom().equals(currentUserID)){
-
+                //Enable useful views
                 chatsViewHolder.sender_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
+
 
                 chatsViewHolder.sender_contactName.setText(messages.getCaption());
                 chatsViewHolder.sender_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.sender_contactIcon.setImageResource(R.drawable.ic_contacts_white_24dp);
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
                 switch (messages.getState()) {
                     case "not sent":
                         chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
@@ -849,7 +880,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-            }else{
+            } else {
 
                 chatsViewHolder.receiver_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
@@ -858,49 +889,43 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.receiver_contactIcon.setImageResource(R.drawable.ic_contacts_black_24dp);
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
+
             }
-        }
+        } else if (messages.getType().equals("location") || messages.getType().contains("Lng:")) {
 
-
-
-
-        else if (messages.getType().equals("location") || messages.getType().contains("Lng:")){
-
-            if ( messages.getFrom().equals(currentUserID)){
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.sender_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
-                chatsViewHolder.sender_contactName.setText(messages.getType().replace("Lng","Longitude")+"\n"+messages.getCaption().replace("Lat","Latitude")+"\n");
+                chatsViewHolder.sender_contactName.setText(messages.getType().replace("Lng", "Longitude") + "\n" + messages.getCaption().replace("Lat", "Latitude") + "\n");
                 chatsViewHolder.sender_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.sender_contactIcon.setImageResource(R.drawable.ic_location_on_white_24dp);
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
                 chatsViewHolder.sender_contactFull.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        openLocationOnMap(messages.getType().replace("Lng:","").trim(),messages.getCaption().replace("Lat:","").trim());
+                        openLocationOnMap(messages.getType().replace("Lng:", "").trim(), messages.getCaption().replace("Lat:", "").trim());
                     }
                 });
                 chatsViewHolder.sender_contactFull.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        openLocationOnMapSec(messages.getType().replace("Lng:","").trim(),messages.getCaption().replace("Lat:","").trim());
+                        openLocationOnMapSec(messages.getType().replace("Lng:", "").trim(), messages.getCaption().replace("Lat:", "").trim());
                         return false;
                     }
                 });
@@ -922,44 +947,37 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-            }else{
+            } else {
 
                 chatsViewHolder.receiver_contactFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
-                chatsViewHolder.receiver_contactName.setText(messages.getType().replace("Lng","Longitude")+"\n"+messages.getCaption().replace("Lat","Latitude")+"\n");
+                chatsViewHolder.receiver_contactName.setText(messages.getType().replace("Lng", "Longitude") + "\n" + messages.getCaption().replace("Lat", "Latitude") + "\n");
                 chatsViewHolder.receiver_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.receiver_contactIcon.setImageResource(R.drawable.ic_location_on_f44c63_24dp);
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
                 chatsViewHolder.receiver_contactFull.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        openLocationOnMap(messages.getType().replace("Lng:","").trim(),messages.getCaption().replace("Lat:","").trim());
+                        openLocationOnMap(messages.getType().replace("Lng:", "").trim(), messages.getCaption().replace("Lat:", "").trim());
                     }
                 });
                 chatsViewHolder.receiver_contactFull.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        openLocationOnMapSec(messages.getType().replace("Lng:","").trim(),messages.getCaption().replace("Lat:","").trim());
+                        openLocationOnMapSec(messages.getType().replace("Lng:", "").trim(), messages.getCaption().replace("Lat:", "").trim());
                         return false;
                     }
                 });
             }
-        }
-
-
-
-
-        else if (messages.getType().equals("document")){
-            if ( messages.getFrom().equals(currentUserID)){
+        } else if (messages.getType().equals("document")) {
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.sender_document_attachmentFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
@@ -967,13 +985,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 chatsViewHolder.sender_document_attachmentName.setText(messages.getCaption());
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
 
                 switch (messages.getState()) {
@@ -992,43 +1009,33 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-
-            }else{
+            } else {
 
                 chatsViewHolder.receiver_document_attachmentFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.receiver_document_attachmentName.setText(messages.getCaption());
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
             }
-        }
-
-
-
-
-
-        else if (messages.getType().equals("audio")){
-            if ( messages.getFrom().equals(currentUserID)){
+        } else if (messages.getType().equals("audio")) {
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.sender_message_audioFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.sender_message_audioFileName.setText(messages.getCaption());
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
 
                 switch (messages.getState()) {
@@ -1047,39 +1054,31 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 }
 
 
-            }else{
+            } else {
 
                 chatsViewHolder.receiver_message_audioFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
                 chatsViewHolder.receiver_message_audioFileName.setText(messages.getCaption());
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
             }
-        }
-
-
-
-
-        else if (messages.getType().equals("findMe")){
-            if ( messages.getFrom().equals(currentUserID)){
+        } else if (messages.getType().equals("findMe")) {
+            if (messages.getFrom().equals(currentUserID)) {
 
                 chatsViewHolder.sender_message_findMeFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
-                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.senderMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+
 
 
                 switch (messages.getState()) {
@@ -1097,12 +1096,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                         break;
                 }
 
-            }else{
+            } else {
 
-                if (messages.getCaption().equals("doneWith")|| messages.getCaption().equals("rejected")){
+                if (messages.getCaption().equals("doneWith") || messages.getCaption().equals("rejected")) {
                     chatsViewHolder.receiver_message_findMeBtnNo.setVisibility(View.GONE);
                     chatsViewHolder.receiver_message_findMeBtnYes.setVisibility(View.GONE);
-                }else{
+                } else {
                     chatsViewHolder.receiver_message_findMeBtnNo.setVisibility(View.VISIBLE);
                     chatsViewHolder.receiver_message_findMeBtnYes.setVisibility(View.VISIBLE);
                 }
@@ -1110,13 +1109,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_message_findMeFull.setVisibility(View.VISIBLE);
                 chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext,Long.parseLong(messages.getMessageID())));
-                chatsViewHolder.receiverMessageDateTime.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext,messages.getDate()+"  "+messages.getTime(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
 
                 chatsViewHolder.receiver_message_findMeBtnNo.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1135,8 +1132,22 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         }
 
 
+    }
+
+    @Override
+    public int getItemCount() {
+        return userChatList.size();
+    }
 
 
+    private void showChatRealTime(TextView messageDateTimeView, final String messageDateTime) {
+        messageDateTimeView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showToast(messageDateTime);
+                return false;
+            }
+        });
     }
 
     private void openLocationOnMap(String longitude, String latitude) {
@@ -1148,9 +1159,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         mContext.startActivity(intent);
     }
 
-
     private void openLocationOnMapSec(String longitude, String latitude) {
-        Intent intent = new Intent(mContext,SingLocationActivity.class);
+        Intent intent = new Intent(mContext, SingLocationActivity.class);
 //        Intent intent = new Intent(mContext, MapboxSingleLocationActivity.class);
         intent.putExtra("long", Double.parseDouble(longitude));
         intent.putExtra("lat", Double.parseDouble(latitude));
@@ -1158,44 +1168,32 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         mContext.startActivity(intent);
     }
 
-
-    @Override
-    public int getItemCount() {
-        return userChatList.size();
-    }
-
-
-
-
-
-
-
     private void openFindMeWithFriend(String fromUid) {
         Intent intent = new Intent(mContext, FindMeMapsActivity.class);
-        intent.putExtra("friend_uid",fromUid);
-        intent.putExtra("friend_name",fromUid);
-        intent.putExtra("connect_auto","yes");
+        intent.putExtra("friend_uid", fromUid);
+        intent.putExtra("friend_name", friendName);
+        intent.putExtra("connect_auto", "yes");
         mContext.startActivity(intent);
-    };
-
-
+    }
 
     private void rejectFindMe(String messageID) {
-        Toast.makeText(mContext, messageID, Toast.LENGTH_SHORT).show();
+        showToast(messageID);
     }
-    private void downloadfiles(String url, String soundName, String localLocation) {
+
+    private void downloadFiles(String url, String soundName, String localLocation) {
         DownloadManager downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
 
         Uri uri = Uri.parse(url);
         DownloadManager.Request request = new DownloadManager.Request(uri);
 
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION);
-        request.setDestinationInExternalFilesDir(mContext,localLocation,soundName);
+        request.setDestinationInExternalFilesDir(mContext, localLocation, soundName);
 
         downloadManager.enqueue(request);
 
     }
-    private void saveImage(Bitmap image,String imageFileName, String directory) {
+
+    private void saveImage(Bitmap image, String imageFileName, String directory) {
         File storageDir = new File(directory);
 
         boolean success = true;
@@ -1203,7 +1201,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
             success = storageDir.mkdirs();
         }
         if (success) {
-            File imageFile = new File(storageDir, imageFileName+".png");
+            File imageFile = new File(storageDir, imageFileName + ".png");
             try {
                 OutputStream fOut = new FileOutputStream(imageFile);
                 image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
@@ -1215,6 +1213,96 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         }
     }
 
+    private void soundImageClicked(String messageSoundName, View imageView) {
+        final String soundName = messageSoundName.replace(".png", "") + ".mp3";
+        String audioPath = String.valueOf(mContext.getExternalFilesDir("/sounds/SoundAudios/" + soundName));
 
+        final File file = new File(audioPath);
+
+        if (!(file.exists()) || (!file.isFile())) {
+            file.delete();
+
+            alertDialog = new AlertDialog.Builder(mContext).create();
+            alertDialog.setTitle(" ");
+            alertDialog.setMessage("Sorry, sound does not exist on your device...");
+            alertDialog.setCanceledOnTouchOutside(true);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Download", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    downloadSound(soundName);
+                }
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    alertDialog.hide();
+                }
+            });
+            alertDialog.show();
+
+
+        } else if (file.exists() && file.isFile()) {
+            playAndSendAudio(file,imageView);
+        } else {
+            showToast("Error....");
+        }
+    }
+
+    private void downloadSound(final String soundName) {
+        if (mAuth.getCurrentUser() != null) {
+            FirebaseDatabase.getInstance().getReference()
+                    .child("sounds").child(soundName)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild("audio")) {
+                                String audioUrl = dataSnapshot.child("audio").getValue().toString();
+                                downloadAndSaveSound(audioUrl, soundName + ".mp3", "/Sounds/SoundAudios/");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            showToast("Couldn't download...");
+                        }
+                    });
+        } else {
+            new MainActivity().logOut();
+        }
+
+    }
+
+    private void playAndSendAudio(final File file, final View imageView) {
+        imageView.setEnabled(false);
+        mMediaPlayer = MediaPlayer.create(mContext, Uri.fromFile(file));
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mMediaPlayer.stop();
+                mMediaPlayer.release();
+                imageView.setEnabled(true);
+            }
+        });
+
+        mMediaPlayer.start();
+
+    }
+
+    private void downloadAndSaveSound(String url, String soundName, String localLocation) {
+        showToast("You are no downloading " + soundName + ", please try again after  download...");
+        DownloadManager downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalFilesDir(mContext, localLocation, soundName);
+
+        downloadManager.enqueue(request);
+    }
+
+    private void showToast(String s) {
+        Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
+    }
 }
 

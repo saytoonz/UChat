@@ -23,17 +23,22 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
     private Context context;
     private FirebaseAuth mAuth;
     private String friendId;
+    private String friendName;
 
-    public ChatActivityBackground(RecyclerView recyclerView, Context context, String friendId) {
+    public ChatActivityBackground(RecyclerView recyclerView,
+                                  Context context,
+                                  String friendId,
+                                  String friendName) {
         this.recyclerView = recyclerView;
         this.context = context;
         this.friendId = friendId;
+        this.friendName = friendName;
     }
 
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,friendId);
+        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,friendId,friendName);
         recyclerView.setAdapter(adapter);
     }
 

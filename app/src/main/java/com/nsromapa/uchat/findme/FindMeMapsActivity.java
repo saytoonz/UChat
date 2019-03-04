@@ -42,7 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nsromapa.uchat.R;
-import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatsUpdateBackground;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -368,7 +368,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                             progressDialog.dismiss();
                         }
 
-                        ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(getApplicationContext());
+                        ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(getApplicationContext());
                         insertIntoDBBackground.execute("message_db", messagePushKey, myUid, friendUid,
                                 caption, currentDate, currentTime, messageText, type, "sent", LOCAL_LOCATION, "yes");
                         Log.d(TAG, "fetchMessageFromFriends:  Message " + messagePushKey + " added to table insertion........");

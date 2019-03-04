@@ -1,11 +1,7 @@
 package com.nsromapa.uchat;
 
 import android.annotation.SuppressLint;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,32 +17,25 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nsromapa.uchat.customizations.CustomIntent;
 import com.nsromapa.uchat.databases.InsertIntoDBBackground;
 import com.nsromapa.uchat.databases.StickersSoundBackground;
-import com.nsromapa.uchat.databases.UpdateLocalDB;
 import com.nsromapa.uchat.adapter.MainPagerAdapter;
-import com.nsromapa.uchat.fragment.CameraFragment;
 import com.nsromapa.uchat.loginsignupsplash.LoginActivity;
-import com.nsromapa.uchat.recyclerchatactivity.ChatsRetrieveBackground;
+import com.nsromapa.uchat.recyclerchatactivity.ChatsUpdateBackground;
 import com.nsromapa.uchat.usersInfos.MyUserInfo;
 import com.nsromapa.uchat.view.MyTabsView;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -272,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                                     });
 
 
-                                    ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                    ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(MainActivity.this);
                                     insertIntoDBBackground.execute("message_db", MESSAGE_ID, FROM_UID, TO_UID,
                                             CAPTION, DATE, TIME, MESSAGE, TYPE, "delivered", LOCAL_LOCATION, SYNCHRONIZED);
                                     Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");
@@ -329,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
 
-                                ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(MainActivity.this);
                                 insertIntoDBBackground.execute("update_message", MESSAGE_ID, FROM_UID, TO_UID,
                                         CAPTION, DATE, TIME, MESSAGE, TYPE, STATE, LOCAL_LOCATION, SYNCHRONIZED);
                                 Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");
@@ -381,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
 
-                                ChatsRetrieveBackground insertIntoDBBackground = new ChatsRetrieveBackground(MainActivity.this);
+                                ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(MainActivity.this);
                                 insertIntoDBBackground.execute("message_deleted", MESSAGE_ID, FROM_UID, TO_UID,
                                         CAPTION, DATE, TIME, MESSAGE, TYPE, STATE, LOCAL_LOCATION, SYNCHRONIZED);
                                 Log.d(TAG, "fetchMessageFromFriends:  Message " + MESSAGE_ID + " added to table insertion........");

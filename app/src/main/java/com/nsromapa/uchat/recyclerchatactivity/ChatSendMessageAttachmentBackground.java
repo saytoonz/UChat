@@ -28,21 +28,25 @@ public class ChatSendMessageAttachmentBackground extends AsyncTask<String, Chats
     private ArrayList<ChatsObjects> chatsObjects = MessagesArrayList.chatsObjects;
     private FirebaseAuth mAuth;
     private String FriendId;
+    private String friendName;
     private static final String TAG = "ChatSendBackground";
 
 
-    public ChatSendMessageAttachmentBackground(RecyclerView recyclerView, Context context,
-                                               String FriendId) {
+    public ChatSendMessageAttachmentBackground(RecyclerView recyclerView,
+                                               Context context,
+                                               String FriendId,
+                                               String friendName) {
         this.recyclerView = recyclerView;
         this.context = context;
         this.FriendId = FriendId;
+        this.friendName = friendName;
     }
 
 
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,FriendId);
+        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,FriendId,friendName);
         //recyclerView.setAdapter(adapter);
     }
 

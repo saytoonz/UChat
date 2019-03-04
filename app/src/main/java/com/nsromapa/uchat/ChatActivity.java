@@ -402,9 +402,14 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 //        chatsAdapter = new ChatsAdapter(this,messageList);
 //        userMessagesRecycler.setAdapter(chatsAdapter);
 
-        new ChatActivityBackground(messagesRecycler,this,receiver_user_id)
+
+        //////Fetch all messages from
+        // the local database of the app...
+        new ChatActivityBackground(messagesRecycler,this, receiver_user_id, receiver_user_name)
                 .execute(receiver_user_id);
 
+        /////Update the state of all new
+        // unread messages and set them to seen
         setAllFriendMessagestoRead(receiver_user_id);
 
 
@@ -614,7 +619,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
             String messageLocalKey = String.valueOf(System.currentTimeMillis());
             String SYNCHRONIZED = "no";
 
-            new ChatSendBackground(messagesRecycler,this,receiver_user_id)
+            new ChatSendBackground(messagesRecycler,this,receiver_user_id, receiver_user_name)
             .execute("sendMessage", messageLocalKey, sender_user_id, receiver_user_id,
                     caption, currentDate, currentTime, messageText, type, LOCAL_LOCATION, SYNCHRONIZED);
 
@@ -1277,7 +1282,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 String messageText ="upload";
 
                 assert fileMediaType != null;
-                new ChatSendMessageAttachmentBackground(messagesRecycler,this,receiver_user_id)
+                new ChatSendMessageAttachmentBackground(messagesRecycler,this,receiver_user_id,receiver_user_name)
                         .execute("sendMessageAttachment", messageLocalKey, sender_user_id, receiver_user_id,
                                 caption, currentDate, currentTime, messageText, fileMediaType, fileName, SYNCHRONIZED);
 
