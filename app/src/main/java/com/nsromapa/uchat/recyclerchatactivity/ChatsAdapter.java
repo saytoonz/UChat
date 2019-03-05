@@ -1,8 +1,10 @@
 package com.nsromapa.uchat.recyclerchatactivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -47,6 +50,7 @@ import com.nsromapa.uchat.MainActivity;
 import com.nsromapa.uchat.R;
 import com.nsromapa.uchat.ShowCapturedActivity;
 import com.nsromapa.uchat.cameraUtils.Config;
+import com.nsromapa.uchat.customizations.CustomIntent;
 import com.nsromapa.uchat.findme.FindMeMapsActivity;
 import com.nsromapa.uchat.utils.FormatterUtil;
 
@@ -57,10 +61,11 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private static final String TAG = "ChatAdapter";
-    List<ChatsObjects> userChatList;
+    private List<ChatsObjects> userChatList;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
@@ -71,11 +76,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private AlertDialog alertDialog;
     private MediaPlayer mMediaPlayer;
 
-    public ChatsAdapter(Context context,Activity mActivity,
-                        List<ChatsObjects> userChatList,
-                        RecyclerView recyclerView,
-                        String friendId,
-                        String friendName) {
+    ChatsAdapter(Context context, Activity mActivity,
+                 List<ChatsObjects> userChatList,
+                 RecyclerView recyclerView,
+                 String friendId,
+                 String friendName) {
         this.userChatList = userChatList;
         this.mContext = context;
         this.mActivity = mActivity;
@@ -94,9 +99,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         return new ChatsViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final ChatsViewHolder chatsViewHolder, final int position) {
-        final String currentUserID = mAuth.getCurrentUser().getUid();
+        final String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         final ChatsObjects messages = userChatList.get(position);
 
         userRef = FirebaseDatabase.getInstance().getReference().child("users").child(messages.getFrom());
@@ -153,7 +159,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -183,7 +189,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
             }
 
         } else if (messages.getType().equals("image") || messages.getType().equals("video")) {
@@ -375,8 +381,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -430,6 +435,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
                                                 intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
+                                                CustomIntent.customType(mContext, "left-to-right");
                                                 mContext.startActivity(intent);
                                             }
                                         });
@@ -459,6 +465,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getLocal_location());
                                                 intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
+                                                CustomIntent.customType(mContext, "left-to-right");
                                                 mContext.startActivity(intent);
                                             }
                                         });
@@ -499,6 +506,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                                 intent.putExtra(Config.KeyName.FILEPATH, messages.getMessage());
                                                 intent.putExtra("coming_from", "ChatsAdapter");
                                                 intent.putExtra("fileType", messages.getType());
+                                                CustomIntent.customType(mContext, "left-to-right");
                                                 mContext.startActivity(intent);
                                             }
                                         });
@@ -539,7 +547,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
             }
         } else if (messages.getType().equals("gif")) {
 
@@ -561,7 +569,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -594,7 +602,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
             }
 
         } else if (messages.getType().equals("sticker")) {
@@ -610,8 +618,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 File stickerFile = new File(String.valueOf(mContext
@@ -667,7 +674,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
                 File stickerFile = new File(String.valueOf(mContext
                         .getExternalFilesDir("/Images/Stickers/" + messages.getMessage() + ".png")));
@@ -708,8 +715,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 File stickerFile = new File(String.valueOf(mContext
@@ -740,7 +746,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     chatsViewHolder.senderSoundImage.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            soundImageClicked(messages.getMessage(),v);
+                                            soundImageClicked(messages.getMessage(), v);
                                         }
                                     });
                                 }
@@ -768,7 +774,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     chatsViewHolder.senderSoundImage.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            soundImageClicked(messages.getMessage(),v);
+                                            soundImageClicked(messages.getMessage(), v);
                                         }
                                     });
                                 }
@@ -802,7 +808,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
                 File soundImageFile = new File(String.valueOf(mContext
                         .getExternalFilesDir("/Sounds/SoundImages/" + messages.getMessage() + ".png")));
@@ -833,7 +839,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     chatsViewHolder.recieverSoundImage.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            soundImageClicked(messages.getMessage(),v);
+                                            soundImageClicked(messages.getMessage(), v);
                                         }
                                     });
                                 }
@@ -860,7 +866,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                     chatsViewHolder.recieverSoundImage.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            soundImageClicked(messages.getMessage(),v);
+                                            soundImageClicked(messages.getMessage(), v);
                                         }
                                     });
                                 }
@@ -887,13 +893,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.sender_contactFull.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        contactChatClicked(messages.getMessage(),messages.getCaption());
+                        contactChatClicked(messages.getMessage(), messages.getCaption());
                     }
                 });
                 chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
                 switch (messages.getState()) {
                     case "not sent":
@@ -925,14 +931,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_contactFull.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        contactChatClicked(messages.getMessage(),messages.getCaption());
+                        contactChatClicked(messages.getMessage(), messages.getCaption());
                     }
                 });
 
                 chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
             }
@@ -952,7 +958,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 chatsViewHolder.sender_contactFull.setOnClickListener(new View.OnClickListener() {
@@ -999,7 +1005,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
                 chatsViewHolder.receiver_contactFull.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1028,8 +1034,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -1059,7 +1064,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
             }
         } else if (messages.getType().equals("audio")) {
             if (messages.getFrom().equals(currentUserID)) {
@@ -1073,8 +1078,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -1103,7 +1107,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
             }
         } else if (messages.getType().equals("findMe")) {
             if (messages.getFrom().equals(currentUserID)) {
@@ -1116,8 +1120,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.senderMessageDateTime,messages.getDate() + "  " + messages.getTime());
-
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
 
                 switch (messages.getState()) {
@@ -1152,7 +1155,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                 ///Show full time in Toast when
                 ///time TextView is long clicked
-                showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
 
                 chatsViewHolder.receiver_message_findMeBtnNo.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1163,11 +1166,56 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_message_findMeBtnYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        openFindMeWithFriend(messages.getFrom());
+                        openFindMeWithFriend(messages.getFrom(), messages.getMessageID());
                     }
                 });
             }
 
+        } else {
+
+            if (messages.getFrom().equals(currentUserID)) {
+
+                chatsViewHolder.senderMessage.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessageDateTime.setVisibility(View.VISIBLE);
+                chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
+
+                chatsViewHolder.senderMessage.setBackgroundResource(R.drawable.sender_messages_layout);
+                chatsViewHolder.senderMessage.setText(mContext.getString(R.string.Unknown_type_of_message));
+
+                chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.senderMessageDateTime, messages.getDate() + "  " + messages.getTime());
+
+
+                switch (messages.getState()) {
+                    case "not sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.black_overlay);
+                        break;
+                    case "sent":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorInitial);
+                        break;
+                    case "delivered":
+                        chatsViewHolder.senderMessage_state.setBackgroundResource(R.color.colorAccent);
+                        break;
+                    case "read":
+                        chatsViewHolder.senderMessage_state.setVisibility(View.GONE);
+                        break;
+                }
+
+            } else {
+
+                chatsViewHolder.receiverMessage.setVisibility(View.VISIBLE);
+                chatsViewHolder.receiverMessageDateTime.setVisibility(View.VISIBLE);
+
+                chatsViewHolder.receiverMessage.setBackgroundResource(R.drawable.receiver_messages_layout);
+                chatsViewHolder.receiverMessage.setText(mContext.getString(R.string.Unknown_type_of_message));
+
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
+                ///Show full time in Toast when
+                ///time TextView is long clicked
+                showChatRealTime(chatsViewHolder.receiverMessageDateTime, messages.getDate() + "  " + messages.getTime());
+            }
         }
 
 
@@ -1177,10 +1225,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     public int getItemCount() {
         return userChatList.size();
     }
-
-
-
-
 
 
     private void contactChatClicked(String contact, final String contactName) {
@@ -1197,7 +1241,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 //            }
 //
 //        }
-        final CharSequence[] choices = {"View Contact","Save Contact","Call "+contactName,"Cancle"};
+        final CharSequence[] choices = {"View Contact", "Save Contact", "Call " + contactName, "Cancle"};
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Select an option...");
         builder.setCancelable(true);
@@ -1205,14 +1249,14 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         builder.setItems(choices, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which==0){
+                if (which == 0) {
                     viewContact(finalContact);
-                }else if (which == 1){
-                    showToast("Save Contact");
-                }else if (which == 2){
-                    showToast("Call "+contactName);
-                }else{
-                    Log.d(TAG, "onClick: Cancel is selected......");   
+                } else if (which == 1) {
+                    saveContact(finalContact, contactName);
+                } else if (which == 2) {
+                   callContact(finalContact);
+                } else {
+                    Log.d(TAG, "onClick: Cancel is selected......");
                 }
                 dialog.dismiss();
             }
@@ -1221,9 +1265,27 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         alert.show();
     }
 
+    private void saveContact(String finalContact, String contactName) {
+        ContentValues values = new ContentValues();
+        values.put(ContactsContract.Data.RAW_CONTACT_ID, 001);
+        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, finalContact);
+        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
+        values.put(ContactsContract.CommonDataKinds.Phone.LABEL, contactName);
+        Uri dataUri = mContext.getContentResolver().insert(ContactsContract.Data.CONTENT_URI,values);
+    }
+
+    private void callContact(String finalContact) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + finalContact));
+        CustomIntent.customType(mContext, "left-to-right");
+        mContext.startActivity(intent);
+    }
+
     private void viewContact(String finalContact) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:"+finalContact));
+        intent.setData(Uri.parse("tel:" + finalContact));
+        CustomIntent.customType(mContext, "left-to-right");
         mContext.startActivity(intent);
     }
 
@@ -1255,7 +1317,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         mContext.startActivity(intent);
     }
 
-    private void openFindMeWithFriend(String fromUid) {
+    private void openFindMeWithFriend(String fromUid, String messageID) {
         Intent intent = new Intent(mContext, FindMeMapsActivity.class);
         intent.putExtra("friend_uid", fromUid);
         intent.putExtra("friend_name", friendName);
@@ -1310,7 +1372,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         if (report.areAllPermissionsGranted()) {
                             final FileOutputStream fileOutputStream;
-                            File file = getExternalDirectory_andFolder("Uchat/Image/"+foldername);
+                            File file = getExternalDirectory_andFolder("Uchat/Image/" + foldername);
 
                             if (!file.exists() && !file.mkdirs()) {
                                 showToast("Can't create Directory to save image");
@@ -1370,6 +1432,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         File file = Environment.getExternalStorageDirectory();
         return new File(file, folder);
     }
+
     private void soundImageClicked(String messageSoundName, View imageView) {
         final String soundName = messageSoundName.replace(".png", "") + ".mp3";
         String audioPath = String.valueOf(mContext.getExternalFilesDir("/sounds/SoundAudios/" + soundName));
@@ -1399,7 +1462,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
 
         } else if (file.exists() && file.isFile()) {
-            playAndSendAudio(file,imageView);
+            playAndSendAudio(file, imageView);
         } else {
             showToast("Error....");
         }
@@ -1461,7 +1524,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private void showToast(String s) {
         Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
     }
-
 
 
 }
