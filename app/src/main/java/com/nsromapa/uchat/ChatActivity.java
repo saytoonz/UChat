@@ -97,6 +97,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
@@ -115,28 +116,26 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     private CircleImageView userProfileImage;
     private ImageView backArrow,sendMessageBtn,toggleKeyboardEmoji;
     private EmoticonEditText messageEditText;
-    private ImageView captureImage,recAudio;
+    private ImageView recAudio;
     private LinearLayout img_capt_aud_rec,attachment_layouout;
-    private ImageView attach_photo, attach_video, attach_gallery, attach_record;
+    private ImageView attach_gallery;
+    private ImageView attach_record;
     private ImageView attach_audio, attach_document, attach_findUser, attach_location, attach_contact;
     public RecyclerView messagesRecycler;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mRootRef, theseUsersMessageTableRef,friendMessageChildRootRef,myMessageChildRootRef;
+    private DatabaseReference mRootRef;
+    private DatabaseReference friendMessageChildRootRef;
+    private DatabaseReference myMessageChildRootRef;
     private ChildEventListener friendMessageChild,myMessagesChild;
-    private String messageSenderRef;
-    private String messageReceivererRef;
 
     private AlertDialog alertDialog;
     private MediaPlayer mMediaPlayer;
 
     private List<ChatsObjects> messageList = new ArrayList<>();
-    private LinearLayoutManager linearLayoutManager;
-    private ChatsAdapter chatsAdapter;
 
     private String currentDate,currentTime;
 
-    private ProgressDialog progressDialog;
     private InputMethodManager inputMethodManager;
     private EmoticonGIFKeyboardFragment emoticonGIFKeyboardFragment;
 
@@ -160,6 +159,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
     PermissionUtils permissionUtils;
 
     boolean isPermissionGranted;
+
+    public ChatActivity() {
+    }
 
 
     @Override
@@ -374,13 +376,13 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         toggleKeyboardEmoji = findViewById(R.id.activity_chat_insert_Emoji);
         sendMessageBtn = findViewById(R.id.activity_chat_send);
         messageEditText = findViewById(R.id.activity_chat_message_text);
-        captureImage = findViewById(R.id.activity_chat_capture_image);
+        ImageView captureImage = findViewById(R.id.activity_chat_capture_image);
         recAudio = findViewById(R.id.activity_chat_record_audio);
         img_capt_aud_rec = findViewById(R.id.image_capture_audio_rec_linearLayout);
 
         attachment_layouout = findViewById(R.id.chat_activity_layout_attachment);
-        attach_photo = findViewById(R.id.chat_activity_open_Photo);
-        attach_video = findViewById(R.id.chat_activity_open_Video);
+        ImageView attach_photo = findViewById(R.id.chat_activity_open_Photo);
+        ImageView attach_video = findViewById(R.id.chat_activity_open_Video);
         attach_gallery = findViewById(R.id.chat_activity_open_Gallery);
         attach_record = findViewById(R.id.chat_activity_open_Recorder);
         attach_audio = findViewById(R.id.chat_activity_open_Audio);
@@ -396,7 +398,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
         messagesRecycler = findViewById(R.id.activity_chat_recyclerview);
         messagesRecycler.setHasFixedSize(true);
         messagesRecycler.setNestedScrollingEnabled(false);
-        linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         messagesRecycler.setLayoutManager(linearLayoutManager);
 
 //        chatsAdapter = new ChatsAdapter(this,messageList);
@@ -405,7 +407,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //////Fetch all messages from
         // the local database of the app...
-        new ChatActivityBackground(messagesRecycler,this, receiver_user_id, receiver_user_name)
+        new ChatActivityBackground(messagesRecycler,this,this, receiver_user_id, receiver_user_name)
                 .execute(receiver_user_id);
 
         /////Update the state of all new
@@ -466,9 +468,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         //Firebase Database References for messages
-        messageSenderRef = "messages/"+ sender_user_id +"/"+ receiver_user_id;
-        messageReceivererRef = "messages/"+ receiver_user_id +"/"+ sender_user_id;
-        theseUsersMessageTableRef = mRootRef.child("Messages")
+        String messageSenderRef = "messages/" + sender_user_id + "/" + receiver_user_id;
+        String messageReceivererRef = "messages/" + receiver_user_id + "/" + sender_user_id;
+        DatabaseReference theseUsersMessageTableRef = mRootRef.child("Messages")
                 .child(sender_user_id).child(receiver_user_id);
 
 
@@ -619,7 +621,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
             String messageLocalKey = String.valueOf(System.currentTimeMillis());
             String SYNCHRONIZED = "no";
 
-            new ChatSendBackground(messagesRecycler,this,receiver_user_id, receiver_user_name)
+            new ChatSendBackground(messagesRecycler,this,this,receiver_user_id, receiver_user_name)
             .execute("sendMessage", messageLocalKey, sender_user_id, receiver_user_id,
                     caption, currentDate, currentTime, messageText, type, LOCAL_LOCATION, SYNCHRONIZED);
 
@@ -641,7 +643,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     if (dataSnapshot.exists()){
-                        if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                        if (Objects.requireNonNull(dataSnapshot.child("from").getValue()).toString().equals(receiver_user_id)){
                             dataSnapshot.child("state").getRef().setValue("read");
                         }
                     }
@@ -651,7 +653,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     if (dataSnapshot.exists()){
-                        if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                        if (Objects.requireNonNull(dataSnapshot.child("from").getValue()).toString().equals(receiver_user_id)){
                             dataSnapshot.child("state").getRef().setValue("read");
                         }
                     }
@@ -683,7 +685,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                @Override
                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                    if (dataSnapshot.exists()){
-                       if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                       if (Objects.requireNonNull(dataSnapshot.child("from").getValue()).toString().equals(receiver_user_id)){
                            dataSnapshot.child("state").getRef().setValue("read");
                        }
                    }
@@ -692,7 +694,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                @Override
                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                    if (dataSnapshot.exists()){
-                       if (dataSnapshot.child("from").getValue().toString().equals(receiver_user_id)){
+                       if (Objects.requireNonNull(dataSnapshot.child("from").getValue()).toString().equals(receiver_user_id)){
                            dataSnapshot.child("state").getRef().setValue("read");
                        }
                    }
@@ -736,9 +738,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String userState = "";
                             if (dataSnapshot.child("userState").hasChild("state")) {
-                                String state = dataSnapshot.child("userState").child("state").getValue().toString();
-                                String date = dataSnapshot.child("userState").child("date").getValue().toString();
-                                String time = dataSnapshot.child("userState").child("time").getValue().toString();
+                                String state = Objects.requireNonNull(dataSnapshot.child("userState").child("state").getValue()).toString();
+                                String date = Objects.requireNonNull(dataSnapshot.child("userState").child("date").getValue()).toString();
+                                String time = Objects.requireNonNull(dataSnapshot.child("userState").child("time").getValue()).toString();
 
                                 if (!state.equals("offline"))
                                     userState = state;
@@ -746,7 +748,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                                     userState = date + "-" + time;
 
                             } else {
-
+                                Log.d(TAG, "onDataChange: User State does not exist....");
                             }
                             lastSeen.setText(userState);
 
@@ -1282,7 +1284,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.C
                 String messageText ="upload";
 
                 assert fileMediaType != null;
-                new ChatSendMessageAttachmentBackground(messagesRecycler,this,receiver_user_id,receiver_user_name)
+                new ChatSendMessageAttachmentBackground(messagesRecycler,this,this,receiver_user_id,receiver_user_name)
                         .execute("sendMessageAttachment", messageLocalKey, sender_user_id, receiver_user_id,
                                 caption, currentDate, currentTime, messageText, fileMediaType, fileName, SYNCHRONIZED);
 

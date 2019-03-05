@@ -1,5 +1,6 @@
 package com.nsromapa.uchat.recyclerchatactivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,16 +22,19 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
     private RecyclerView.Adapter adapter;
     private ArrayList<ChatsObjects> chatsObjects = new ArrayList<>();
     private Context context;
+    private Activity mActivity;
     private FirebaseAuth mAuth;
     private String friendId;
     private String friendName;
 
     public ChatActivityBackground(RecyclerView recyclerView,
                                   Context context,
+                                  Activity mActivity,
                                   String friendId,
                                   String friendName) {
         this.recyclerView = recyclerView;
         this.context = context;
+        this.mActivity = mActivity;
         this.friendId = friendId;
         this.friendName = friendName;
     }
@@ -38,7 +42,7 @@ public class ChatActivityBackground extends AsyncTask<String, ChatsObjects, Void
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,friendId,friendName);
+        adapter = new ChatsAdapter(context,mActivity,chatsObjects,recyclerView,friendId,friendName);
         recyclerView.setAdapter(adapter);
     }
 

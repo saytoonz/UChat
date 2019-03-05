@@ -1,5 +1,6 @@
 package com.nsromapa.uchat.recyclerchatactivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import timber.log.Timber;
 public class ChatSendMessageAttachmentBackground extends AsyncTask<String, ChatsObjects, String> {
 
     private Context context;
+    private Activity mActivity;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ArrayList<ChatsObjects> chatsObjects = MessagesArrayList.chatsObjects;
@@ -34,10 +36,12 @@ public class ChatSendMessageAttachmentBackground extends AsyncTask<String, Chats
 
     public ChatSendMessageAttachmentBackground(RecyclerView recyclerView,
                                                Context context,
+                                               Activity mActivity,
                                                String FriendId,
                                                String friendName) {
         this.recyclerView = recyclerView;
         this.context = context;
+        this.mActivity = mActivity;
         this.FriendId = FriendId;
         this.friendName = friendName;
     }
@@ -46,7 +50,7 @@ public class ChatSendMessageAttachmentBackground extends AsyncTask<String, Chats
     @Override
     protected void onPreExecute() {
         mAuth = FirebaseAuth.getInstance();
-        adapter = new ChatsAdapter(context, chatsObjects,recyclerView,FriendId,friendName);
+        adapter = new ChatsAdapter(context, mActivity, chatsObjects,recyclerView,FriendId,friendName);
         //recyclerView.setAdapter(adapter);
     }
 

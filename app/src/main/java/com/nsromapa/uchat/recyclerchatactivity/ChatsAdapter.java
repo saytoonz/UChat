@@ -1,5 +1,7 @@
 package com.nsromapa.uchat.recyclerchatactivity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -28,6 +31,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.nsromapa.uchat.ChatActivity;
 import com.nsromapa.uchat.LocationUtil.MapboxSingleLocationActivity;
 import com.nsromapa.uchat.LocationUtil.SingLocationActivity;
 import com.nsromapa.uchat.MainActivity;
@@ -39,7 +48,10 @@ import com.nsromapa.uchat.utils.FormatterUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
@@ -47,19 +59,21 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private Context mContext;
+    private Activity mActivity;
     private RecyclerView recyclerView;
     private String friendId;
     private String friendName;
     private AlertDialog alertDialog;
     private MediaPlayer mMediaPlayer;
 
-    public ChatsAdapter(Context context,
+    public ChatsAdapter(Context context,Activity mActivity,
                         List<ChatsObjects> userChatList,
                         RecyclerView recyclerView,
                         String friendId,
                         String friendName) {
         this.userChatList = userChatList;
         this.mContext = context;
+        this.mActivity = mActivity;
         this.recyclerView = recyclerView;
         this.friendId = friendId;
         this.friendName = friendName;
@@ -324,12 +338,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
-                                            saveImage(resource, newFileName, destinationFilename + "Sent/");
+                                            saveImage(resource, "Sent");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
                                                     messages.getCaption(), messages.getDate(), messages.getTime(), messages.getMessage(), messages.getMessage(),
-                                                    messages.getState(), destinationFilename + "Sent/" + newFileName + ".png", "yes");
+                                                    messages.getState(), destinationFilename + "Sent/" + newFileName + ".jpg", "yes");
                                         }
 
                                     }
@@ -447,7 +461,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
 
-                                            saveImage(resource, newFileName, destinationFilename + "Received/");
+                                            saveImage(resource, "Received");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
@@ -488,7 +502,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
 
-                                            saveImage(resource, newFileName, destinationFilename + "Received/");
+                                            saveImage(resource, destinationFilename + "Received");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
@@ -1213,6 +1227,76 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         }
     }
 
+    private void saveImage(final Bitmap bitmap, final String foldername) {
+
+        Dexter.withActivity(mActivity)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()) {
+                            final FileOutputStream fileOutputStream;
+                            File file = getExternalDirectory_andFolder("Uchat/Image/"+foldername);
+
+                            if (!file.exists() && !file.mkdirs()) {
+                                showToast("Can't create Directory to save image");
+                                return;
+                            }
+
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmsshhmmss");
+                            String date = simpleDateFormat.format(new Date());
+                            String imgName = "uchat_" + date + ".jpg";
+                            String file_name = file.getAbsolutePath() + "/" + imgName;
+                            File new_file = new File(file_name);
+
+                            try {
+
+                                fileOutputStream = new FileOutputStream(new_file);
+
+                                Glide.with(mContext)
+                                        .asBitmap()
+                                        .load(bitmap)
+                                        .into(new SimpleTarget<Bitmap>() {
+                                            @Override
+                                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                                                resource.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                                            }
+                                        });
+
+                                showToast("Image Saved Successfully");
+
+                                fileOutputStream.flush();
+                                fileOutputStream.close();
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            refreshingGallery(new_file);
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        showToast("Permission denied!");
+                    }
+                }).check();
+
+
+    }
+
+    private void refreshingGallery(File new_file) {
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(new_file));
+        mContext.sendBroadcast(intent);
+    }
+
+    private File getExternalDirectory_andFolder(String folder) {
+        File file = Environment.getExternalStorageDirectory();
+        return new File(file, folder);
+    }
     private void soundImageClicked(String messageSoundName, View imageView) {
         final String soundName = messageSoundName.replace(".png", "") + ".mp3";
         String audioPath = String.valueOf(mContext.getExternalFilesDir("/sounds/SoundAudios/" + soundName));
@@ -1304,5 +1388,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     private void showToast(String s) {
         Toast.makeText(mContext, s, Toast.LENGTH_SHORT).show();
     }
+
+
+
 }
 
