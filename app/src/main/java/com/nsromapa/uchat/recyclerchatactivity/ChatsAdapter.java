@@ -12,9 +12,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -37,6 +40,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.nsromapa.uchat.ChatActivity;
+import com.nsromapa.uchat.ChooseReceiverActivity;
 import com.nsromapa.uchat.LocationUtil.MapboxSingleLocationActivity;
 import com.nsromapa.uchat.LocationUtil.SingLocationActivity;
 import com.nsromapa.uchat.MainActivity;
@@ -55,6 +59,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
+    private static final String TAG = "ChatAdapter";
     List<ChatsObjects> userChatList;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
@@ -338,7 +343,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
-                                            saveImage(resource, "Sent");
+                                            saveImagetoExternalDirectory(resource, "Sent");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
@@ -461,7 +466,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
 
-                                            saveImage(resource, "Received");
+                                            saveImagetoExternalDirectory(resource, "Received");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
@@ -502,7 +507,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                                         String newFileName = String.valueOf(System.currentTimeMillis());
                                         if (messages.getType().equals("image")) {
 
-                                            saveImage(resource, destinationFilename + "Received");
+                                            saveImagetoExternalDirectory(resource, destinationFilename + "Received");
 
                                             ChatsUpdateBackground insertIntoDBBackground = new ChatsUpdateBackground(mContext);
                                             insertIntoDBBackground.execute("update_message", messages.getMessageID(), messages.getFrom(), currentUserID,
@@ -545,7 +550,12 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.senderMessage_state.setVisibility(View.VISIBLE);
 
 //                Picasso.get().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
-                Glide.with(mContext).asGif().load(messages.getMessage()).into(chatsViewHolder.senderStickerSoundGifImage);
+                Glide.with(mContext).asGif().load(messages.getMessage()).into(new SimpleTarget<GifDrawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull GifDrawable resource, @Nullable Transition<? super GifDrawable> transition) {
+                        chatsViewHolder.senderStickerSoundGifImage.setImageDrawable(resource);
+                    }
+                });
 
                 chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
 
@@ -873,6 +883,13 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.sender_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.sender_contactIcon.setImageResource(R.drawable.ic_contacts_white_24dp);
 
+                /////When a contact sent is clicked.....
+                chatsViewHolder.sender_contactFull.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contactChatClicked(messages.getMessage(),messages.getCaption());
+                    }
+                });
                 chatsViewHolder.senderMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
                 ///Show full time in Toast when
                 ///time TextView is long clicked
@@ -903,8 +920,16 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                 chatsViewHolder.receiver_contactNumber.setText(messages.getMessage());
                 chatsViewHolder.receiver_contactIcon.setImageResource(R.drawable.ic_contacts_black_24dp);
 
-                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
 
+                /////When a contact sent is clicked.....
+                chatsViewHolder.receiver_contactFull.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contactChatClicked(messages.getMessage(),messages.getCaption());
+                    }
+                });
+
+                chatsViewHolder.receiverMessageDateTime.setText(FormatterUtil.getRelativeTimeSpanStringShort(mContext, Long.parseLong(messages.getMessageID())));
                 ///Show full time in Toast when
                 ///time TextView is long clicked
                 showChatRealTime(chatsViewHolder.receiverMessageDateTime,messages.getDate() + "  " + messages.getTime());
@@ -1154,6 +1179,54 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     }
 
 
+
+
+
+
+    private void contactChatClicked(String contact, final String contactName) {
+//
+//        if (!contact.contains("+")){
+//            if (contact.startsWith("00")){
+//                contact = "+233"+contact;
+//
+//            }else if (contact.startsWith("0")){
+//                contact = "+233"+contact;
+//
+//            }else if (contact.startsWith("233")){
+//                contact = "+"+contact;
+//            }
+//
+//        }
+        final CharSequence[] choices = {"View Contact","Save Contact","Call "+contactName,"Cancle"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Select an option...");
+        builder.setCancelable(true);
+        final String finalContact = contact;
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which==0){
+                    viewContact(finalContact);
+                }else if (which == 1){
+                    showToast("Save Contact");
+                }else if (which == 2){
+                    showToast("Call "+contactName);
+                }else{
+                    Log.d(TAG, "onClick: Cancel is selected......");   
+                }
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void viewContact(String finalContact) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:"+finalContact));
+        mContext.startActivity(intent);
+    }
+
     private void showChatRealTime(TextView messageDateTimeView, final String messageDateTime) {
         messageDateTimeView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -1227,7 +1300,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         }
     }
 
-    private void saveImage(final Bitmap bitmap, final String foldername) {
+    private void saveImagetoExternalDirectory(final Bitmap bitmap, final String foldername) {
 
         Dexter.withActivity(mActivity)
                 .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,

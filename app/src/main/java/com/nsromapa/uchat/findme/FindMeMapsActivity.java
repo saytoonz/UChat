@@ -80,9 +80,6 @@ public class FindMeMapsActivity extends AppCompatActivity implements
     private TextView notificationView;
 
 
-    private LatLng latLng;
-    private MarkerOptions options;
-
     String friendUid, friendName, myUid, connectAuto;
     FirebaseAuth mAuth;
     DatabaseReference usersRef;
@@ -107,6 +104,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
         notificationView = findViewById(R.id.findMe_notification_textView);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         mAuth = FirebaseAuth.getInstance();
@@ -118,7 +116,6 @@ public class FindMeMapsActivity extends AppCompatActivity implements
             Toast.makeText(this, "There was an error...", Toast.LENGTH_SHORT).show();
             finish();
             return;
-
         }else{
             friendUid = getIntent().getStringExtra("friend_uid");
             friendName = getIntent().getStringExtra("friend_name");
@@ -181,7 +178,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
             Toast.makeText(this, "Could not get location...", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             mLastLocation = location;
             displayLocation();
 
@@ -221,11 +218,14 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild("findMeState")){
-                            String findMeState = dataSnapshot.child("findMeState").getValue().toString();
-                            if (findMeState.equals(friendUid)){
+                            String findMeState = Objects.requireNonNull(dataSnapshot.child("findMeState").getValue()).toString();
+
+                           if (findMeState.equals(friendUid)){
                                 usersRef.child(myUid).child("findMe").child("findMeState")
                                         .removeValue();
+
                                 toggleFindMe.setImageResource(R.drawable.ic_perm_contact_calendar_red_24dp);
+
                                 if (progressDialog.isShowing()){
                                     progressDialog.dismiss();
                                 }
@@ -252,10 +252,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         if (dataSnapshot.child("userState").hasChild("state")){
-                            String state=dataSnapshot.child("userState").child("state").getValue().toString();
+                            String state= Objects.requireNonNull(dataSnapshot.child("userState").child("state").getValue()).toString();
                             if (state.equals("online")) {
-                                
-                                
+
                                 if (userState.equals("connected")) {
                                     if (progressDialog.isShowing()){
                                         progressDialog.dismiss();
@@ -264,19 +263,23 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                                     Toast.makeText(FindMeMapsActivity.this,
                                             friendName + " is on FindMe with someone else...",
                                             Toast.LENGTH_SHORT).show();
+
                                 } else {
                                     hasFriendConnectedMeAlready();
                                 }
 
                             }else {
-                                if (progressDialog.isShowing())
-                                    progressDialog.dismiss();
+                                if (progressDialog.isShowing()) progressDialog.dismiss();
+
                                 map.clear();
                                 String userState = "Sorry, "+friendName+" is offline...";
                                 Toast.makeText(FindMeMapsActivity.this, userState, Toast.LENGTH_SHORT).show();
                             }
 
                         }else{
+                            if (progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
                             map.clear();
                             String userState = friendName+" is not available for now.";
                             Toast.makeText(FindMeMapsActivity.this, userState, Toast.LENGTH_SHORT).show();
@@ -286,6 +289,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
+                        if (progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         map.clear();
                         String userState = "Sorry, "+friendName+" is unreachable...";
                         Toast.makeText(FindMeMapsActivity.this, userState, Toast.LENGTH_SHORT).show();
@@ -304,7 +310,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
                         toggleFindMe.setImageResource(R.drawable.ic_perm_contact_calendar_black_24dp);
 
                         if (dataSnapshot.hasChild("findMeState")){
-                            if (!dataSnapshot.child("findMeState").getValue().toString().equals(myUid)){
+                            if (!Objects.requireNonNull(dataSnapshot.child("findMeState").getValue()).toString().equals(myUid)){
                                 sendUserMessage();
                             }
                         }else{
@@ -321,6 +327,9 @@ public class FindMeMapsActivity extends AppCompatActivity implements
     }
 
     private void sendUserMessage() {
+        if (progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
         SendMessage(myUid,"findMe","active","");
     }
     public void SendMessage(final String messageText, final String type, final String caption , final String LOCAL_LOCATION) {
