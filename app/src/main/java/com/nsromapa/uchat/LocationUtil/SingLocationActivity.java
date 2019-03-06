@@ -16,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.nsromapa.uchat.R;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SingLocationActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -57,7 +58,9 @@ public class SingLocationActivity extends FragmentActivity implements OnMapReady
         HashMap<String, Object> onlineState = new HashMap<>();
         onlineState.put("state", state);
 
-        FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("userState")
+        FirebaseDatabase.getInstance().getReference().child("users")
+                .child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                .child("userState")
                 .updateChildren(onlineState);
     }
 

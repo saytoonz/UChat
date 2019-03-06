@@ -156,7 +156,7 @@ public class FindMeMapsActivity extends AppCompatActivity implements
         toggleMapView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (map.getMapType() == GoogleMap.MAP_TYPE_SATELLITE) {
+                if (map.getMapType() == GoogleMap.MAP_TYPE_HYBRID) {
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 } else {
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);

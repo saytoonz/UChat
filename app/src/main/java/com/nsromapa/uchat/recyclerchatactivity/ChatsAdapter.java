@@ -40,8 +40,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.nsromapa.uchat.ChatActivity;
 import com.nsromapa.uchat.ChooseReceiverActivity;
 import com.nsromapa.uchat.LocationUtil.MapboxSingleLocationActivity;
@@ -1265,21 +1268,54 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         alert.show();
     }
 
-    private void saveContact(String finalContact, String contactName) {
-        ContentValues values = new ContentValues();
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, 001);
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, finalContact);
-        values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
-        values.put(ContactsContract.CommonDataKinds.Phone.LABEL, contactName);
-        Uri dataUri = mContext.getContentResolver().insert(ContactsContract.Data.CONTENT_URI,values);
+    private void saveContact(final String finalContact, final String contactName) {
+
+        Dexter.withActivity(mActivity)
+                .withPermissions(Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()){
+                            ContentValues values = new ContentValues();
+                            values.put(ContactsContract.Data.RAW_CONTACT_ID, 001);
+                            values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+                            values.put(ContactsContract.CommonDataKinds.Phone.NUMBER, finalContact);
+                            values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
+                            values.put(ContactsContract.CommonDataKinds.Phone.LABEL, contactName);
+                            Uri dataUri = mContext.getContentResolver().insert(ContactsContract.Data.CONTENT_URI,values);
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        showToast("Permissions denied...");
+                    }
+                });
     }
 
-    private void callContact(String finalContact) {
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + finalContact));
-        CustomIntent.customType(mContext, "left-to-right");
-        mContext.startActivity(intent);
+    private void callContact(final String finalContact) {
+        Dexter.withActivity(mActivity)
+                .withPermission(Manifest.permission.CALL_PHONE)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + finalContact));
+                        CustomIntent.customType(mContext, "left-to-right");
+                        mContext.startActivity(intent);
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        showToast("Permission denied....");
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        showToast("Permission denied!");
+                    }
+                });
     }
 
     private void viewContact(String finalContact) {
@@ -1304,7 +1340,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
         Intent intent = new Intent(mContext, MapboxSingleLocationActivity.class);
         intent.putExtra("long", Double.parseDouble(longitude));
         intent.putExtra("lat", Double.parseDouble(latitude));
-        intent.putExtra("friendName", "FriendName");
+        intent.putExtra("friendName", friendName);
         mContext.startActivity(intent);
     }
 
@@ -1313,7 +1349,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
 //        Intent intent = new Intent(mContext, MapboxSingleLocationActivity.class);
         intent.putExtra("long", Double.parseDouble(longitude));
         intent.putExtra("lat", Double.parseDouble(latitude));
-        intent.putExtra("friendName", "FriendName");
+        intent.putExtra("friendName", friendName);
         mContext.startActivity(intent);
     }
 
